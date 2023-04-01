@@ -9,7 +9,7 @@ Pra rodar o projeto você precisa:
 
 ### `reactJS`
 
-Ao clonar o repositório e instalar as bibliotecas acima, execute no terminal ### `npm run start`
+Ao clonar o repositório e instalar as bibliotecas acima, execute no terminal  `npm run start`
 
 Abrirá uma janela no browser com o endereço local: [http://localhost:3000](http://localhost:3000) 
 
