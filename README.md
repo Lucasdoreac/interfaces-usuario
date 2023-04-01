@@ -5,6 +5,8 @@ Responsável - Thiago Dias.
 
 Pra rodar o projeto você precisa:
 
+### `nodeJS`
+
 ### `npm start`
 
 Runs the app in the development mode.\
