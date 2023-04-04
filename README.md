@@ -5,11 +5,11 @@ Responsável - Thiago Dias.
 
 Pra rodar o projeto você precisa:
 
-### `npm start`
+### `nodeJS`
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+### `reactJS`
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+Ao clonar o repositório e instalar as bibliotecas acima, execute no terminal  `npm run start`
+
+Abrirá uma janela no browser com o endereço local: [http://localhost:3000](http://localhost:3000) 
 
