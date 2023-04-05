@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 
-const Home = () =>{
+const Organizador = () =>{
     return (
       <div>
         <h1>Página organizador</h1>
@@ -19,4 +19,4 @@ const Home = () =>{
     );
   }
   
-  export default Home;
+  export default Organizador;

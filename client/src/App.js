@@ -1,12 +1,14 @@
 import './App.css';
 import {BrowserRouter, Routes, Route} from 'react-router-dom';
-import Home from './pages/home';
-import Organizador from './pages/organizador/organizador'
+import Home from './pages/Home';
+import Organizador from './pages/Organizador/Organizador';
+import Navbar from './components/Navbar/Navbar';
+
+
 function App() {
   return (
     <div className="App">
-    {/* navbar aqui  */}
-
+      <Navbar/>
       <BrowserRouter>      
         <Routes>
           <Route path='/' element={<Home/>} />
