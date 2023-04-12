@@ -5,7 +5,7 @@ const Organizador = () =>{
     return (
       <div>
         <h1>Página organizador</h1>
-        <nav>
+      
           <ul>
             <li>
               <Link to="/">home</Link>
@@ -14,7 +14,7 @@ const Organizador = () =>{
               teste
             </li>
           </ul>
-        </nav>
+       
       </div>
     );
   }
