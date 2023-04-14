@@ -14,3 +14,17 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+.card{
+  border-width: 5px !important;
+  border-color: #fff !important;   
+  border-radius: 15px !important;
+}
+.card-header{
+  border-width: 5px !important;
+  border-color: #fff !important;   
+  border-top-left-radius: 15px !important;
+  border-top-right-radius:  15px !important;
+}
+.btn-sm {
+  padding: 10px 20px !important;
+}

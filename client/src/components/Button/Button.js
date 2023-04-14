@@ -1,13 +1,15 @@
 import "./Button.scss"
-const Button = (props) =>{
+import Button from 'react-bootstrap/Button';
+
+const Botão = (props) =>{
     return (
-        <>
-            <button className="btn-primary">
-
-            </button>
-        </>
-
+        
+     
+        <Button href={props.href} variant={props.variant} className={props.style}  size={props.size}>
+          {props.text}
+        </Button>
+     
     )
 }
 
-export default Button;
+export default Botão;
