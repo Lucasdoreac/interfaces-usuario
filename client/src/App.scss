@@ -36,3 +36,16 @@
     transform: rotate(360deg);
   }
 }
+input.input-success{
+  
+    border: 1px solid #28a745; /* cor da borda */
+    background-color: #dff0d8; /* cor de fundo */
+    color: #28a745; /* cor do texto */
+  
+}
+
+input.input-danger {
+  border: 1px solid #dc3545; /* cor da borda */
+  background-color: #f8d7da; /* cor de fundo */
+  color: #dc3545; /* cor do texto */
+}

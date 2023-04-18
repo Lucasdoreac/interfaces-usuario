@@ -18,15 +18,9 @@ const Navbar = () => {
             </span>
           </span>
         </a>
-
       </div>
     </nav>
-
-
   )
-
-
-
 }
 
 export default Navbar;

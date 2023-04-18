@@ -16,7 +16,7 @@ a:focus,
     line-height: 1;
     text-align: center;
     padding: 10px 30px;
-    border-width: 5px !important;
+    border-width: 2px !important;
     border-color: #fff !important;   
     border-radius: 10px !important;
     outline: 0 none;
@@ -31,11 +31,10 @@ a:focus,
     color: #ffff !important;
     border-color: #0a2d7a !important;
     background-color: #0a2d7a !important; 
-    transform: scale(1.08) !important;
+    transform: scale(1.00) !important;
     transition: 0.1s all;
     -webkit-box-shadow: 0 10px 25px rgba(0, 0, 0, 0.10) !important;
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5) !important; 
-    font-weight: 600;
+    box-shadow: 0 5px 10px rgba(0, 0, 0, 0.5) !important; 
     text-decoration: none;
   }
   
