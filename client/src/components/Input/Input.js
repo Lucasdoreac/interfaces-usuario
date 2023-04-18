@@ -19,7 +19,7 @@ const Input = (props) => {
 
             <div className="input-text">
                 <label>{props.label}</label>
-                <input placeholder={props.placeholder}/>
+                <input placeholder={props.placeholder} onChange={props.onChange}/>
             </div>
         )
     }

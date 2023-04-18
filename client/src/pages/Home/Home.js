@@ -3,6 +3,7 @@ import './Home.scss';
 import AvatarImage from '../../images/man.png';
 import Button from '../../components/Button/Button';
 import { AiOutlineLeft } from "react-icons/ai";
+import { Link } from "react-router-dom";
 
 const Home = () =>{
   return (       
@@ -25,8 +26,10 @@ const Home = () =>{
                     <div className="row">
                       <div className="col-md-12 text-center">               
                           <img className="img-man" src={AvatarImage} style={{ width: '200px', }} alt="man avatar"/>  
-                            <div className="mt-4">                    
-                              <Button href="/organizador" className="btn" size="md" text="ORGANIZADOR"/>
+                            <div className="mt-4">     
+                              <Link to={"/organizador"}>
+                                <Button className="btn" size="md" text="ORGANIZADOR"/>
+                              </Link>               
                             </div>
                       </div>
                     </div>         
