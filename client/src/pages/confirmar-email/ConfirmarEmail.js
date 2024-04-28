@@ -1,8 +1,13 @@
 import React from "react";
-import AvatarImage from '../../images/man.png';
+import EnvImage from '../../images/email.png';
 import { AiOutlineLeft } from "react-icons/ai";
 import './ConfirmarEmail.scss';
+
+
 const ConfirmarEmail = () =>{
+
+
+  
     return (
        <div>
         <div className="card-header">
@@ -22,7 +27,11 @@ const ConfirmarEmail = () =>{
               <div className="card-body">
                 <div className="row">
                   <div className="col-md-12 text-center">
-                    <img className="img-man mb-2" src={AvatarImage} style={{ width: '200px', }} alt="man avatar" />          
+                    <img className="img-man mb-2" src={EnvImage} style={{ width: '200px',backgroundColor: 'transparent' }} alt="man avatar" />
+                    <p>Clique no link do e-mail que enviamos para <b>organizador@udf.edu.br</b></p>
+                    <div className="mt-4">
+                        <button type="submit" className="btn"  size="md" text="CONFIRMADO" >CONFIRMADO </button>
+                      </div>       
                   </div>
                 </div>
               </div>
