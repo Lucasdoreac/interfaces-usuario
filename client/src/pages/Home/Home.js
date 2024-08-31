@@ -5,14 +5,14 @@ import Button from '../../components/Button/Button';
 
 const Home = () => {
   return (
-   <div>
+    <div>
       <div className="card-header">
         <div className="row mb-4">
           <div className="col-md-3">
 
           </div>
         </div>
-    </div>
+      </div>
       <div className="card-body">
         <div className="row">
           <div className="col-md-12 text-center">
@@ -23,7 +23,7 @@ const Home = () => {
           </div>
         </div>
       </div>
-   </div>
+    </div>
   );
 }
 
