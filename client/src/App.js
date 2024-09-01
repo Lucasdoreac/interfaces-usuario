@@ -5,6 +5,8 @@ import Organizador from './pages/organizador/organizador';
 import Navbar from './components/Navbar/Navbar';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import ConfirmarEmail from './pages/confirmar-email/ConfirmarEmail';
+import DadosPessoais from './pages/dados-pessoais/DadosPessoais';
+import DescricaoEvento from './pages/descricao-evento/DescricaoEvento';
 
 
 function App() {
@@ -21,6 +23,8 @@ function App() {
                   <Route path='/' element={<Home/>} />
                   <Route path='/organizador' element={<Organizador/>} />
                   <Route path='/confirmar-email' element={<ConfirmarEmail/>} />
+                  <Route path='/dados-pessoais'element={<DadosPessoais/>}/>
+                  <Route path='/descricao-evento'element={<DescricaoEvento/>}/>
                 </Routes>
               </BrowserRouter>
               </div>
