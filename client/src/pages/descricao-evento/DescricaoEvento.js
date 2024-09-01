@@ -5,10 +5,16 @@ import {useNavigate} from 'react-router-dom';
 
 const DescricaoEvento=()=>{
     const navigate = useNavigate();
+
+    const listaCurso = ['Ciência da Computação', 'Sistemas da Informação', 'Engenharia Civil'];
     const [dados, setDados]=useState(
         {
             linkEvento:'',
             descricaoEvento:'',
+            curso:'',
+            publicoAlvoRadio:'',
+            recursosNecessariosRadio:'',
+
             
 
         }
@@ -29,7 +35,48 @@ const DescricaoEvento=()=>{
         console.log({data: e});
     }
     const confDescricaoEventos = ()=>{
-        navigate('/local-evento');
+        
+        if(validacaoDescricaoEvento()){
+            navigate('/local-evento');
+
+        }
+    }
+
+    const validacaoDescricaoEvento = ()=>{
+        const erro = {};
+        if(!dados.linkEvento.trim()){
+            erro.linkEvento = "Campo obrigatório.";
+            setErros(erro);
+            return false;
+
+        }
+        if(!dados.descricaoEvento.trim()){
+            erro.descricaoEvento = "Campo obrigatório.";
+            setErros(erro);
+            return false;
+
+        }
+        if(!dados.curso.trim()){
+            erro.curso = "Campo obrigatório.";
+            setErros(erro);
+            return false;
+
+        }
+        if(!dados.publicoAlvoRadio.trim()){
+            erro.publicoAlvoRadio = "Campo obrigatório.";
+            setErros(erro);
+            return false;
+
+        }
+        if(!dados.recursosNecessariosRadio.trim()){
+            erro.recursosNecessariosRadio = "Campo obrigatório.";
+            setErros(erro);
+            return false;
+
+        }
+        
+
+        return true;
     }
 
     return (
@@ -59,7 +106,7 @@ const DescricaoEvento=()=>{
                 <div className="col">
                     <label htmlFor="linkEvento">Link do evento/Inscrições</label>
                     <input type= "text" className="form-control" id="linkEvento" name='linkEvento' value={dados.linkEvento} onChange={handleChange}/>
-
+                    {erros.linkEvento && <span style={{ color: 'red' }}>{erros.linkEvento}</span>}
                 </div>
            </div>
 
@@ -67,44 +114,54 @@ const DescricaoEvento=()=>{
               <div className="col">
                 <label htmlFor="descricaoEvento"> Descrição do evento/ Objetivos</label>
                 <input type="textArea" className="form-control" id="descricaoEvento" name="descricaoEvento" value={dados.descricaoEvento} onChange={handleChange}/>
-               
+                {erros.descricaoEvento && <span style={{ color: 'red' }}>{erros.descricaoEvento}</span>}
               </div>
 
            </div>
         
            <div className="row">
-           <div className="col">
-                <label for="inputState">Curso Vinculado</label><select id="inputState" class="form-control" style={{width:200}}>
-                         <option selected>Nome curso e código</option>
-                         <option>...</option>
-                            </select>
-                        </div>
+            <div className="col">
+                    <label for="curso">Curso Vinculado</label>
+                    <select id="curso" name="curso" value={dados.curso} defaultValue="" onChange={handleChange} class="form-control" style={{width:200}}>
+                    <option value="" disabled > Nome curso e Código </option>
 
-                       </div>
+                      {
+                        listaCurso.map((curso,index)=>(
+                            <option value = {curso} key={index}>{curso}</option>
+                        ))
+                      }
+
+                           
+                    </select>
+
+                    {erros.curso && <span style={{ color: 'red' }}>{erros.curso}</span>}
+                </div>
+
+            </div>
                     
            <div className="row">
                 <div className="col">
                     <label htmlFor="publicoAlvo"> Público alvo</label><br></br>
                     
                     <div className="form-check">
-                        <input class="form-check-input" type="radio" name="publicoAlvoRadio" id="alunosUDF"></input>
-                        <label class="form-check-label" for="flexRadioDefault1">
+                        <input class="form-check-input" type="radio" name="publicoAlvoRadio" id="alunosUDF"  onChange={handleChange} value ='alunosUDF' checked={dados.publicoAlvoRadio === 'alunosUDF'}></input>
+                        <label class="form-check-label" for="alunosUDF">
                             Alunos UDF
                         </label>
                     </div>
                     <div className="form-check">
-                        <input class="form-check-input" type="radio" name="publicoAlvoRadio" id="professores"></input>
-                        <label class="form-check-label" for="flexRadioDefault2">
+                        <input class="form-check-input" type="radio" name="publicoAlvoRadio" id="professores" onChange={handleChange} value ='professores' checked={dados.publicoAlvoRadio === 'professores'}></input>
+                        <label class="form-check-label" for="professores">
                             Professores
                         </label>
                     </div>
                     <div className="form-check">
-                        <input class="form-check-input" type="radio" name="publicoAlvoRadio" id="publicoExterno"></input>
-                        <label class="form-check-label" for="flexRadioDefault3">
+                        <input class="form-check-input" type="radio" name="publicoAlvoRadio" id="publicoExterno" onChange={handleChange} value ='publicoExterno' checked={dados.publicoAlvoRadio === 'publicoExterno'}></input>
+                        <label class="form-check-label" for="publicoExterno">
                             Público externo
                         </label>
                     </div>
-                    
+                    {erros.publicoAlvoRadio && <span style={{ color: 'red' }}>{erros.publicoAlvoRadio}</span>}
             </div>
         </div>
 
@@ -113,29 +170,31 @@ const DescricaoEvento=()=>{
                     <label htmlFor="recursosNecessarios">Recursos Necessários</label><br></br>
 
                     <div className="form-check">
-                        <input class="form-check-input" type="radio" name="recursosNecessariosRadio" id="humanas"></input>
+                        <input class="form-check-input" type="radio" name="recursosNecessariosRadio" id="humanas" onChange={handleChange} value ='humanas' checked={dados.recursosNecessariosRadio === 'humanas'}></input>
                         <label class="form-check-label" for="flexRadioDefault1">
                             Humanas
                         </label>
                     </div>
                     <div className="form-check">
-                        <input class="form-check-input" type="radio" name="recursosNecessariosRadio" id="tecnologias"></input>
+                        <input class="form-check-input" type="radio" name="recursosNecessariosRadio" id="tecnologias" onChange={handleChange} value ='tecnologias' checked={dados.recursosNecessariosRadio === 'tecnologias'}></input>
                         <label class="form-check-label" for="flexRadioDefault1">
                             Tecnologias
                         </label>
                     </div>
                     <div className="form-check">
-                        <input class="form-check-input" type="radio" name="recursosNecessariosRadio" id="servicos"></input>
+                        <input class="form-check-input" type="radio" name="recursosNecessariosRadio" id="servicos" onChange={handleChange} value ='servicos' checked={dados.recursosNecessariosRadio === 'servicos'}></input>
                         <label class="form-check-label" for="flexRadioDefault1">
                             Serviços
                         </label>
                     </div>
                     <div className="form-check">
-                        <input class="form-check-input" type="radio" name="recursosNecessariosRadio" id="materias"></input>
+                        <input class="form-check-input" type="radio" name="recursosNecessariosRadio" id="materias" onChange={handleChange} value ='materias' checked={dados.recursosNecessariosRadio === 'materias'}></input>
                         <label class="form-check-label" for="flexRadioDefault1">
                             Materiais
                         </label>
                     </div>
+
+                    {erros.recursosNecessariosRadio && <span style={{ color: 'red' }}>{erros.recursosNecessariosRadio}</span>}
 
                     <br/>
                     <div className="row">

@@ -3,10 +3,10 @@ import {BrowserRouter, Routes, Route} from 'react-router-dom';
 import Home from './pages/Home/Home';
 import Organizador from './pages/organizador/organizador';
 import Navbar from './components/Navbar/Navbar';
-import 'bootstrap/dist/css/bootstrap.min.css';
 import ConfirmarEmail from './pages/confirmar-email/ConfirmarEmail';
 import DadosPessoais from './pages/dados-pessoais/DadosPessoais';
 import DescricaoEvento from './pages/descricao-evento/DescricaoEvento';
+import LocalEvento from './pages/local-evento/LocalEvento';
 
 
 function App() {
@@ -25,6 +25,7 @@ function App() {
                   <Route path='/confirmar-email' element={<ConfirmarEmail/>} />
                   <Route path='/dados-pessoais'element={<DadosPessoais/>}/>
                   <Route path='/descricao-evento'element={<DescricaoEvento/>}/>
+                  <Route path='/local-evento'element={<LocalEvento/>}/>
                 </Routes>
               </BrowserRouter>
               </div>
