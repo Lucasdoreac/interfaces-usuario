@@ -123,7 +123,7 @@ const DadosPessoais=()=>{
                             {erros.tituloEvento && <span style={{ color: 'red' }}>{erros.tituloEvento}</span>}
                     </div>
              
-                </div> 
+                </div> <br></br>
                 <div className="row">
                         <div className="col">
                             <label htmlFor = "formProfessor">Professor</label>
@@ -137,7 +137,7 @@ const DadosPessoais=()=>{
                             <input type= "text" className="form-control" id="formEmail" name="emailProfessor" value={dados.emailProfessor} onChange={handleChange} />
 
                         </div>
-                </div>*/}
+                </div>*/}<br></br>
                 <div className="row">
                         <div className="col">
                             <label htmlFor="telefone">Telefone</label>
@@ -163,7 +163,7 @@ const DadosPessoais=()=>{
                             {erros.classificacao && <span style={{ color: 'red' }}>{erros.classificacao}</span>}
                         </div>
                         
-                </div> 
+                </div><br></br> 
                <div className="row">
                     {/* <div className="col">
                         <label htmlFor="date">Data do evento</label>
@@ -190,7 +190,7 @@ const DadosPessoais=()=>{
                             {erros.horario && <span style={{ color: 'red' }}>{erros.horario}</span>}
                         </div>
                     <div> 
-                    <div className="col">
+                    <br></br><div className="col">
                             <label htmlFor="ods">Classificação ODS</label>
                             <select id="ods" name="ods" class="form-control" style={{width:150}} defaultValue="" onChange={handleChange} value={dados.ods}>
                                 

@@ -101,7 +101,7 @@ const DescricaoEvento=()=>{
            </div>
            <div className="card-body">
            <div className="row"><div className="col-md-12"><h4>Novo Evento</h4></div></div>
-
+           
            <div className="row">
                 <div className="col">
                     <label htmlFor="linkEvento">Link do evento/Inscrições</label>
@@ -109,16 +109,16 @@ const DescricaoEvento=()=>{
                     {erros.linkEvento && <span style={{ color: 'red' }}>{erros.linkEvento}</span>}
                 </div>
            </div>
-
+           <br></br>
            <div className="row">
               <div className="col">
                 <label htmlFor="descricaoEvento"> Descrição do evento/ Objetivos</label>
-                <input type="textArea" className="form-control" id="descricaoEvento" name="descricaoEvento" value={dados.descricaoEvento} onChange={handleChange}/>
+                <textArea rows="2" className="form-control" id="descricaoEvento" name="descricaoEvento" value={dados.descricaoEvento} onChange={handleChange}/>
                 {erros.descricaoEvento && <span style={{ color: 'red' }}>{erros.descricaoEvento}</span>}
               </div>
 
            </div>
-        
+           <br></br>
            <div className="row">
             <div className="col">
                     <label for="curso">Curso Vinculado</label>
@@ -138,7 +138,7 @@ const DescricaoEvento=()=>{
                 </div>
 
             </div>
-                    
+            <br></br> 
            <div className="row">
                 <div className="col">
                     <label htmlFor="publicoAlvo"> Público alvo</label><br></br>
@@ -164,7 +164,7 @@ const DescricaoEvento=()=>{
                     {erros.publicoAlvoRadio && <span style={{ color: 'red' }}>{erros.publicoAlvoRadio}</span>}
             </div>
         </div>
-
+        <br></br>
             <div className="row">
                 <div className="col">
                     <label htmlFor="recursosNecessarios">Recursos Necessários</label><br></br>
