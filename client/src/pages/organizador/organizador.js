@@ -3,21 +3,40 @@ import './Organizador.scss';
 import AvatarImage from '../../images/man.png';
 import { AiOutlineLeft } from "react-icons/ai";
 import { useNavigate } from 'react-router-dom'; // useNavigate para navegação
+import axios from 'axios';
 
 function Organizador() {
   const [email, setEmail] = useState("");
   const [errors, setErro] = useState("");
+  const [loading, setLoading] = useState(false); // Adicionando estado de loading
   const navigate = useNavigate(); // Navegação por URL
 
   const handlerEmail = (event) => {
     setEmail(event.target.value);
   };
 
-  const sendEmail = (event) => {
+  const sendEmail = async (event) => {
     event.preventDefault();
     if (validEmail()) {
-      // Lógica de envio de email...
-      navigate('/confirmar-email'); // Navegar para /confirmar-email
+      setLoading(true);
+      try{
+        const response = await axios.post('http://127.0.0.1:5000/auth-mail', null,  {
+          params: { email }
+        });
+
+        console.log(response.data)
+
+        if (response.data.magic_link) {
+          localStorage.setItem('userEmail', email);
+          navigate('/confirmar-email');
+        } else {
+          setErro('Erro ao gerar o link.');
+        }
+      } catch (error){
+        setErro(error.response?.data?.error || 'Erro ao enviar o e-mail.');
+      } finally {
+        setLoading(false);
+      }
     }
   };
 
@@ -51,14 +70,16 @@ function Organizador() {
               <img className="img-man mb-2" src={AvatarImage} style={{ width: '200px' }} alt="man avatar" />
               <input
                   type="email"
-                  placeholder="Digite seu email@aluno.cruzeirodosul.edu.br"
+                  placeholder="Digite seu email@udf.edu.br"
                   value={email}
                   onChange={handlerEmail}
                   className="form-control"
               />
               {errors && <span style={{ color: 'red' }}>{errors}</span>}
               <div className="mt-4">
-                <button type="submit" onClick={sendEmail} className="btn">CONFIRMAR</button>
+                <button type="submit" onClick={sendEmail} className="btn" disabled={loading}>
+                  {loading ? 'Enviando...' : 'CONFIRMAR'}
+                </button>
               </div>
             </div>
           </div>
