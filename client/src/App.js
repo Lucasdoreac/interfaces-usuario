@@ -22,7 +22,7 @@ function App() {
                     <Routes>
                       <Route path="/" element={<Home />} />
                       <Route path="/organizador" element={<Organizador />} />
-                      <Route path="/confirmar-email" element={<ConfirmarEmail />} />
+                      <Route path="/auth/callback" element={<ConfirmarEmail />} />
                       <Route path="/dados-pessoais" element={<DadosPessoais />} />
                       <Route path="/descricao-evento" element={<DescricaoEvento />} />
                       <Route path="/local-evento" element={<LocalEvento />} />

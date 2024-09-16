@@ -78,7 +78,7 @@ const DadosPessoais=()=>{
             <div>
                 <div className="card-header">
                     <div className="d-flex d-flex justify-content-start">
-                  <span onClick={() => navigate('/confirmar-email')}>
+                  <span onClick={() => navigate('/auth/callback')}>
                     <AiOutlineLeft
                         style={{
                             margin: "0px 10px 0px 0px"
