@@ -12,6 +12,7 @@ Orientar novos integrantes do LabTech na execução do projeto Front-End, inclui
 [![Git](https://img.shields.io/badge/Git-000?style=for-the-badge&logo=git&logoColor=E94D5F)](https://git-scm.com/downloads/win) 
 [![Node.js](https://img.shields.io/badge/Node.js-000?style=for-the-badge&logo=node.js&logoColor=green)]([https://git-scm.com/doc](https://nodejs.org/en/download/package-manager)) 
 [![Yarn](https://img.shields.io/badge/yarn-000?style=for-the-badge&logo=yarn&logoColor=blue)](https://classic.yarnpkg.com/lang/en/docs/install/#windows-stable) 
+[![nvm](https://img.shields.io/badge/nvm-000?style=for-the-badge&logo=nvm&logoColor=grenn)](https://github.com/coreybutler/nvm-windows/release)
 
 ## Guia de Instalação de Ferramentas
 ### GitHub
@@ -38,6 +39,29 @@ Node.js é uma plataforma JavaScript que permite executar código JavaScript no 
 
     node --version
     npm --version
+
+
+### NvM (Node Version Manager)
+É um gerenciador de versões do Node.JS, ele é responsável por gerenciar as versões instaladas na nossa máquina de desenvolvimento.
+
+> Para instalar acesse no link [nvm](https://github.com/coreybutler/nvm-windows/releases) e baixe o executável "nvm-setup.exe"
+
+Siga as instruções do instalador.
+
+Após a instalação, você pode verificar a instalação com o comando:
+
+    nvm --version
+
+>[!IMPORTANT]
+>No projeto estamos utilizando a versão v20.
+
+Para instalar uma versão específica do Node.js, você pode usar o comando:
+
+    nvm install <version>
+
+Para mudar de versão, use:        
+    
+    nvm use <version>
 
 ### Yarn
 Yarn é um gerenciador de pacotes que facilita o gerenciamento de dependências em projetos.
@@ -91,16 +115,9 @@ Isto é uma política de segurança do Powershell para evitar que scripts malici
     Get-ExecutionPolicy
     RemoteSigned
 
+Após a execução dos comandos dentro do PowerShell, execute novamente o comando no terminal "yarn start".
+
 #### Para mais informações consulte: [Microsoft Documentation](https://learn.microsoft.com/pt-pt/powershell/module/microsoft.powershell.core/about/about_execution_policies?view=powershell-7.4)
-
-## Contribua com o READ.ME
-Contribua com os erros e soluções encontrados para assim facilitar a jornada dos novos integrantes!
-
-
-### Membros da comunidade que já contribuiram:
-<a href="">
-  <img src=""/>
-</a>
 
 ##
 <div align="center">Criado por DW Corp LTDA</a>.</div>
