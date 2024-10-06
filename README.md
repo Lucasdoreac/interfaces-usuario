@@ -91,6 +91,8 @@ Isto é uma política de segurança do Powershell para evitar que scripts malici
     Get-ExecutionPolicy
     RemoteSigned
 
+#### Para mais informações consulte: [Microsoft Documentation](https://learn.microsoft.com/pt-pt/powershell/module/microsoft.powershell.core/about/about_execution_policies?view=powershell-7.4)
+
 ## Contribua com o READ.ME
 Contribua com os erros e soluções encontrados para assim facilitar a jornada dos novos integrantes!
 
