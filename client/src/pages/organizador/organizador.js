@@ -1,65 +1,91 @@
-import React, { useState } from 'react';
-import './Organizador.scss';
-import Input from '../../components/Input/Input';
-import AvatarImage from '../../images/man.png';
+import React, { useState } from "react";
+import "./Organizador.scss";
+import AvatarImage from "../../images/man.png";
+import { AiOutlineLeft } from "react-icons/ai";
+import { useNavigate } from "react-router-dom";
+import apiService from "../../services/client";
 
-import ApiService from '../../services/client';
+function Organizador() {
+  const [email, setEmail] = useState("");
+  const [errors, setErro] = useState("");
+  const [loading, setLoading] = useState(false);
+  const navigate = useNavigate(); // Navegação por URL
 
-const Organizador = () => {
-  const [email, setEmail] = useState('');
+  const handlerEmail = (event) => {
+    setEmail(event.target.value);
+  };
 
-  const handleSubmit = async (e) => {
-    // e.preventDefault();
-    if (email && email.endsWith('@udf.edu.br')) {
-      try {
-        const response = await ApiService.postAuthMail(email);
-        console.log(response.data);
-      } catch (error) {
-        console.error(error);
-      }
-    } else {
-      console.error('Invalid email address');
+  const sendEmail = async (event) => {
+    event.preventDefault();
+    if (validEmail()) {
+      setLoading(true);
+      if (apiService.postAuthMail(email))
+        navigate("/auth/callback");
+      else
+        setErro("Serviço indisponível")
+      setLoading(false);
     }
   };
 
-  const handleChange = (e) => {
-    setEmail(e.target.value);
+  const validEmail = () => {
+    if (!email.trim()) {
+      setErro("O campo e-mail é obrigatório.");
+      return false;
+    }
+
+    if (!/^[a-zA-Z0-9._%+-]+@udf\.edu\.br$/.test(email)) {
+      setErro("O campo e-mail está fora do formato permitido.");
+      return false;
+    }
+
+    return true;
   };
 
-
   return (
-    <section id="organizador" className="section-padding">
-      <div className="container">
-        <div className="row justify-content-center">
-          <div className="col-md-6">
-            <div className="card">
-              <div className="card-header">
-                <div className="row justify-content-center">
-                  <div className="col-md-6">
-                    <h5>Organizador</h5>
-                  </div>
-                </div>
-              </div>
-              <div className="card-body">
-                <div className="row">
-                  <div className="col-md-12 text-center">
-                    <img className="img-man" src={AvatarImage} style={{ width: '200px', }} alt="man avatar" />
-                    <div className="mt-4">
-                      <Input type="input-text" placeholder="Digite o e-mail para cadastro" onChange={handleChange}/>
-                      <button onClick={() => handleSubmit()}>
-                        Request Auth Mail
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              </div>
+    <div>
+      <div className="card-header">
+        <div className="d-flex justify-content-start">
+          <span onClick={() => navigate("/")}>
+            <AiOutlineLeft
+              size="20px"
+              color="white"
+              style={{ margin: "0px 10px 0px 0px" }}
+            />
+          </span>
+          <h5>Voltar</h5>
+        </div>
+      </div>
+      <div className="card-body">
+        <div className="row">
+          <div className="col-md-12 text-center">
+            <img
+              className="img-man mb-2"
+              src={AvatarImage}
+              style={{ width: "200px" }}
+              alt="man avatar"
+            />
+            <input
+              type="email"
+              placeholder="Digite seu email@udf.edu.br"
+              value={email}
+              onChange={handlerEmail}
+              className="form-control"
+            />
+            {errors && <span style={{ color: "red" }}>{errors}</span>}
+            <div className="mt-4">
+              <button
+                type="submit"
+                onClick={sendEmail}
+                className="btn"
+                disabled={loading}
+              >
+                {loading ? "Enviando..." : "CONFIRMAR"}
+              </button>
             </div>
           </div>
         </div>
       </div>
-
-
-    </section>
+    </div>
   );
 }
 

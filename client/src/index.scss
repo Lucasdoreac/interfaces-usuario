@@ -18,7 +18,16 @@ code {
   border-width: 5px !important;
   border-color: #fff !important;   
   border-radius: 15px !important;
+  box-shadow: 0px 0px 46px -12px rgba(0,0,0,0.75)
 }
+.card:hover,
+  .card:focus,
+  .card:active {   
+    transform: scale(1.01) !important;
+    transition: 0.1s all;
+    -webkit-box-shadow: 0 10px 25px rgba(0, 0, 0, 0.10) !important;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5) !important;    
+  }
 .card-header{
   border-width: 5px !important;
   border-color: #fff !important;   

@@ -1,49 +1,44 @@
 import React from 'react';
 import './Home.scss';
 import AvatarImage from '../../images/man.png';
-import Button from '../../components/Button/Button';
-import { AiOutlineLeft } from "react-icons/ai";
-import { Link } from "react-router-dom";
+import { useNavigate } from 'react-router-dom'; // Importar useNavigate para navegação
 
-const Home = () =>{
-  return (       
-        <section id="home" className="section-padding">
-          <div className="container">
-          <div className="row justify-content-center">
-            <div className="col-md-6">
-              <div className="card">
-                <div className="card-header">
-                  <div className="row mb-4">
+const Home = () => {
+    const navigate = useNavigate(); // Usar useNavigate para navegação entre páginas
+
+    return (
+        <div>
+            <div className="card-header">
+                <div className="row mb-4">
                     <div className="col-md-3">
-                          <a href="/">
-                        <AiOutlineLeft/>
-                          </a>
+                        {/* Espaço vazio */}
                     </div>
-                  </div>
                 </div>
-
-                  <div className="card-body">                 
-                    <div className="row">
-                      <div className="col-md-12 text-center">               
-                          <img className="img-man" src={AvatarImage} style={{ width: '200px', }} alt="man avatar"/>  
-                            <div className="mt-4">     
-                              <Link to={"/organizador"}>
-                                <Button className="btn" size="md" text="ORGANIZADOR"/>
-                              </Link>               
-                            </div>
-                      </div>
-                    </div>         
-                  </div> 
-                  </div>
+            </div>
+            <div className="card-body">
+                <div className="row">
+                    <div className="col-md-12 text-center">
+                        <img
+                            className="img-man"
+                            src={AvatarImage}
+                            style={{ width: '200px' }}
+                            alt="man avatar"
+                        />
+                        <div className="mt-4">
+                            {/* O botão agora usa onClick para navegação */}
+                            <button
+                                className="btn"
+                                size="md"
+                                onClick={() => navigate('/organizador')} // Navegar para a página "Organizador"
+                            >
+                                ORGANIZADOR
+                            </button>
+                        </div>
+                    </div>
                 </div>
-           
-            
-           
-          </div>
+            </div>
         </div>
-                   
-        </section>   
-  );
+    );
 }
 
 export default Home;
