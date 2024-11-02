@@ -3,7 +3,9 @@ import axios from "axios";
 class ApiService {
   constructor() {
     this.http = axios.create({
-      baseURL: "http://localhost:5000",
+      baseURL: "http://localhost:8000",
+      withCredentials: false,
+      validateStatus: (status) => status >= 200 && status <= 404,
     });
 
     this.http.interceptors.request.use((config) => {
@@ -30,12 +32,15 @@ class ApiService {
 
   async validateToken(token, email) {
     try {
-      const response = await this.http.get("/auth/validate", null, {
-        params: { token, email },
+      const params = new URLSearchParams({ token, email });
+      const response = await this.http.get("/auth/validate", {
+        params: params,
       });
-      return response.data;
+      if (response.status >= 400) return false;
+      return true;
     } catch (error) {
       console.error();
+      return false;
     }
   }
 }

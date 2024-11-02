@@ -5,43 +5,47 @@
 </h1>
 
 ## Objetivo
+
 Orientar novos integrantes do LabTech na execução do projeto Front-End, incluindo manual de instalações necessárias e solução de erros frequêntes.
+
 ## Ferramentas
+
 [![GitHub](https://img.shields.io/badge/GitHub-000?style=for-the-badge&logo=github&logoColor=30A3DC)](https://docs.github.com/)
 [![VsCode](https://img.shields.io/badge/vscode-000?style=for-the-badge&logo=vscode&logoColor=black)](https://code.visualstudio.com/download)
-[![Git](https://img.shields.io/badge/Git-000?style=for-the-badge&logo=git&logoColor=E94D5F)](https://git-scm.com/downloads/win) 
-[![Node.js](https://img.shields.io/badge/Node.js-000?style=for-the-badge&logo=node.js&logoColor=green)]([https://git-scm.com/doc](https://nodejs.org/en/download/package-manager)) 
-[![Yarn](https://img.shields.io/badge/yarn-000?style=for-the-badge&logo=yarn&logoColor=blue)](https://classic.yarnpkg.com/lang/en/docs/install/#windows-stable) 
+[![Git](https://img.shields.io/badge/Git-000?style=for-the-badge&logo=git&logoColor=E94D5F)](https://git-scm.com/downloads/win)
+[![Node.js](https://img.shields.io/badge/Node.js-000?style=for-the-badge&logo=node.js&logoColor=green)](<[https://git-scm.com/doc](https://nodejs.org/en/download/package-manager)>)
+[![Yarn](https://img.shields.io/badge/yarn-000?style=for-the-badge&logo=yarn&logoColor=blue)](https://classic.yarnpkg.com/lang/en/docs/install/#windows-stable)
 [![nvm](https://img.shields.io/badge/nvm-000?style=for-the-badge&logo=nvm&logoColor=grenn)](https://github.com/coreybutler/nvm-windows/release)
 
 ## Guia de Instalação de Ferramentas
+
 ### GitHub
+
 GitHub é uma plataforma para desenvolvimento colaborativo que permite armazenar, compartilhar e gerenciar projetos de software.
+
 > Acesse [github.com](https://github.com)
-> 
+>
 > [Crie sua conta](https://github.com/signup?ref_cta=Sign+up&ref_loc=header+logged+out&ref_page=%2F%3Cuser-name%3E%2F%3Crepo-name%3E&source=header-repo&source_repo=coreybutler%2Fnvm-windows) (caso ainda não tenha)
 
 ### Git
+
 Git é uma ferramenta de controle de versão que permite gerenciar seu código.
+
 > Acesse o [site oficial do Git](https://git-scm.com/downloads)
 
-    
 ### VsCode
+
 Visual Studio Code (VS Code) é uma IDE para desenvolvimento em várias linguagens.
+
 > Acesse o [site oficial do VS Code](https://code.visualstudio.com/) e baixe a versão correspondente ao seu sistema operacional.
 
 ### Node.js
+
 Node.js é uma plataforma JavaScript que permite executar código JavaScript no lado do servidor.
-> Acesse o [site oficial do Node.js](https://nodejs.org/en/download/package-manager/current) e baixe a versão v20.
+_não é necessário instalar o node diretamente, pois o NVM irá gerenciar as instalações_
 
->[!IMPORTANT] 
-> Verifique se o Node.js e o npm (Node Package Manager) estão instalados corretamente, executando os seguintes comandos em terminal:
+### NVM (Node Version Manager)
 
-    node --version
-    npm --version
-
-
-### NvM (Node Version Manager)
 É um gerenciador de versões do Node.JS, ele é responsável por gerenciar as versões instaladas na nossa máquina de desenvolvimento.
 
 > Para instalar acesse no link [nvm](https://github.com/coreybutler/nvm-windows/releases) e baixe o executável "nvm-setup.exe"
@@ -52,24 +56,27 @@ Após a instalação, você pode verificar a instalação com o comando:
 
     nvm --version
 
->[!IMPORTANT]
->No projeto estamos utilizando a versão v20.
+> [!IMPORTANT]
+> No projeto estamos utilizando a versão v20.
 
 Para instalar uma versão específica do Node.js, você pode usar o comando:
 
     nvm install <version>
 
-Para mudar de versão, use:        
-    
+Para mudar de versão, use:
+
     nvm use <version>
 
 ### Yarn
+
 Yarn é um gerenciador de pacotes que facilita o gerenciamento de dependências em projetos.
+
 > Para instalação, execute o seguinte comando no terminal:
 
     npm install --global yarn
->[!IMPORTANT] 
->Verifique se o yarn foi instalado corretamente, executando o seguinte comando em terminal:
+
+> [!IMPORTANT]
+> Verifique se o yarn foi instalado corretamente, executando o seguinte comando em terminal:
 
     yarn --version
 
@@ -81,8 +88,8 @@ Execute o GitBash no seu computador, após a execução digite:
 
     $ git clone [link_do_repositorio]
 
->[!IMPORTANT]
->O link do repositório você pode encontrar no GitHub>LabTech>interfaces_usuario>(<>code)>copiar link do repositorio HTTPS.
+> [!IMPORTANT]
+> O link do repositório você pode encontrar no GitHub>LabTech>interfaces_usuario>(<>code)>copiar link do repositorio HTTPS.
 
 Se o comando foir executado com sucesso você deve visualizar esse bash:
 
@@ -98,19 +105,22 @@ Agora execute no terminal o comando:
 
     yarn start
 
-Isso abrirá uma janela no browser com o endereço local: [http://localhost:3000](http://localhost:3000) 
+Isso abrirá uma janela no browser com o endereço local: [http://localhost:3000](http://localhost:3000)
 
 ###
 
 ## Manual de solução de erros
+
 ### 1. Execução de scripts foi desabilitada neste sistema
->[!CAUTION]
->Ocorreu um erro; Execução de scripts foi desabilitada neste sistema
+
+> [!CAUTION]
+> Ocorreu um erro; Execução de scripts foi desabilitada neste sistema
 
 Isto é uma política de segurança do Powershell para evitar que scripts maliciosos sejam executados indevidamente no seu sistema. Por isso, todos os scripts que não forem assinados terão sua execução bloqueada. Ou seja, a política de execução está como Restricted (que é o padrão).
->Solução:
+
+> Solução:
 >
->Acesse seu Powershell como administrador e execute os seguintes comandos:
+> Acesse seu Powershell como administrador e execute os seguintes comandos:
 
     Get-ExecutionPolicy
     RemoteSigned
@@ -120,4 +130,5 @@ Após a execução dos comandos dentro do PowerShell, execute novamente o comand
 #### Para mais informações consulte: [Microsoft Documentation](https://learn.microsoft.com/pt-pt/powershell/module/microsoft.powershell.core/about/about_execution_policies?view=powershell-7.4)
 
 ##
+
 <div align="center">Criado por DW Corp LTDA</a>.</div>
