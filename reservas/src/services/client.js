@@ -30,12 +30,15 @@ class ApiService {
 
   async validateToken(token, email) {
     try {
-      const response = await this.http.get("/auth/validate", null, {
-        params: { token, email },
+      const params = new URLSearchParams({ token, email });
+      const response = await this.http.get("/auth/validate", {
+        params: params,
       });
-      return response.data;
+      if (response.status === 200) return true;
+      return false;
     } catch (error) {
       console.error();
+      return false;
     }
   }
 }

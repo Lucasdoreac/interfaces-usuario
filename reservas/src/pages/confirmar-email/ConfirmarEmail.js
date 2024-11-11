@@ -18,19 +18,21 @@ const ConfirmarEmail = () => {
     };
   };
 
-  useEffect(() => {
-    emailConfirmado();
-  }, [navigate, location]);
-
-  const emailConfirmado = () => {
+  const emailConfirmado = async () => {
     const { token, email } = getUserData();
-    if (token && email && apiService.validateToken(token, email)) {
+    if (token && email && (await apiService.validateToken(token, email))) {
       localStorage.setItem("userEmail", email);
-      localStorage.setItem("token", token)
+      localStorage.setItem("token", token);
       setEmail(email);
       return navigate("/dados-pessoais");
+    } else {
+      return navigate("/acesso-negado");
     }
   };
+
+  useEffect(() => {
+    emailConfirmado();
+  }, [navigate, emailConfirmado]);
 
   return (
     <div>
