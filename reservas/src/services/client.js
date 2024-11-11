@@ -34,7 +34,7 @@ class ApiService {
       const response = await this.http.get("/auth/validate", {
         params: params,
       });
-      if (response.status == 200) return true;
+      if (response.status === 200) return true;
       return false;
     } catch (error) {
       console.error();

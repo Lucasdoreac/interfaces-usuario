@@ -18,10 +18,6 @@ const ConfirmarEmail = () => {
     };
   };
 
-  useEffect(() => {
-    emailConfirmado();
-  }, [navigate, location]);
-
   const emailConfirmado = async () => {
     const { token, email } = getUserData();
     if (token && email && (await apiService.validateToken(token, email))) {
@@ -33,6 +29,10 @@ const ConfirmarEmail = () => {
       return navigate("/acesso-negado");
     }
   };
+
+  useEffect(() => {
+    emailConfirmado();
+  }, [navigate, emailConfirmado]);
 
   return (
     <div>
