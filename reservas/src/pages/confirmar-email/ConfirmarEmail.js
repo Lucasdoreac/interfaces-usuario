@@ -29,6 +29,8 @@ const ConfirmarEmail = () => {
       localStorage.setItem("token", token);
       setEmail(email);
       return navigate("/dados-pessoais");
+    } else {
+      return navigate("/acesso-negado");
     }
   };
 
