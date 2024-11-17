@@ -123,7 +123,7 @@ Isto é uma política de segurança do Powershell para evitar que scripts malici
 > Acesse seu Powershell como administrador e execute os seguintes comandos:
 
     Get-ExecutionPolicy
-    RemoteSigned
+    Set-ExecutionPolicy -ExecutionPolicy RemoteSigned
 
 Após a execução dos comandos dentro do PowerShell, execute novamente o comando no terminal "yarn start".
 
