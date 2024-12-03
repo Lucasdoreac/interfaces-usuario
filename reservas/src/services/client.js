@@ -41,6 +41,21 @@ class ApiService {
       return false;
     }
   }
+
+  async getData() {
+    try {
+      const apiKey = "test";
+      const response = await this.http.get("/types", {
+        headers: {
+          "X-API-Key": apiKey,
+        },
+      });
+      return response.data;
+    } catch (error) {
+      console.error("Erro ao obter dados:", error);
+      return null;
+    }
+  }
 }
 const apiService = new ApiService();
 export default apiService;

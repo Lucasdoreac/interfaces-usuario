@@ -1,22 +1,41 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { AiOutlineLeft } from "react-icons/ai";
 import "./DadosPessoais.scss";
 import { useNavigate } from "react-router-dom";
 import InputMask from "react-input-mask";
 import { useFormContext } from "../../context/FormContext";
+import apiService from "../../services/client";
 
 const DadosPessoais = () => {
   const navigate = useNavigate();
   const { formData, handleChange } = useFormContext();
-  const listaTpEvento = ["tipo evento 1", "tipo evento 2", "tipo evento 3"];
-  const listaHorario = [
+
+  const [listaTpEvento, setListaTpEvento] = useState([]);
+  const [listaODS, setListaODS] = useState([]);
+  const [listaHorario] = useState([
     "de 08:00 a 10:00",
     "de 14:00 a 15:00",
     "de 16:00 a 17:00",
-  ];
-  const listaODS = ["1 a 17", "17 a 34"];
-
+  ]); // Lista de horários permanece estática
   const [erros, setErros] = useState({});
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const data = await apiService.getData();
+      if (data && data.types) {
+        const eventData = data.types.find(
+          (item) => item.collection === "events"
+        );
+        const odsData = data.types.find((item) => item.collection === "ODS");
+
+        setListaTpEvento(eventData ? eventData.types.map((t) => t.type) : []);
+        setListaODS(
+          odsData ? odsData.types.map((ods) => `${ods.nome} (${ods.type})`) : []
+        );
+      }
+    };
+    fetchData();
+  }, []);
 
   const validaFormulario = () => {
     const erro = {};
@@ -86,6 +105,7 @@ const DadosPessoais = () => {
             </div>
           </div>
 
+          {/* Campos do formulário */}
           <div className="row">
             <div className="col">
               <label htmlFor="formTitulo">Nome do Evento</label>
@@ -145,6 +165,7 @@ const DadosPessoais = () => {
               )}
             </div>
 
+            {/* Dropdowns Dinâmicos */}
             <div className="col">
               <label htmlFor="classificacao">Classificação</label>
               <select
@@ -156,8 +177,7 @@ const DadosPessoais = () => {
                 name="classificacao"
               >
                 <option value="" disabled>
-                  {" "}
-                  Tipo do Evento{" "}
+                  Tipo do Evento
                 </option>
                 {listaTpEvento.map((evt, index) => (
                   <option value={evt} key={index}>
