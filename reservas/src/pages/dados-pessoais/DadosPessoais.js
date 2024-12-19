@@ -5,92 +5,84 @@ import { useNavigate } from "react-router-dom";
 import InputMask from "react-input-mask";
 import { useFormContext } from "../../context/FormContext";
 import apiService from "../../services/client";
+import TwoButtons from "../../components/TwoButtons";
 
 const DadosPessoais = () => {
   const navigate = useNavigate();
-  const { formData, handleChange } = useFormContext();
+  const { formData, handleChange, handleSaveDraft } = useFormContext();
 
-  const [listaTpEvento, setListaTpEvento] = useState([]);
+  const [listaTipoEvento, setListaTipoEvento] = useState([]);
   const [listaODS, setListaODS] = useState([]);
-  const [listaHorario] = useState([
-    "de 08:00 a 10:00",
-    "de 14:00 a 15:00",
-    "de 16:00 a 17:00",
-  ]); // Lista de horários permanece estática
   const [erros, setErros] = useState({});
 
   useEffect(() => {
-    const fetchData = async () => {
-      const data = await apiService.getData();
-      if (data && data.types) {
-        const eventData = data.types.find(
-          (item) => item.collection === "events"
-        );
-        const odsData = data.types.find((item) => item.collection === "ODS");
-
-        setListaTpEvento(eventData ? eventData.types.map((t) => t.type) : []);
-        setListaODS(
-          odsData ? odsData.types.map((ods) => `${ods.nome} (${ods.type})`) : []
-        );
+    const fetchEventData = async () => {
+      try {
+        const data = await apiService.getTypes();
+        if (data?.types) {
+          setListaTipoEvento(
+            data.types
+              .find((item) => item.collection === "events")
+              ?.types.map((t) => t.type) || []
+          );
+          setListaODS(
+            data.types
+              .find((item) => item.collection === "ODS")
+              ?.types.map((ods) => `${ods.name} (${ods.type})`) || []
+          );
+        }
+      } catch (error) {
+        console.error("Failed to fetch event data:", error);
       }
     };
-    fetchData();
+
+    fetchEventData();
   }, []);
 
-  const validaFormulario = () => {
-    const erro = {};
+  const validateForm = () => {
+    const newErrors = {};
+
     if (!formData.tituloEvento?.trim()) {
-      erro.tituloEvento = "O campo nome do evento é obrigatório.";
-      setErros(erro);
-      return false;
+      newErrors.tituloEvento = "O campo nome do evento é obrigatório.";
+    } else if (formData.tituloEvento.length < 5) {
+      newErrors.tituloEvento =
+        "O campo nome do evento precisa ter mais caracteres!";
     }
-    if (formData.tituloEvento?.length < 5) {
-      erro.tituloEvento = "O campo nome do evento precisa ter mais caracteres!";
-      setErros(erro);
-      return false;
-    }
+
     if (!formData.nomeProfessor?.trim()) {
-      erro.nomeProfessor = "O campo PROFESSOR é obrigatório.";
-      setErros(erro);
-      return false;
+      newErrors.nomeProfessor = "O campo PROFESSOR é obrigatório.";
     }
-    if (!formData.telefone?.trim()) {
-      erro.telefone = "O número de telefone é obrigatório.";
-      setErros(erro);
-      return false;
-    }
+
     if (!formData.classificacao?.trim()) {
-      erro.classificacao = "Defina uma classificação.";
-      setErros(erro);
-      return false;
+      newErrors.classificacao = "Defina uma classificação.";
     }
-    if (!formData.horario?.trim()) {
-      erro.horario = "É necessário definir um horário.";
-      setErros(erro);
-      return false;
-    }
+
     if (!formData.ods?.trim()) {
-      erro.ods = "Defina uma ODS.";
-      setErros(erro);
-      return false;
+      newErrors.ods = "Defina uma ODS.";
     }
-    return true;
+
+    setErros(newErrors);
+    return Object.keys(newErrors).length === 0;
   };
 
-  const confDadosPessoais = () => {
-    if (validaFormulario()) {
+  const handleNext = () => {
+    if (validateForm()) {
+      handleSaveDraft();
       navigate("/descricao-evento");
     }
   };
+
+  const renderError = (field) =>
+    erros[field] && <span style={{ color: "red" }}>{erros[field]}</span>;
 
   return (
     <form>
       <div>
         <div className="card-header">
-          <div className="d-flex d-flex justify-content-start">
+          <div className="d-flex justify-content-start">
             <span onClick={() => navigate("/auth/callback")}>
               <AiOutlineLeft
-                style={{ margin: "0px 10px 0px 0px" }}
+                style={{ margin: "0 10px 0 0" }}
                 size="20px"
                 color="white"
               />
@@ -98,6 +90,7 @@ const DadosPessoais = () => {
             <h5>X Cancelar</h5>
           </div>
         </div>
+
         <div className="card-body">
           <div className="row">
             <div className="col-md-12">
@@ -105,7 +98,7 @@ const DadosPessoais = () => {
             </div>
           </div>
 
-          {/* Campos do formulário */}
+          {/* Form Fields */}
           <div className="row">
             <div className="col">
               <label htmlFor="formTitulo">Nome do Evento</label>
@@ -114,37 +107,33 @@ const DadosPessoais = () => {
                 className="form-control"
                 id="formTitulo"
                 name="tituloEvento"
-                value={formData.tituloEvento || ""}
+                value={formData.tituloEvento}
                 onChange={handleChange}
               />
-              {erros.tituloEvento && (
-                <span style={{ color: "red" }}>{erros.tituloEvento}</span>
-              )}
+              {renderError("tituloEvento")}
             </div>
           </div>
-          <br />
-          <div className="row">
+
+          <div className="row mt-3">
             <div className="col">
               <label htmlFor="formProfessor">Professor</label>
               <input
                 type="text"
+                disabled
                 className="form-control"
                 id="formProfessor"
                 name="nomeProfessor"
-                value={formData.nomeProfessor || ""}
-                onChange={handleChange}
+                value={formData.nomeProfessor}
               />
-              {erros.nomeProfessor && (
-                <span style={{ color: "red" }}>{erros.nomeProfessor}</span>
-              )}
+              {renderError("nomeProfessor")}
             </div>
           </div>
-          <br />
-          <div className="row">
+
+          <div className="row mt-3">
             <div className="col">
               <label htmlFor="telefone">Telefone</label>
               <InputMask
-                mask="(99)9 9999-9999"
+                mask="(99) 9 9999-9999"
                 id="telefone"
                 name="telefone"
                 placeholder="(XX) XXXXX-XXXX"
@@ -160,70 +149,41 @@ const DadosPessoais = () => {
                   />
                 )}
               </InputMask>
-              {erros.telefone && (
-                <span style={{ color: "red" }}>{erros.telefone}</span>
-              )}
+              {renderError("telefone")}
             </div>
 
-            {/* Dropdowns Dinâmicos */}
             <div className="col">
               <label htmlFor="classificacao">Classificação</label>
               <select
                 className="form-control"
                 style={{ width: 150 }}
-                onChange={handleChange}
-                value={formData.classificacao || ""}
                 id="classificacao"
                 name="classificacao"
+                value={formData.classificacao || ""}
+                onChange={handleChange}
               >
                 <option value="" disabled>
                   Tipo do Evento
                 </option>
-                {listaTpEvento.map((evt, index) => (
+                {listaTipoEvento.map((evt, index) => (
                   <option value={evt} key={index}>
                     {evt}
                   </option>
                 ))}
               </select>
-              {erros.classificacao && (
-                <span style={{ color: "red" }}>{erros.classificacao}</span>
-              )}
+              {renderError("classificacao")}
             </div>
           </div>
-          <br />
-          <div className="row">
-            <div className="col">
-              <label htmlFor="horario">Horário</label>
-              <select
-                id="horario"
-                name="horario"
-                className="form-control"
-                style={{ width: 200 }}
-                onChange={handleChange}
-                value={formData.horario || ""}
-              >
-                <option value="" disabled>
-                  de HH:MM a HH:MM
-                </option>
-                {listaHorario.map((hr, index) => (
-                  <option value={hr} key={index}>
-                    {hr}
-                  </option>
-                ))}
-              </select>
-              {erros.horario && (
-                <span style={{ color: "red" }}>{erros.horario}</span>
-              )}
-            </div>
-            <div className="col">
+
+          <div className="row mt-3">
+            <div className="col-md-12">
               <label htmlFor="ods">Classificação ODS</label>
               <select
                 id="ods"
                 name="ods"
                 className="form-control"
-                style={{ width: 150 }}
-                onChange={handleChange}
                 value={formData.ods || ""}
+                onChange={handleChange}
               >
                 <option value="" disabled>
                   ODS
@@ -234,26 +194,14 @@ const DadosPessoais = () => {
                   </option>
                 ))}
               </select>
-              {erros.ods && <span style={{ color: "red" }}>{erros.ods}</span>}
+              {renderError("ods")}
             </div>
           </div>
-          <br />
-          <div className="row">
-            <div className="col">
-              <input
-                type="button"
-                className="btn btn-outline-secondary"
-                value="Salvar Rascunho"
-              />
-              <button
-                type="button"
-                className="btn btn-warning"
-                onClick={confDadosPessoais}
-              >
-                Próximo
-              </button>
-            </div>
-          </div>
+
+          <TwoButtons
+            handleSaveDraft={handleSaveDraft}
+            handleNext={handleNext}
+          />
         </div>
       </div>
     </form>

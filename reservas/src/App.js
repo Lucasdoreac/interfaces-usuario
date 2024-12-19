@@ -3,6 +3,7 @@ import "./App.scss";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Home from "./pages/Home/Home";
 import Organizador from "./pages/organizador/organizador";
+import EmailCoordination from "./pages/approve-event";
 import Navbar from "./components/Navbar/Navbar";
 import ConfirmarEmail from "./pages/confirmar-email/ConfirmarEmail";
 import DadosPessoais from "./pages/dados-pessoais/DadosPessoais";
@@ -19,9 +20,9 @@ function App() {
         <div className="App">
           <Navbar />
           <section id="paginaInicial" className="section-padding">
-            <div className="container">
+            <div>
               <div className="row justify-content-center">
-                <div className="col-md-6">
+                <div className="col-md-12 col-sm-12 col-12">
                   <div className="card">
                     <Routes>
                       <Route path="/" element={<Home />} />
@@ -29,6 +30,10 @@ function App() {
                       <Route
                         path="/auth/callback"
                         element={<ConfirmarEmail />}
+                      />
+                      <Route
+                        path="/coordenacao"
+                        element={<EmailCoordination />}
                       />
                       <Route
                         path="/dados-pessoais"

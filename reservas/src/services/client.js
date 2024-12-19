@@ -9,8 +9,11 @@ class ApiService {
     this.http.interceptors.request.use((config) => {
       // Add authorization header if available
       const token = localStorage.getItem("token");
+      const email = localStorage.getItem("userEmail");
       if (token) {
         config.headers.Authorization = `Bearer ${token}`;
+        config.headers.email = email;
+        config.headers.token = token;
       }
       return config;
     });
@@ -42,7 +45,7 @@ class ApiService {
     }
   }
 
-  async getData() {
+  async getTypes() {
     try {
       const apiKey = "test";
       const response = await this.http.get("/types", {
@@ -53,6 +56,18 @@ class ApiService {
       return response.data;
     } catch (error) {
       console.error("Erro ao obter dados:", error);
+      return null;
+    }
+  }
+
+  async searchCourses(query) {
+    try {
+      const response = await this.http.get("/courses", {
+        params: { course_name: query },
+      });
+      return response.data;
+    } catch (error) {
+      console.error("Erro ao buscar cursos:", error);
       return null;
     }
   }

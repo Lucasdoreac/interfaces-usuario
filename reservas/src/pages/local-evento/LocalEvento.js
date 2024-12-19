@@ -1,24 +1,85 @@
-import React from "react";
+import React, { useState } from "react";
 import { AiOutlineLeft } from "react-icons/ai";
 import { useNavigate } from "react-router-dom";
-import { useFormContext } from "../../context/FormContext"; // ajuste o caminho conforme necessário
+import { useFormContext } from "../../context/FormContext";
 
 const LocalEvento = () => {
   const navigate = useNavigate();
-  const { formData, handleChange } = useFormContext(); // use o contexto
+  const { formData, handleChange, handleSaveDraft } = useFormContext();
+  const [alunosMonitores, setAlunosMonitores] = useState([]);
+  const [errors, setErrors] = useState({});
+  const [logoPreview, setLogoPreview] = useState(null);
 
-  const confLocalEvento = () => {
-    navigate("/proximo-passo"); // Exemplo de navegação
+  const handleAddAluno = () => {
+    setAlunosMonitores([...alunosMonitores, ""]);
   };
+
+  const handleRemoveAluno = (index) => {
+    const updatedAlunos = alunosMonitores.filter((_, i) => i !== index);
+    setAlunosMonitores(updatedAlunos);
+  };
+
+  const handleAlunoChange = (index, value) => {
+    const updatedAlunos = [...alunosMonitores];
+    updatedAlunos[index] = value;
+    setAlunosMonitores(updatedAlunos);
+  };
+
+  const handleLogoUpload = (event) => {
+    const file = event.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = () => {
+        setLogoPreview(reader.result);
+      };
+      reader.readAsDataURL(file);
+    }
+    handleChange({ target: { name: "logo", value: file } });
+  };
+
+  const validateForm = () => {
+    const newErrors = {};
+
+    if (
+      !formData.numeroParticipantes?.trim() ||
+      formData.numeroParticipantes <= 0
+    ) {
+      newErrors.numeroParticipantes = "Número de participantes é obrigatório.";
+    }
+
+    if (!formData.espacos?.trim()) {
+      newErrors.espacos = "Selecione um espaço necessário.";
+    }
+
+    if (formData.trilha === "sim" && !formData.trilhaDesc?.trim()) {
+      newErrors.trilhaDesc = "Descrição da trilha empreendedora é obrigatória.";
+    }
+
+    if (formData.projeto === "sim" && !formData.projetoDesc?.trim()) {
+      newErrors.projetoDesc = "Descrição do projeto de extensão é obrigatória.";
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  const handleNext = () => {
+    if (validateForm()) {
+      navigate("/proximo-passo");
+    }
+  };
+
+  const renderError = (field) =>
+    errors[field] && <span style={{ color: "red" }}>{errors[field]}</span>;
 
   return (
     <form>
       <div>
         <div className="card-header">
-          <div className="d-flex d-flex justify-content-start">
+          <div className="d-flex justify-content-start">
             <span onClick={() => navigate("/descricao-evento")}>
               <AiOutlineLeft
-                style={{ margin: "0px 10px 0px 0px" }}
+                style={{ margin: "0 10px 0 0" }}
                 size="20px"
                 color="white"
               />
@@ -26,13 +87,15 @@ const LocalEvento = () => {
             <h5>Voltar Descrição Evento</h5>
           </div>
         </div>
+
         <div className="card-body">
           <div className="row">
             <div className="col-md-12">
               <h4>Novo Evento</h4>
             </div>
           </div>
-          <div className="row">
+
+          <div className="row mt-3">
             <div className="col">
               <label htmlFor="numeroParticipantes">
                 Número de participantes
@@ -43,18 +106,18 @@ const LocalEvento = () => {
                 min="0"
                 max="100"
                 id="numeroParticipantes"
-                style={{ width: 200 }}
                 name="numeroParticipantes"
                 value={formData.numeroParticipantes || ""}
                 onChange={handleChange}
+                style={{ width: 200 }}
               />
+              {renderError("numeroParticipantes")}
             </div>
           </div>
-          <br />
-          <div className="row">
+
+          <div className="row mt-3">
             <div className="col">
-              <label htmlFor="espacos">Espaços Necessários</label>
-              <br />
+              <label htmlFor="espacos">Espaço Necessário</label>
               {[
                 "online",
                 "auditorio",
@@ -68,9 +131,9 @@ const LocalEvento = () => {
                     type="radio"
                     name="espacos"
                     id={espaco}
-                    onChange={handleChange}
                     value={espaco}
                     checked={formData.espacos === espaco}
+                    onChange={handleChange}
                   />
                   <label className="form-check-label" htmlFor={espaco}>
                     {espaco.charAt(0).toUpperCase() +
@@ -78,22 +141,22 @@ const LocalEvento = () => {
                   </label>
                 </div>
               ))}
+              {renderError("espacos")}
             </div>
           </div>
-          <br />
-          <div className="row">
+
+          <div className="row mt-3">
             <div className="col-5">
               <label htmlFor="trilha">Trilha empreendedora</label>
               <select
                 id="trilha"
                 name="trilha"
-                value={formData.trilha || ""}
+                value={formData.trilha || "nao"}
                 onChange={handleChange}
                 className="form-control"
               >
-                <option value="" disabled></option>
-                <option value="sim">Sim</option>
                 <option value="nao">Não</option>
+                <option value="sim">Sim</option>
               </select>
             </div>
             <div className="col-7">
@@ -106,22 +169,22 @@ const LocalEvento = () => {
                 value={formData.trilhaDesc || ""}
                 onChange={handleChange}
               />
+              {renderError("trilhaDesc")}
             </div>
           </div>
-          <br />
-          <div className="row">
+
+          <div className="row mt-3">
             <div className="col-5">
               <label htmlFor="projeto">Projeto Extensão</label>
               <select
                 id="projeto"
                 name="projeto"
-                value={formData.projeto || ""}
+                value={formData.projeto || "nao"}
                 onChange={handleChange}
                 className="form-control"
               >
-                <option value="" disabled></option>
-                <option value="sim">Sim</option>
                 <option value="nao">Não</option>
+                <option value="sim">Sim</option>
               </select>
             </div>
             <div className="col-7">
@@ -134,17 +197,75 @@ const LocalEvento = () => {
                 value={formData.projetoDesc || ""}
                 onChange={handleChange}
               />
+              {renderError("projetoDesc")}
             </div>
           </div>
-          <br />
-          <div className="row">
-            <div className="col text-center">
+
+          <div className="row mt-3">
+            <div className="col">
+              <label>Alunos Monitores</label>
+              {alunosMonitores.map((aluno, index) => (
+                <div className="input-group mb-2" key={index}>
+                  <input
+                    type="text"
+                    className="form-control"
+                    value={aluno}
+                    onChange={(e) => handleAlunoChange(index, e.target.value)}
+                  />
+                  <button
+                    type="button"
+                    className="btn btn-danger"
+                    onClick={() => handleRemoveAluno(index)}
+                  >
+                    Remover
+                  </button>
+                </div>
+              ))}
+              <button
+                type="button"
+                className="btn btn-outline-primary"
+                onClick={handleAddAluno}
+              >
+                Adicionar Aluno
+              </button>
+            </div>
+          </div>
+
+          <div className="row mt-3">
+            <div className="col">
+              <label htmlFor="logo">Logo do Evento</label>
+              <input
+                type="file"
+                className="form-control"
+                id="logo"
+                name="logo"
+                onChange={handleLogoUpload}
+              />
+              {logoPreview && (
+                <img
+                  src={logoPreview}
+                  alt="Logo Preview"
+                  style={{ marginTop: "10px", maxWidth: "200px" }}
+                />
+              )}
+            </div>
+          </div>
+
+          <div className="row mt-3">
+            <div className="col">
+              <button
+                type="button"
+                className="btn btn-outline-secondary"
+                onClick={handleSaveDraft}
+              >
+                Salvar Rascunho
+              </button>
               <button
                 type="button"
                 className="btn btn-primary"
-                onClick={confLocalEvento}
+                onClick={handleNext}
               >
-                Próximo Passo
+                Enviar para Coordenação
               </button>
             </div>
           </div>

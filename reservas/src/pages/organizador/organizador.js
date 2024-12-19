@@ -19,10 +19,10 @@ function Organizador() {
     event.preventDefault();
     if (validEmail()) {
       setLoading(true);
+      localStorage.clear();
       if (apiService.postAuthMail(email))
-        navigate("/auth/callback");
-      else
-        setErro("Serviço indisponível")
+        navigate("/auth/callback?email=" + email);
+      else setErro("Serviço indisponível");
       setLoading(false);
     }
   };
@@ -76,10 +76,10 @@ function Organizador() {
               <button
                 type="submit"
                 onClick={sendEmail}
-                className="btn"
+                className="btn btn-primary btn-lg"
                 disabled={loading}
               >
-                {loading ? "Enviando..." : "CONFIRMAR"}
+                <b>{loading ? "Enviando..." : "Próximo"}</b>
               </button>
             </div>
           </div>
