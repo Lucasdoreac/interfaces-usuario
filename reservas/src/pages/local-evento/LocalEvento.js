@@ -2,27 +2,32 @@ import React, { useState } from "react";
 import { AiOutlineLeft } from "react-icons/ai";
 import { useNavigate } from "react-router-dom";
 import { useFormContext } from "../../context/FormContext";
+import apiService from "../../services/client";
 
 const LocalEvento = () => {
   const navigate = useNavigate();
-  const { formData, handleChange, handleSaveDraft } = useFormContext();
-  const [alunosMonitores, setAlunosMonitores] = useState([]);
+  const { formData, handleChange, handleSaveDraft, handleSaveAlunoMonitor } = useFormContext();
+  const [alunosMonitores, setAlunosMonitores] = useState(formData.alunosMonitores || []);
   const [errors, setErrors] = useState({});
   const [logoPreview, setLogoPreview] = useState(null);
 
   const handleAddAluno = () => {
+    const updatedAlunos = [...alunosMonitores, ""]
     setAlunosMonitores([...alunosMonitores, ""]);
+    handleSaveAlunoMonitor(updatedAlunos)
   };
 
   const handleRemoveAluno = (index) => {
     const updatedAlunos = alunosMonitores.filter((_, i) => i !== index);
     setAlunosMonitores(updatedAlunos);
+    handleSaveAlunoMonitor(updatedAlunos)
   };
 
   const handleAlunoChange = (index, value) => {
     const updatedAlunos = [...alunosMonitores];
     updatedAlunos[index] = value;
     setAlunosMonitores(updatedAlunos);
+    handleSaveAlunoMonitor(updatedAlunos)
   };
 
   const handleLogoUpload = (event) => {
@@ -63,9 +68,16 @@ const LocalEvento = () => {
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleNext = () => {
+  const handleNext = async () => {
     if (validateForm()) {
-      navigate("/proximo-passo");
+      try{
+        const response = await apiService.submitForm(formData)
+        console.log("Form submitted ", response)
+        navigate("/proximo-passo");
+      }
+      catch (error){
+        console.error("Error submitting: ", error)
+      }
     }
   };
 

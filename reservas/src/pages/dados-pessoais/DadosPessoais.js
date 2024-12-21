@@ -28,7 +28,7 @@ const DadosPessoais = () => {
           setListaODS(
             data.types
               .find((item) => item.collection === "ODS")
-              ?.types.map((ods) => `${ods.name} (${ods.type})`) || []
+              ?.types.map((ods) => `${ods.id} - ${ods.name} (${ods.type})`) || []
           );
         }
       } catch (error) {

@@ -71,6 +71,17 @@ class ApiService {
       return null;
     }
   }
+
+  async submitForm(data) {
+    try {
+      const response = await this.http.post("/events", data);
+      return response.data;
+    } catch (error) {
+      console.error("Error submitting form data:", error);
+      throw error;
+    }
+  }
+
 }
 const apiService = new ApiService();
 export default apiService;

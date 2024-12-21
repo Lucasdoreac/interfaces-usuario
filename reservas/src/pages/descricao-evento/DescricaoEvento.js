@@ -9,9 +9,10 @@ import TwoButtons from "../../components/TwoButtons";
 
 const DescricaoEvento = () => {
   const navigate = useNavigate();
-  const { formData, handleChange, handleSaveDraft } = useFormContext();
+  const { formData, handleChange, handleSaveDraft, handleCursoChanged } = useFormContext();
   const [errors, setErrors] = useState({});
   const [searchResults, setSearchResults] = useState([]);
+  const [courseSelected, setCourseSelected] = useState("");
   const [query, setQuery] = useState("");
   const [loading, setLoading] = useState(false);
 
@@ -55,7 +56,7 @@ const DescricaoEvento = () => {
     if (!formData.descricaoEvento?.trim()) {
       newErrors.descricaoEvento = "Campo obrigatório.";
     }
-    if (!formData.curso?.trim()) {
+    if (!formData.courseId) {
       newErrors.curso = "Campo obrigatório.";
     }
     if (!formData.publicoAlvo?.length) {
@@ -64,6 +65,16 @@ const DescricaoEvento = () => {
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
+  };
+
+  const teste = (e) => {
+    const selectedCourseName = e.target.value;
+    const selectedCourse = searchResults.find((curso) => curso.name === selectedCourseName);
+  
+    if (selectedCourse) {
+      setCourseSelected(selectedCourseName);
+      handleCursoChanged(selectedCourseName, selectedCourse.id);
+    }
   };
 
   const handleNext = () => {
@@ -151,8 +162,8 @@ const DescricaoEvento = () => {
                   <select
                     id="curso"
                     name="curso"
-                    value={formData.curso || ""}
-                    onChange={handleChange}
+                    value={formData.courseName || courseSelected}
+                    onChange={teste}
                     className="form-control"
                   >
                     <option value="" disabled>

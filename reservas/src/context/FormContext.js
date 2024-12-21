@@ -5,6 +5,7 @@ const FormContext = createContext();
 export const FormProvider = ({ children }) => {
   const [formData, setFormData] = useState({
     nomeProfessor: localStorage.getItem("userEmail") || "",
+    alunosMonitores: [],
   });
 
   const handleChange = (e) => {
@@ -12,14 +13,29 @@ export const FormProvider = ({ children }) => {
     setFormData((prevData) => ({ ...prevData, [name]: value }));
   };
 
+  const handleCursoChanged = (name, id) => {
+    setFormData((prevData) =>({
+      ...prevData,
+      courseId: id, courseName: name
+    }))
+  }
+
   const handleSaveDraft = () => {
-    // Save form data to local storage or send to a draft endpoint
     localStorage.setItem("eventDraft", JSON.stringify(formData));
     alert("Rascunho salvo com sucesso!");
   };
 
+  const handleSaveAlunoMonitor = (alunos) => {
+    setFormData((prevData) => ({
+      ...prevData,
+      alunosMonitores: alunos,
+    }));
+  };
+
   return (
-    <FormContext.Provider value={{ formData, handleChange, handleSaveDraft }}>
+    <FormContext.Provider
+      value={{ formData, handleChange, handleSaveDraft, handleSaveAlunoMonitor, handleCursoChanged }}
+    >
       {children}
     </FormContext.Provider>
   );
