@@ -82,6 +82,21 @@ class ApiService {
     }
   }
 
+  async getUserEvents(userEmail) {
+    try {
+      const response = await this.http.get("/events", {
+        params: {userEmail : userEmail},
+      });
+      if (response.status === 200) {
+        return response.data;
+      }
+      return false;
+    } catch (error) {
+      console.error();
+      return false;
+    }
+  }
 }
+
 const apiService = new ApiService();
 export default apiService;

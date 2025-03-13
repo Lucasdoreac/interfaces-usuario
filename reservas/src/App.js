@@ -12,6 +12,8 @@ import LocalEvento from "./pages/local-evento/LocalEvento";
 import AcessoNegado from "./pages/acesso-negado/AcessoNegado";
 import PrivateRoute from "./PrivateRoute";
 import { FormProvider } from "./context/FormContext";
+import EventoConfirmacao from "./pages/evento-confirmacao/EventoConfirmacao";
+import MeusEventos from "./pages/meus-eventos/MeusEventos";
 
 function App() {
   return (
@@ -46,6 +48,14 @@ function App() {
                       <Route
                         path="/local-evento"
                         element={<PrivateRoute element={LocalEvento} />}
+                      />
+                      <Route
+                        path="/evento-confirmacao"
+                        element={<PrivateRoute element={EventoConfirmacao} />}
+                      />
+                      <Route
+                        path="/meus-eventos"
+                        element={<PrivateRoute element={MeusEventos} />}
                       />
                       <Route path="/acesso-negado" element={<AcessoNegado />} />
                     </Routes>

@@ -58,7 +58,7 @@ const LocalEvento = () => {
       try {
         const response = await apiService.submitForm(formData);
         console.log("Form submitted", response);
-        navigate("/proximo-passo");
+        navigate("/evento-confirmacao");
       } catch (error) {
         console.error("Error submitting:", error);
       }
