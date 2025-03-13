@@ -12,31 +12,28 @@ const LocalEvento = () => {
   const [logoPreview, setLogoPreview] = useState(null);
 
   const handleAddAluno = () => {
-    const updatedAlunos = [...alunosMonitores, ""]
-    setAlunosMonitores([...alunosMonitores, ""]);
-    handleSaveAlunoMonitor(updatedAlunos)
+    const updatedAlunos = [...alunosMonitores, ""];
+    setAlunosMonitores(updatedAlunos);
+    handleSaveAlunoMonitor(updatedAlunos);
   };
 
   const handleRemoveAluno = (index) => {
     const updatedAlunos = alunosMonitores.filter((_, i) => i !== index);
     setAlunosMonitores(updatedAlunos);
-    handleSaveAlunoMonitor(updatedAlunos)
+    handleSaveAlunoMonitor(updatedAlunos);
   };
 
   const handleAlunoChange = (index, value) => {
-    const updatedAlunos = [...alunosMonitores];
-    updatedAlunos[index] = value;
+    const updatedAlunos = alunosMonitores.map((aluno, i) => (i === index ? value : aluno));
     setAlunosMonitores(updatedAlunos);
-    handleSaveAlunoMonitor(updatedAlunos)
+    handleSaveAlunoMonitor(updatedAlunos);
   };
 
   const handleLogoUpload = (event) => {
     const file = event.target.files[0];
     if (file) {
       const reader = new FileReader();
-      reader.onload = () => {
-        setLogoPreview(reader.result);
-      };
+      reader.onload = () => setLogoPreview(reader.result);
       reader.readAsDataURL(file);
     }
     handleChange({ target: { name: "logo", value: file } });
@@ -44,117 +41,80 @@ const LocalEvento = () => {
 
   const validateForm = () => {
     const newErrors = {};
-
-    if (
-      !formData.numeroParticipantes?.trim() ||
-      formData.numeroParticipantes <= 0
-    ) {
+    if (!formData.numeroParticipantes?.trim() || formData.numeroParticipantes <= 0)
       newErrors.numeroParticipantes = "Número de participantes é obrigatório.";
-    }
-
-    if (!formData.espacos?.trim()) {
+    if (!formData.espacos?.trim())
       newErrors.espacos = "Selecione um espaço necessário.";
-    }
-
-    if (formData.trilha === "sim" && !formData.trilhaDesc?.trim()) {
+    if (formData.trilha === "sim" && !formData.trilhaDesc?.trim())
       newErrors.trilhaDesc = "Descrição da trilha empreendedora é obrigatória.";
-    }
-
-    if (formData.projeto === "sim" && !formData.projetoDesc?.trim()) {
+    if (formData.projeto === "sim" && !formData.projetoDesc?.trim())
       newErrors.projetoDesc = "Descrição do projeto de extensão é obrigatória.";
-    }
-
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
   const handleNext = async () => {
     if (validateForm()) {
-      try{
-        const response = await apiService.submitForm(formData)
-        console.log("Form submitted ", response)
+      try {
+        const response = await apiService.submitForm(formData);
+        console.log("Form submitted", response);
         navigate("/proximo-passo");
-      }
-      catch (error){
-        console.error("Error submitting: ", error)
+      } catch (error) {
+        console.error("Error submitting:", error);
       }
     }
   };
 
-  const renderError = (field) =>
-    errors[field] && <span style={{ color: "red" }}>{errors[field]}</span>;
+  const renderError = (field) => errors[field] && <span className="error">{errors[field]}</span>;
 
   return (
     <form>
-      <div>
+      <div className="card">
         <div className="card-header">
-          <div className="d-flex justify-content-start">
-            <span onClick={() => navigate("/descricao-evento")}>
-              <AiOutlineLeft
-                style={{ margin: "0 10px 0 0" }}
-                size="20px"
-                color="white"
-              />
-            </span>
-            <h5>Voltar Descrição Evento</h5>
-          </div>
+          <span onClick={() => navigate("/descricao-evento")}>
+            <AiOutlineLeft size="20px" color="white" style={{ marginRight: 10 }} />
+          </span>
+          <h5>Voltar Descrição Evento</h5>
         </div>
 
         <div className="card-body">
-          <div className="row">
-            <div className="col-md-12">
-              <h4>Novo Evento</h4>
-            </div>
+          <h4>Novo Evento</h4>
+          
+          <div className="form-group mt-3">
+            <label htmlFor="numeroParticipantes">Número de participantes</label>
+            <input
+              type="number"
+              className="form-control"
+              min="0"
+              max="100"
+              id="numeroParticipantes"
+              name="numeroParticipantes"
+              value={formData.numeroParticipantes || ""}
+              onChange={handleChange}
+              style={{ width: 200 }}
+            />
+            {renderError("numeroParticipantes")}
           </div>
 
-          <div className="row mt-3">
-            <div className="col">
-              <label htmlFor="numeroParticipantes">
-                Número de participantes
-              </label>
-              <input
-                type="number"
-                className="form-control"
-                min="0"
-                max="100"
-                id="numeroParticipantes"
-                name="numeroParticipantes"
-                value={formData.numeroParticipantes || ""}
-                onChange={handleChange}
-                style={{ width: 200 }}
-              />
-              {renderError("numeroParticipantes")}
-            </div>
-          </div>
-
-          <div className="row mt-3">
-            <div className="col">
-              <label htmlFor="espacos">Espaço Necessário</label>
-              {[
-                "online",
-                "auditorio",
-                "hall",
-                "salaAula",
-                "laboratorioInfo",
-              ].map((espaco) => (
-                <div className="form-check" key={espaco}>
-                  <input
-                    className="form-check-input"
-                    type="radio"
-                    name="espacos"
-                    id={espaco}
-                    value={espaco}
-                    checked={formData.espacos === espaco}
-                    onChange={handleChange}
-                  />
-                  <label className="form-check-label" htmlFor={espaco}>
-                    {espaco.charAt(0).toUpperCase() +
-                      espaco.slice(1).replace(/([A-Z])/g, " $1")}
-                  </label>
-                </div>
-              ))}
-              {renderError("espacos")}
-            </div>
+          <div className="form-group mt-3">
+            <label htmlFor="espacos">Espaço Necessário</label>
+            {["online", "auditorio", "hall", "salaAula", "laboratorioInfo"].map((espaco) => (
+              <div className="form-check" key={espaco}>
+                <input
+                  className="form-check-input"
+                  type="radio"
+                  name="espacos"
+                  id={espaco}
+                  value={espaco}
+                  checked={formData.espacos === espaco}
+                  onChange={handleChange}
+                />
+                <label className="form-check-label" htmlFor={espaco}>
+                  {espaco.charAt(0).toUpperCase() + espaco.slice(1).replace(/([A-Z])/g, " $1")}
+                </label>
+              </div>
+            ))}
+            {renderError("espacos")}
           </div>
 
           <div className="row mt-3">
@@ -213,73 +173,45 @@ const LocalEvento = () => {
             </div>
           </div>
 
-          <div className="row mt-3">
-            <div className="col">
-              <label>Alunos Monitores</label>
-              {alunosMonitores.map((aluno, index) => (
-                <div className="input-group mb-2" key={index}>
-                  <input
-                    type="text"
-                    className="form-control"
-                    value={aluno}
-                    onChange={(e) => handleAlunoChange(index, e.target.value)}
-                  />
-                  <button
-                    type="button"
-                    className="btn btn-danger"
-                    onClick={() => handleRemoveAluno(index)}
-                  >
-                    Remover
-                  </button>
-                </div>
-              ))}
-              <button
-                type="button"
-                className="btn btn-outline-primary"
-                onClick={handleAddAluno}
-              >
-                Adicionar Aluno
-              </button>
-            </div>
-          </div>
-
-          <div className="row mt-3">
-            <div className="col">
-              <label htmlFor="logo">Logo do Evento</label>
-              <input
-                type="file"
-                className="form-control"
-                id="logo"
-                name="logo"
-                onChange={handleLogoUpload}
-              />
-              {logoPreview && (
-                <img
-                  src={logoPreview}
-                  alt="Logo Preview"
-                  style={{ marginTop: "10px", maxWidth: "200px" }}
+          <div className="form-group mt-3">
+            <label>Alunos Monitores</label>
+            {alunosMonitores.map((aluno, index) => (
+              <div className="input-group mb-2" key={index}>
+                <input
+                  type="text"
+                  className="form-control"
+                  value={aluno}
+                  onChange={(e) => handleAlunoChange(index, e.target.value)}
                 />
-              )}
-            </div>
+                <button
+                  type="button"
+                  className="btn btn-danger"
+                  onClick={() => handleRemoveAluno(index)}
+                >
+                  Remover
+                </button>
+              </div>
+            ))}
+            <button type="button" className="btn btn-outline-primary" onClick={handleAddAluno}>
+              Adicionar Aluno
+            </button>
           </div>
 
-          <div className="row mt-3">
-            <div className="col">
-              <button
-                type="button"
-                className="btn btn-outline-secondary"
-                onClick={handleSaveDraft}
-              >
-                Salvar Rascunho
-              </button>
-              <button
-                type="button"
-                className="btn btn-primary"
-                onClick={handleNext}
-              >
-                Enviar para Coordenação
-              </button>
-            </div>
+          <div className="form-group mt-3">
+            <label htmlFor="logo">Logo do Evento</label>
+            <input type="file" className="form-control" id="logo" name="logo" onChange={handleLogoUpload} />
+            {logoPreview && (
+              <img src={logoPreview} alt="Logo Preview" style={{ marginTop: "10px", maxWidth: "200px" }} />
+            )}
+          </div>
+
+          <div className="form-group mt-3">
+            <button type="button" className="btn btn-outline-secondary" onClick={handleSaveDraft}>
+              Salvar Rascunho
+            </button>
+            <button type="button" className="btn btn-primary" onClick={handleNext}>
+              Enviar para Coordenação
+            </button>
           </div>
         </div>
       </div>

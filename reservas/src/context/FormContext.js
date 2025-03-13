@@ -13,12 +13,26 @@ export const FormProvider = ({ children }) => {
     setFormData((prevData) => ({ ...prevData, [name]: value }));
   };
 
-  const handleCursoChanged = (name, id) => {
-    setFormData((prevData) =>({
+  const handleOdsChange = (e) => {
+    const { value } = e.target;
+    const parts = value.split(" - ");
+    const odsId = parts[0];
+    const odsName = parts[1]?.split(" (")[0].trim();
+    setFormData((prevData) => ({
       ...prevData,
-      courseId: id, courseName: name
-    }))
-  }
+      ods: value,
+      odsId,
+      odsName,
+    }));
+  };
+
+  const handleCursoChanged = (name, id) => {
+    setFormData((prevData) => ({
+      ...prevData,
+      courseId: id,
+      courseName: name,
+    }));
+  };
 
   const handleSaveDraft = () => {
     localStorage.setItem("eventDraft", JSON.stringify(formData));
@@ -34,7 +48,14 @@ export const FormProvider = ({ children }) => {
 
   return (
     <FormContext.Provider
-      value={{ formData, handleChange, handleSaveDraft, handleSaveAlunoMonitor, handleCursoChanged }}
+      value={{
+        formData,
+        handleChange,
+        handleOdsChange, // novo handler para ODS
+        handleSaveDraft,
+        handleSaveAlunoMonitor,
+        handleCursoChanged,
+      }}
     >
       {children}
     </FormContext.Provider>

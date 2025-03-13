@@ -9,7 +9,7 @@ import TwoButtons from "../../components/TwoButtons";
 
 const DadosPessoais = () => {
   const navigate = useNavigate();
-  const { formData, handleChange, handleSaveDraft } = useFormContext();
+  const { formData, handleChange, handleOdsChange, handleSaveDraft } = useFormContext();
 
   const [listaTipoEvento, setListaTipoEvento] = useState([]);
   const [listaODS, setListaODS] = useState([]);
@@ -45,8 +45,7 @@ const DadosPessoais = () => {
     if (!formData.tituloEvento?.trim()) {
       newErrors.tituloEvento = "O campo nome do evento é obrigatório.";
     } else if (formData.tituloEvento.length < 5) {
-      newErrors.tituloEvento =
-        "O campo nome do evento precisa ter mais caracteres!";
+      newErrors.tituloEvento = "O campo nome do evento precisa ter mais caracteres!";
     }
 
     if (!formData.nomeProfessor?.trim()) {
@@ -81,11 +80,7 @@ const DadosPessoais = () => {
         <div className="card-header">
           <div className="d-flex justify-content-start">
             <span onClick={() => navigate("/auth/callback")}>
-              <AiOutlineLeft
-                style={{ margin: "0 10px 0 0" }}
-                size="20px"
-                color="white"
-              />
+              <AiOutlineLeft style={{ margin: "0 10px 0 0" }} size="20px" color="white" />
             </span>
             <h5>X Cancelar</h5>
           </div>
@@ -98,7 +93,7 @@ const DadosPessoais = () => {
             </div>
           </div>
 
-          {/* Form Fields */}
+          {/* Nome do Evento */}
           <div className="row">
             <div className="col">
               <label htmlFor="formTitulo">Nome do Evento</label>
@@ -114,6 +109,7 @@ const DadosPessoais = () => {
             </div>
           </div>
 
+          {/* Professor */}
           <div className="row mt-3">
             <div className="col">
               <label htmlFor="formProfessor">Professor</label>
@@ -129,6 +125,7 @@ const DadosPessoais = () => {
             </div>
           </div>
 
+          {/* Telefone */}
           <div className="row mt-3">
             <div className="col">
               <label htmlFor="telefone">Telefone</label>
@@ -152,6 +149,7 @@ const DadosPessoais = () => {
               {renderError("telefone")}
             </div>
 
+            {/* Classificação */}
             <div className="col">
               <label htmlFor="classificacao">Classificação</label>
               <select
@@ -175,6 +173,7 @@ const DadosPessoais = () => {
             </div>
           </div>
 
+          {/* ODS */}
           <div className="row mt-3">
             <div className="col-md-12">
               <label htmlFor="ods">Classificação ODS</label>
@@ -183,7 +182,7 @@ const DadosPessoais = () => {
                 name="ods"
                 className="form-control"
                 value={formData.ods || ""}
-                onChange={handleChange}
+                onChange={handleOdsChange}
               >
                 <option value="" disabled>
                   ODS
