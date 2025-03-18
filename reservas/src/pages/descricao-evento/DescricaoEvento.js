@@ -91,7 +91,6 @@ const DescricaoEvento = () => {
           <span onClick={() => navigate("/dados-pessoais")}>
             <AiOutlineLeft size="20px" color="white" style={{ marginRight: 10 }} />
           </span>
-          <h5>X Cancelar</h5>
         </div>
 
         <div className="card-body">

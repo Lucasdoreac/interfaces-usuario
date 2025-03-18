@@ -40,6 +40,9 @@ const MeusEventos = () => {
           {events.map((evento) => (
             <li key={evento.id} className="evento-item">
               <h3>{evento.name}</h3>
+              <p>Sala: {evento.sala || "Indefinido"}</p>
+              <p>Dia: {evento.dia || "Indefinido"}</p>
+              <p>Horário: {evento.horario || "Indefinido"}</p>
               <p>Status: {evento.status}</p>
             </li>
           ))}

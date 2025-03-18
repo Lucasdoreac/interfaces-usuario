@@ -1,0 +1,18 @@
+.room-card {
+    border: 1px solid #ccc;
+    padding: 16px;
+    margin: 8px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: border-color 0.2s;
+  
+    &:hover {
+      border-color: #888;
+    }
+  }
+  
+  .room-card.selected {
+    border-color: #007bff;
+    background-color: #e7f0fd;
+  }
+  

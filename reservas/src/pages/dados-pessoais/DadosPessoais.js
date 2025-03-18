@@ -82,7 +82,6 @@ const DadosPessoais = () => {
             <span onClick={() => navigate("/auth/callback")}>
               <AiOutlineLeft style={{ margin: "0 10px 0 0" }} size="20px" color="white" />
             </span>
-            <h5>X Cancelar</h5>
           </div>
         </div>
 

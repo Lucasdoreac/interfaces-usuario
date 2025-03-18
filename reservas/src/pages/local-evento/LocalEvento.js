@@ -74,7 +74,6 @@ const LocalEvento = () => {
           <span onClick={() => navigate("/descricao-evento")}>
             <AiOutlineLeft size="20px" color="white" style={{ marginRight: 10 }} />
           </span>
-          <h5>Voltar Descrição Evento</h5>
         </div>
 
         <div className="card-body">

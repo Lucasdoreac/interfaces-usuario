@@ -85,7 +85,7 @@ class ApiService {
   async getUserEvents(userEmail) {
     try {
       const response = await this.http.get("/events", {
-        params: {userEmail : userEmail},
+        params: { userEmail: userEmail },
       });
       if (response.status === 200) {
         return response.data;
@@ -93,6 +93,21 @@ class ApiService {
       return false;
     } catch (error) {
       console.error();
+      return false;
+    }
+  }
+
+  async getAvailableSlots(formattedDate, time, page = 1, page_size = 10) {
+    try {
+      const response = await this.http.get("/rooms/available-rooms", {
+        params: { date: formattedDate, time: time, page, page_size },
+      });
+      if (response.status === 200) {
+        return response.data;
+      }
+      return false;
+    } catch (error) {
+      console.error(error);
       return false;
     }
   }

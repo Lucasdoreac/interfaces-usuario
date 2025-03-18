@@ -14,6 +14,7 @@ import PrivateRoute from "./PrivateRoute";
 import { FormProvider } from "./context/FormContext";
 import EventoConfirmacao from "./pages/evento-confirmacao/EventoConfirmacao";
 import MeusEventos from "./pages/meus-eventos/MeusEventos";
+import EscolhaHorario from "./pages/escolha-horario/EscolhaHorario";
 
 function App() {
   return (
@@ -48,6 +49,10 @@ function App() {
                       <Route
                         path="/local-evento"
                         element={<PrivateRoute element={LocalEvento} />}
+                      />
+                      <Route
+                        path="/escolha-horario"
+                        element={<PrivateRoute element={EscolhaHorario} />}
                       />
                       <Route
                         path="/evento-confirmacao"

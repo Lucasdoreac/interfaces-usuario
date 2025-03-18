@@ -34,6 +34,14 @@ export const FormProvider = ({ children }) => {
     }));
   };
 
+  const handleRoomDataChange = (roomId, reservationDate) => {
+    setFormData((prevData) => ({
+      ...prevData,
+      roomId,
+      reservationDate,
+    }));
+  };
+
   const handleSaveDraft = () => {
     localStorage.setItem("eventDraft", JSON.stringify(formData));
     alert("Rascunho salvo com sucesso!");
@@ -51,10 +59,11 @@ export const FormProvider = ({ children }) => {
       value={{
         formData,
         handleChange,
-        handleOdsChange, // novo handler para ODS
+        handleOdsChange,
+        handleCursoChanged,
+        handleRoomDataChange,
         handleSaveDraft,
         handleSaveAlunoMonitor,
-        handleCursoChanged,
       }}
     >
       {children}
