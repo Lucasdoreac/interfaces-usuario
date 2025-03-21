@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { AiOutlineLeft } from "react-icons/ai";
 import DatePickerComponent from "../../components/date-picker/DatePickerComponent";
 import InfiniteScrollRooms from "../../components/infinite-scroll-rooms/InfiniteScrollRooms";
 import { useNavigate } from "react-router-dom";
@@ -9,7 +10,8 @@ const EscolheHorario = () => {
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [selectedPeriod, setSelectedPeriod] = useState();
   const [selectedRoom, setSelectedRoom] = useState(null);
-  const { handleRoomDataChange, handleSaveDraft } = useFormContext();
+  const { formData, handleChange, handleRoomDataChange, handleSaveDraft } =
+    useFormContext();
   const navigate = useNavigate();
 
   const periodToTime = {
@@ -31,22 +33,54 @@ const EscolheHorario = () => {
   const handleRoomSelect = (roomId) => {
     setSelectedRoom(roomId);
     handleRoomDataChange(roomId, selectedDate);
-
   };
 
   const handleContinue = () => {
     handleSaveDraft();
-    navigate("/proximo-passo");
+    navigate("/confirmar-dados");
   };
 
   return (
     <div className="escolha-horario-container">
+      <div className="card-header">
+        <span onClick={() => navigate("/local-evento")}>
+          <AiOutlineLeft
+            size="20px"
+            color="white"
+            style={{ marginRight: 10 }}
+          />
+        </span>
+      </div>
       <div className="header-container">
         <h2>Escolha o Dia e Horário</h2>
         <DatePickerComponent
           selectedDate={selectedDate}
           onDateChange={handleDateChange}
         />
+
+        {/* <div className="form-group mt-3">
+          <label htmlFor="periods">Selecione o período:</label>
+          {["Manhã", "Tarde", "Noite"].map(
+            (period) => (
+              <div className="form-check" key={period}>
+                <input
+                  className="form-check-input"
+                  type="radio"
+                  name="periods"
+                  id={period}
+                  value={period}
+                  checked={formData.period === period}
+                  onChange={handleChange}
+                />
+                <label className="form-check-label" htmlFor={period}>
+                  {period.charAt(0).toUpperCase() +
+                    period.slice(1).replace(/([A-Z])/g, " $1")}
+                </label>
+              </div>
+            )
+          )}
+          {renderError("espacos")}
+        </div> */}
 
         <div className="period-selection">
           <p>Selecione o período:</p>

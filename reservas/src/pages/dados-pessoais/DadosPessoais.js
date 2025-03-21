@@ -9,7 +9,8 @@ import TwoButtons from "../../components/TwoButtons";
 
 const DadosPessoais = () => {
   const navigate = useNavigate();
-  const { formData, handleChange, handleOdsChange, handleSaveDraft } = useFormContext();
+  const { formData, handleChange, handleOdsChange, handleSaveDraft } =
+    useFormContext();
 
   const [listaTipoEvento, setListaTipoEvento] = useState([]);
   const [listaODS, setListaODS] = useState([]);
@@ -28,7 +29,8 @@ const DadosPessoais = () => {
           setListaODS(
             data.types
               .find((item) => item.collection === "ODS")
-              ?.types.map((ods) => `${ods.id} - ${ods.name} (${ods.type})`) || []
+              ?.types.map((ods) => `${ods.id} - ${ods.name} (${ods.type})`) ||
+              []
           );
         }
       } catch (error) {
@@ -41,11 +43,11 @@ const DadosPessoais = () => {
 
   const validateForm = () => {
     const newErrors = {};
-
     if (!formData.tituloEvento?.trim()) {
       newErrors.tituloEvento = "O campo nome do evento é obrigatório.";
     } else if (formData.tituloEvento.length < 5) {
-      newErrors.tituloEvento = "O campo nome do evento precisa ter mais caracteres!";
+      newErrors.tituloEvento =
+        "O campo nome do evento precisa ter mais caracteres!";
     }
 
     if (!formData.nomeProfessor?.trim()) {
@@ -80,7 +82,11 @@ const DadosPessoais = () => {
         <div className="card-header">
           <div className="d-flex justify-content-start">
             <span onClick={() => navigate("/auth/callback")}>
-              <AiOutlineLeft style={{ margin: "0 10px 0 0" }} size="20px" color="white" />
+              <AiOutlineLeft
+                style={{ margin: "0 10px 0 0" }}
+                size="20px"
+                color="white"
+              />
             </span>
           </div>
         </div>

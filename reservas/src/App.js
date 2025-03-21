@@ -12,9 +12,10 @@ import LocalEvento from "./pages/local-evento/LocalEvento";
 import AcessoNegado from "./pages/acesso-negado/AcessoNegado";
 import PrivateRoute from "./PrivateRoute";
 import { FormProvider } from "./context/FormContext";
-import EventoConfirmacao from "./pages/evento-confirmacao/EventoConfirmacao";
+import EventoConfirmacao from "./pages/confirmacao-evento/ConfirmacaoEvento";
 import MeusEventos from "./pages/meus-eventos/MeusEventos";
 import EscolhaHorario from "./pages/escolha-horario/EscolhaHorario";
+import ConfirmarDados from "./pages/confirmar-dados/ConfirmarDados";
 
 function App() {
   return (
@@ -55,7 +56,11 @@ function App() {
                         element={<PrivateRoute element={EscolhaHorario} />}
                       />
                       <Route
-                        path="/evento-confirmacao"
+                        path="/confirmar-dados"
+                        element={<PrivateRoute element={ConfirmarDados} />}
+                      />
+                      <Route
+                        path="/confirmacao-evento"
                         element={<PrivateRoute element={EventoConfirmacao} />}
                       />
                       <Route
