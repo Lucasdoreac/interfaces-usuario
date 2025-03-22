@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback, useMemo } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import EnvImage from "../../images/email.png";
 import { AiOutlineLeft } from "react-icons/ai";
@@ -10,34 +10,41 @@ const ConfirmarEmail = () => {
   const location = useLocation();
   const [email, setEmail] = useState("");
 
-  const getUserData = () => {
-    const params = new URLSearchParams(location.search);
-    return {
-      token: params.get("hash") || localStorage.getItem("token"),
-      email: params.get("email") || localStorage.getItem("userEmail"),
-    };
-  };
+  const queryParams = useMemo(
+    () => new URLSearchParams(location.search),
+    [location.search]
+  );
 
-  const emailConfirmado = async () => {
+  const getUserData = useCallback(() => {
+    const token = queryParams.get("hash") || localStorage.getItem("token");
+    const email = queryParams.get("email") || localStorage.getItem("userEmail");
+    return { token, email };
+  }, [queryParams]);
+
+  const emailConfirmado = useCallback(async () => {
     const { token, email } = getUserData();
-    if (token && email && (await apiService.validateToken(token, email))) {
-      localStorage.setItem("userEmail", email);
-      localStorage.setItem("token", token);
+
+    if (email) {
+      if (token && (await apiService.validateToken(token, email))) {
+        localStorage.clear();
+        localStorage.setItem("userEmail", email);
+        localStorage.setItem("token", token);
+        return navigate("/dados-pessoais");
+      }
       setEmail(email);
-      return navigate("/dados-pessoais");
     } else {
       return navigate("/acesso-negado");
     }
-  };
+  }, [getUserData, navigate]);
 
   useEffect(() => {
     emailConfirmado();
-  }, [navigate, emailConfirmado]);
+  }, [emailConfirmado]);
 
   return (
     <div>
       <div className="card-header">
-        <div className="d-flex d-flex justify-content-start">
+        <div className="d-flex justify-content-start">
           <span onClick={() => navigate("/organizador")}>
             <AiOutlineLeft
               style={{ margin: "0px 10px 0px 0px" }}
@@ -59,11 +66,14 @@ const ConfirmarEmail = () => {
             />
             <p>
               Clique no link do e-mail que enviamos para <b>{email}</b>
-            </p>{" "}
-            {/* Mostra o e-mail correto */}
+            </p>
             <div className="mt-4">
-              <button type="submit" className="btn" onClick={emailConfirmado}>
-                CONFIRMADO
+              <button
+                type="button"
+                className="btn btn-primary btn-lg"
+                onClick={emailConfirmado}
+              >
+                <b>Já Confirmei!</b>
               </button>
             </div>
           </div>

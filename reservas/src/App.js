@@ -3,6 +3,7 @@ import "./App.scss";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Home from "./pages/Home/Home";
 import Organizador from "./pages/organizador/organizador";
+import EmailCoordination from "./pages/approve-event";
 import Navbar from "./components/Navbar/Navbar";
 import ConfirmarEmail from "./pages/confirmar-email/ConfirmarEmail";
 import DadosPessoais from "./pages/dados-pessoais/DadosPessoais";
@@ -11,6 +12,10 @@ import LocalEvento from "./pages/local-evento/LocalEvento";
 import AcessoNegado from "./pages/acesso-negado/AcessoNegado";
 import PrivateRoute from "./PrivateRoute";
 import { FormProvider } from "./context/FormContext";
+import EventoConfirmacao from "./pages/confirmacao-evento/ConfirmacaoEvento";
+import MeusEventos from "./pages/meus-eventos/MeusEventos";
+import EscolhaHorario from "./pages/escolha-horario/EscolhaHorario";
+import ConfirmarDados from "./pages/confirmar-dados/ConfirmarDados";
 
 function App() {
   return (
@@ -19,9 +24,9 @@ function App() {
         <div className="App">
           <Navbar />
           <section id="paginaInicial" className="section-padding">
-            <div className="container">
+            <div>
               <div className="row justify-content-center">
-                <div className="col-md-6">
+                <div className="col-md-12 col-sm-12 col-12">
                   <div className="card">
                     <Routes>
                       <Route path="/" element={<Home />} />
@@ -29,6 +34,10 @@ function App() {
                       <Route
                         path="/auth/callback"
                         element={<ConfirmarEmail />}
+                      />
+                      <Route
+                        path="/coordenacao"
+                        element={<EmailCoordination />}
                       />
                       <Route
                         path="/dados-pessoais"
@@ -41,6 +50,22 @@ function App() {
                       <Route
                         path="/local-evento"
                         element={<PrivateRoute element={LocalEvento} />}
+                      />
+                      <Route
+                        path="/escolha-horario"
+                        element={<PrivateRoute element={EscolhaHorario} />}
+                      />
+                      <Route
+                        path="/confirmar-dados"
+                        element={<PrivateRoute element={ConfirmarDados} />}
+                      />
+                      <Route
+                        path="/confirmacao-evento"
+                        element={<PrivateRoute element={EventoConfirmacao} />}
+                      />
+                      <Route
+                        path="/meus-eventos"
+                        element={<PrivateRoute element={MeusEventos} />}
                       />
                       <Route path="/acesso-negado" element={<AcessoNegado />} />
                     </Routes>

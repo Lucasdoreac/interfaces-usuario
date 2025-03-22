@@ -1,99 +1,111 @@
-import React from "react";
+import React, { useState } from "react";
 import { AiOutlineLeft } from "react-icons/ai";
 import { useNavigate } from "react-router-dom";
-import { useFormContext } from "../../context/FormContext"; // ajuste o caminho conforme necessário
+import { useFormContext } from "../../context/FormContext";
 
 const LocalEvento = () => {
   const navigate = useNavigate();
-  const { formData, handleChange } = useFormContext(); // use o contexto
+  const { formData, handleChange, handleSaveDraft, handleSaveAlunoMonitor } = useFormContext();
+  const [alunosMonitores, setAlunosMonitores] = useState(formData.alunosMonitores || []);
+  const [errors, setErrors] = useState({});
+  const [logoPreview, setLogoPreview] = useState(null);
 
-  const confLocalEvento = () => {
-    navigate("/proximo-passo"); // Exemplo de navegação
+  const handleAddAluno = () => {
+    const updatedAlunos = [...alunosMonitores, ""];
+    setAlunosMonitores(updatedAlunos);
+    handleSaveAlunoMonitor(updatedAlunos);
   };
+
+  const handleRemoveAluno = (index) => {
+    const updatedAlunos = alunosMonitores.filter((_, i) => i !== index);
+    setAlunosMonitores(updatedAlunos);
+    handleSaveAlunoMonitor(updatedAlunos);
+  };
+
+  const handleAlunoChange = (index, value) => {
+    const updatedAlunos = alunosMonitores.map((aluno, i) => (i === index ? value : aluno));
+    setAlunosMonitores(updatedAlunos);
+    handleSaveAlunoMonitor(updatedAlunos);
+  };
+
+  const handleLogoUpload = (event) => {
+    const file = event.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = () => setLogoPreview(reader.result);
+      reader.readAsDataURL(file);
+    }
+    handleChange({ target: { name: "logo", value: file } });
+  };
+
+  const handleNext = async () => {
+    handleSaveDraft();
+    navigate("/escolha-horario");
+  };
+
+  const renderError = (field) => errors[field] && <span className="error">{errors[field]}</span>;
 
   return (
     <form>
-      <div>
+      <div className="card">
         <div className="card-header">
-          <div className="d-flex d-flex justify-content-start">
-            <span onClick={() => navigate("/descricao-evento")}>
-              <AiOutlineLeft
-                style={{ margin: "0px 10px 0px 0px" }}
-                size="20px"
-                color="white"
-              />
-            </span>
-            <h5>Voltar Descrição Evento</h5>
-          </div>
+          <span onClick={() => navigate("/descricao-evento")}>
+            <AiOutlineLeft size="20px" color="white" style={{ marginRight: 10 }} />
+          </span>
         </div>
+
         <div className="card-body">
-          <div className="row">
-            <div className="col-md-12">
-              <h4>Novo Evento</h4>
-            </div>
+          <h4>Novo Evento</h4>
+          
+          <div className="form-group mt-3">
+            <label htmlFor="numeroParticipantes">Número de participantes</label>
+            <input
+              type="number"
+              className="form-control"
+              min="0"
+              max="100"
+              id="numeroParticipantes"
+              name="numeroParticipantes"
+              value={formData.numeroParticipantes || ""}
+              onChange={handleChange}
+              style={{ width: 200 }}
+            />
+            {renderError("numeroParticipantes")}
           </div>
-          <div className="row">
-            <div className="col">
-              <label htmlFor="numeroParticipantes">
-                Número de participantes
-              </label>
-              <input
-                type="number"
-                className="form-control"
-                min="0"
-                max="100"
-                id="numeroParticipantes"
-                style={{ width: 200 }}
-                name="numeroParticipantes"
-                value={formData.numeroParticipantes || ""}
-                onChange={handleChange}
-              />
-            </div>
+
+          <div className="form-group mt-3">
+            <label htmlFor="espacos">Espaço Necessário</label>
+            {["online", "auditorio", "hall", "salaAula", "laboratorioInfo"].map((espaco) => (
+              <div className="form-check" key={espaco}>
+                <input
+                  className="form-check-input"
+                  type="radio"
+                  name="espacos"
+                  id={espaco}
+                  value={espaco}
+                  checked={formData.espacos === espaco}
+                  onChange={handleChange}
+                />
+                <label className="form-check-label" htmlFor={espaco}>
+                  {espaco.charAt(0).toUpperCase() + espaco.slice(1).replace(/([A-Z])/g, " $1")}
+                </label>
+              </div>
+            ))}
+            {renderError("espacos")}
           </div>
-          <br />
-          <div className="row">
-            <div className="col">
-              <label htmlFor="espacos">Espaços Necessários</label>
-              <br />
-              {[
-                "online",
-                "auditorio",
-                "hall",
-                "salaAula",
-                "laboratorioInfo",
-              ].map((espaco) => (
-                <div className="form-check" key={espaco}>
-                  <input
-                    className="form-check-input"
-                    type="radio"
-                    name="espacos"
-                    id={espaco}
-                    onChange={handleChange}
-                    value={espaco}
-                    checked={formData.espacos === espaco}
-                  />
-                  <label className="form-check-label" htmlFor={espaco}>
-                    {espaco.charAt(0).toUpperCase() +
-                      espaco.slice(1).replace(/([A-Z])/g, " $1")}
-                  </label>
-                </div>
-              ))}
-            </div>
-          </div>
-          <br />
-          <div className="row">
+
+          <div className="row mt-3">
             <div className="col-5">
               <label htmlFor="trilha">Trilha empreendedora</label>
               <select
                 id="trilha"
                 name="trilha"
-                value={formData.trilha || ""}
+                value={formData.trilha || "nao"}
                 onChange={handleChange}
                 className="form-control"
               >
-                <option value="" disabled></option>
-                <option value="sim">Sim</option>
                 <option value="nao">Não</option>
+                <option value="sim">Sim</option>
               </select>
             </div>
             <div className="col-7">
@@ -106,22 +118,22 @@ const LocalEvento = () => {
                 value={formData.trilhaDesc || ""}
                 onChange={handleChange}
               />
+              {renderError("trilhaDesc")}
             </div>
           </div>
-          <br />
-          <div className="row">
+
+          <div className="row mt-3">
             <div className="col-5">
               <label htmlFor="projeto">Projeto Extensão</label>
               <select
                 id="projeto"
                 name="projeto"
-                value={formData.projeto || ""}
+                value={formData.projeto || "nao"}
                 onChange={handleChange}
                 className="form-control"
               >
-                <option value="" disabled></option>
-                <option value="sim">Sim</option>
                 <option value="nao">Não</option>
+                <option value="sim">Sim</option>
               </select>
             </div>
             <div className="col-7">
@@ -134,19 +146,49 @@ const LocalEvento = () => {
                 value={formData.projetoDesc || ""}
                 onChange={handleChange}
               />
+              {renderError("projetoDesc")}
             </div>
           </div>
-          <br />
-          <div className="row">
-            <div className="col text-center">
-              <button
-                type="button"
-                className="btn btn-primary"
-                onClick={confLocalEvento}
-              >
-                Próximo Passo
-              </button>
-            </div>
+
+          <div className="form-group mt-3">
+            <label>Alunos Monitores</label>
+            {alunosMonitores.map((aluno, index) => (
+              <div className="input-group mb-2" key={index}>
+                <input
+                  type="text"
+                  className="form-control"
+                  value={aluno}
+                  onChange={(e) => handleAlunoChange(index, e.target.value)}
+                />
+                <button
+                  type="button"
+                  className="btn btn-danger"
+                  onClick={() => handleRemoveAluno(index)}
+                >
+                  Remover
+                </button>
+              </div>
+            ))}
+            <button type="button" className="btn btn-outline-primary" onClick={handleAddAluno}>
+              Adicionar Aluno
+            </button>
+          </div>
+
+          <div className="form-group mt-3">
+            <label htmlFor="logo">Logo do Evento</label>
+            <input type="file" className="form-control" id="logo" name="logo" onChange={handleLogoUpload} />
+            {logoPreview && (
+              <img src={logoPreview} alt="Logo Preview" style={{ marginTop: "10px", maxWidth: "200px" }} />
+            )}
+          </div>
+
+          <div className="form-group mt-3">
+            <button type="button" className="btn btn-outline-secondary" onClick={handleSaveDraft}>
+              Salvar Rascunho
+            </button>
+            <button type="button" className="btn btn-primary" onClick={handleNext}>
+              Próximo
+            </button>
           </div>
         </div>
       </div>
