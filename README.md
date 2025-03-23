@@ -73,6 +73,8 @@ Yarn é um gerenciador de pacotes que facilita o gerenciamento de dependências 
 
 > Para instalação, execute o seguinte comando no terminal:
 
+    yern install
+>
     npm install --global yarn
 
 > [!IMPORTANT]
@@ -126,7 +128,28 @@ Isto é uma política de segurança do Powershell para evitar que scripts malici
     Set-ExecutionPolicy -ExecutionPolicy RemoteSigned
 
 Após a execução dos comandos dentro do PowerShell, execute novamente o comando no terminal "yarn start".
+> [!WARNING]
+> Possivel erro com Year install falhando na hora da instalação, Caso Esse erro apareça indica que a sua conexão de rede está tendo problemas para baixar os pacotes do registro do Yarn.
+> 
+![image](https://github.com/user-attachments/assets/d470e347-46fe-4e4e-8b83-d2061c87a327)
 
+> [!IMPORTANT]
+> Verifique sua conexão: Certifique-se de que sua conexão de internet está funcionando corretamente.
+
+
+> Solução para problema year install.
+> 
+> Abra promp comando e execute seguinte comando:
+
+1. Limpe o cache Year executando o comando no terminal:
+   ```bash
+   yarn cache clean
+2. Execute novamente no terminal:
+   ```bash
+   yern install
+3. Execute projeto:
+    ```bash
+    yarn start
 #### Para mais informações consulte: [Microsoft Documentation](https://learn.microsoft.com/pt-pt/powershell/module/microsoft.powershell.core/about/about_execution_policies?view=powershell-7.4)
 
 ##
