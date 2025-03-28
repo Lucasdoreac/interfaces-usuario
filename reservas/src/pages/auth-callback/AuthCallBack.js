@@ -2,10 +2,10 @@ import React, { useEffect, useState, useCallback, useMemo } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import EnvImage from "../../images/email.png";
 import { AiOutlineLeft } from "react-icons/ai";
-import "./ConfirmarEmail.scss";
+import "./AuthCallBack.scss";
 import apiService from "../../services/client";
 
-const ConfirmarEmail = () => {
+const AuthCallBack = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const [email, setEmail] = useState("");
@@ -29,11 +29,11 @@ const ConfirmarEmail = () => {
         localStorage.clear();
         localStorage.setItem("userEmail", email);
         localStorage.setItem("token", token);
-        return navigate("/dados-pessoais");
+        return navigate("/event/basic-info");
       }
       setEmail(email);
     } else {
-      return navigate("/acesso-negado");
+      return navigate("/access-denied");
     }
   }, [getUserData, navigate]);
 
@@ -45,7 +45,7 @@ const ConfirmarEmail = () => {
     <div>
       <div className="card-header">
         <div className="d-flex justify-content-start">
-          <span onClick={() => navigate("/organizador")}>
+          <span onClick={() => navigate("/organizer")}>
             <AiOutlineLeft
               style={{ margin: "0px 10px 0px 0px" }}
               size="20px"
@@ -83,4 +83,4 @@ const ConfirmarEmail = () => {
   );
 };
 
-export default ConfirmarEmail;
+export default AuthCallBack;

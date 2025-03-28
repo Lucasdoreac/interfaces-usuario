@@ -2,11 +2,11 @@ import React from "react";
 import { useNavigate } from "react-router-dom";
 import EnvImage from "../../images/schedule.png";
 
-const EventoConfirmacao = () => {
+const EventConfirmation = () => {
   const navigate = useNavigate();
 
   const handleViewEvents = () => {
-    navigate("/meus-eventos"); // Rota para a página onde o usuário pode acompanhar o status dos eventos
+    navigate("/my-events"); // Rota para a página onde o usuário pode acompanhar o status dos eventos
   };
 
   return (
@@ -39,4 +39,4 @@ const EventoConfirmacao = () => {
   );
 };
 
-export default EventoConfirmacao;
+export default EventConfirmation;

@@ -1,14 +1,35 @@
-import React, { createContext, useContext, useState } from "react";
+import React, { createContext, useContext, useState, useEffect } from "react";
+import apiService from "../services/client";
 
 const FormContext = createContext();
 
 export const FormProvider = ({ children }) => {
-  const [formData, setFormData] = useState({
-    nomeProfessor: localStorage.getItem("userEmail") || "",
-    alunosMonitores: [],
+  const [formData, setFormData] = useState(() => {
+    const saved = localStorage.getItem("formData");
+    return saved ? JSON.parse(saved) : {};
   });
 
-  const handleChange = (e) => { 
+  useEffect(() => {
+    localStorage.setItem("formData", JSON.stringify(formData));
+  }, [formData]);
+
+  const saveDraft = async () => {
+    try {
+      const existingEventId = localStorage.getItem("eventId");
+      const draftId = await apiService.submitEventData(
+        formData,
+        "draft",
+        existingEventId
+      );
+      localStorage.setItem("eventId", draftId);
+      console.log("Saved Draft ID: ", draftId);
+    } catch (error) {
+      console.error("Erro ao salvar draft:", error);
+      return null;
+    }
+  };
+
+  const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prevData) => ({ ...prevData, [name]: value }));
   };
@@ -34,17 +55,13 @@ export const FormProvider = ({ children }) => {
     }));
   };
 
-  const handleRoomDataChange = (roomId, reservationDate) => {
+  const handleRoomDataChange = (roomId, reservationDate, eventId) => {
     setFormData((prevData) => ({
       ...prevData,
       roomId,
       reservationDate,
+      eventId,
     }));
-  };
-
-  const handleSaveDraft = () => {
-    localStorage.setItem("eventDraft", JSON.stringify(formData));
-    alert("Rascunho salvo com sucesso!");
   };
 
   const handleSaveAlunoMonitor = (alunos) => {
@@ -58,11 +75,11 @@ export const FormProvider = ({ children }) => {
     <FormContext.Provider
       value={{
         formData,
+        saveDraft,
         handleChange,
         handleOdsChange,
         handleCursoChanged,
         handleRoomDataChange,
-        handleSaveDraft,
         handleSaveAlunoMonitor,
       }}
     >

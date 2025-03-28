@@ -1,15 +1,15 @@
 import React, { useState, useEffect } from "react";
 import { AiOutlineLeft } from "react-icons/ai";
-import "./DadosPessoais.scss";
+import "./EventBasicInfo.scss";
 import { useNavigate } from "react-router-dom";
 import InputMask from "react-input-mask";
 import { useFormContext } from "../../context/FormContext";
 import apiService from "../../services/client";
 import TwoButtons from "../../components/TwoButtons";
 
-const DadosPessoais = () => {
+const EventBasicInfo = () => {
   const navigate = useNavigate();
-  const { formData, handleChange, handleOdsChange, handleSaveDraft } =
+  const { formData, handleChange, saveDraft, handleOdsChange } =
     useFormContext();
 
   const [listaTipoEvento, setListaTipoEvento] = useState([]);
@@ -50,10 +50,6 @@ const DadosPessoais = () => {
         "O campo nome do evento precisa ter mais caracteres!";
     }
 
-    if (!formData.nomeProfessor?.trim()) {
-      newErrors.nomeProfessor = "O campo PROFESSOR é obrigatório.";
-    }
-
     if (!formData.classificacao?.trim()) {
       newErrors.classificacao = "Defina uma classificação.";
     }
@@ -66,10 +62,10 @@ const DadosPessoais = () => {
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleNext = () => {
+  const handleNext = async () => {
     if (validateForm()) {
-      handleSaveDraft();
-      navigate("/descricao-evento");
+      await saveDraft()
+      navigate("/event/details");
     }
   };
 
@@ -124,7 +120,7 @@ const DadosPessoais = () => {
                 className="form-control"
                 id="formProfessor"
                 name="nomeProfessor"
-                value={formData.nomeProfessor}
+                value={localStorage.getItem("userEmail")}
               />
               {renderError("nomeProfessor")}
             </div>
@@ -203,7 +199,7 @@ const DadosPessoais = () => {
           </div>
 
           <TwoButtons
-            handleSaveDraft={handleSaveDraft}
+            saveDraft={saveDraft}
             handleNext={handleNext}
           />
         </div>
@@ -212,4 +208,4 @@ const DadosPessoais = () => {
   );
 };
 
-export default DadosPessoais;
+export default EventBasicInfo;

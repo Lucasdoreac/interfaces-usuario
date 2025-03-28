@@ -1,21 +1,38 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { AiOutlineLeft } from "react-icons/ai";
 import { useNavigate } from "react-router-dom";
 import { useFormContext } from "../../context/FormContext";
 import apiService from "../../services/client";
-import "./ConfirmarDados.scss";
+import "./EventConfirmData.scss";
 
-const ConfirmarDados = () => {
+const EventConfirmData = () => {
   const navigate = useNavigate();
-  const {formData} = useFormContext()
+  const { formData } = useFormContext();
   const [errors, setErrors] = useState({});
 
   const handleConfirm = async () => {
     if (validateForm()) {
       try {
-        const response = await apiService.submitForm(formData);
-        console.log("Form submitted", response);
-        navigate("/confirmacao-evento");
+        const eventId = localStorage.getItem("eventId");
+
+        await apiService.submitEventData(formData, "requested", eventId);
+
+        const reservationData = {
+          roomId: formData.roomId,
+          reservationDate: formData.reservationDate,
+          eventId: eventId,
+        };
+
+        const isReservationSaved = await apiService.submitReservationData(
+          reservationData
+        );
+        if (!isReservationSaved) {
+          console.error("Falha ao salvar a reserva.");
+          // redirecionar para erro na reserva
+        }
+
+        console.log("Form submitted", eventId);
+        navigate("/event/confirmation");
       } catch (error) {
         console.error("Error submitting:", error);
       }
@@ -24,7 +41,10 @@ const ConfirmarDados = () => {
 
   const validateForm = () => {
     const newErrors = {};
-    if (!formData.numeroParticipantes?.trim() || formData.numeroParticipantes <= 0)
+    if (
+      !formData.numeroParticipantes?.trim() ||
+      formData.numeroParticipantes <= 0
+    )
       newErrors.numeroParticipantes = "Número de participantes é obrigatório.";
     if (!formData.espacos?.trim())
       newErrors.espacos = "Selecione um espaço necessário.";
@@ -43,7 +63,7 @@ const ConfirmarDados = () => {
   return (
     <div className="confirmar-dados-container">
       <div className="card-header">
-        <span onClick={() => navigate("/escolha-horario")}>
+        <span onClick={() => navigate("/event/schedule")}>
           <AiOutlineLeft
             size="20px"
             color="white"
@@ -55,9 +75,11 @@ const ConfirmarDados = () => {
       <div className="dados-preview">
         <pre>{JSON.stringify(formData, null, 2)}</pre>
       </div>
-        <button className="btn btn-primary" onClick={handleConfirm}>Confirmar</button>
+      <button className="btn btn-primary" onClick={handleConfirm}>
+        Confirmar
+      </button>
     </div>
   );
 };
 
-export default ConfirmarDados;
+export default EventConfirmData;

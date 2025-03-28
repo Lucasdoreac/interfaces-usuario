@@ -72,12 +72,20 @@ class ApiService {
     }
   }
 
-  async submitForm(data) {
+  async submitEventData(data, status, eventId = null) {
     try {
-      const response = await this.http.post("/events", data);
-      return response.data;
+      const requestData = { ...data, status };
+      let response;
+      // Update an event object
+      if (eventId) {
+        response = await this.http.put(`/events/${eventId}`, requestData);
+      } else {
+        // Create a new event object
+        response = await this.http.post("/events", requestData);
+      }
+      return response.data.eventId;
     } catch (error) {
-      console.error("Error submitting form data:", error);
+      console.error("Erro ao enviar dados:", error);
       throw error;
     }
   }
@@ -97,6 +105,21 @@ class ApiService {
     }
   }
 
+  async getEventsReservations(eventId) {
+    try {
+      const response = await this.http.get("/reservations", {
+        params: { eventId },
+      });
+      if (response.status === 200) {
+        return response.data;
+      }
+      return false;
+    } catch (error) {
+      console.error(error);
+      return false;
+    }
+  }
+
   async getAvailableSlots(formattedDate, time, page = 1, page_size = 10) {
     try {
       const response = await this.http.get("/rooms/available-rooms", {
@@ -109,6 +132,33 @@ class ApiService {
     } catch (error) {
       console.error(error);
       return false;
+    }
+  }
+
+  async submitReservationData(roomId, reservationDate, eventId) {
+    try {
+      const reservationData = { roomId, reservationDate, eventId };
+      const response = await this.http.post("/reservations", reservationData);
+      if (response.status === 201) return true;
+      return false;
+    } catch (error) {
+      console.error(error);
+      return false;
+    }
+  }
+
+  async getRoomById(roomId) {
+    try {
+      const response = await this.http.get("/rooms", {
+        params: { roomId },
+      });
+      if (response.status === 200) {
+        return response.data;
+      }
+      return null;
+    } catch (error) {
+      console.error("Erro ao obter sala:", error);
+      return null;
     }
   }
 }

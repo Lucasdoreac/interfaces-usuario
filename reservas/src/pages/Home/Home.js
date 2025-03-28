@@ -26,7 +26,7 @@ const Home = () => {
               {/* O botão agora usa onClick para navegação */}
               <button
                 className="btn btn-outline-primary btn-lg"
-                onClick={() => navigate("/organizador")} // Navegar para a página "Organizador"
+                onClick={() => navigate("/organizer")} // Navegar para a página "Organizador"
               >
                 ORGANIZADOR
               </button>

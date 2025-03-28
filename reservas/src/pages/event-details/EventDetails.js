@@ -1,16 +1,17 @@
 import React, { useState, useCallback, useRef } from "react";
 import { AiOutlineLeft } from "react-icons/ai";
 import debounce from "lodash.debounce";
-import "./DescricaoEvento.scss";
+import "./EventDetails.scss";
 import { useNavigate } from "react-router-dom";
 import { useFormContext } from "../../context/FormContext";
 import apiService from "../../services/client";
 import TwoButtons from "../../components/TwoButtons";
 
-const DescricaoEvento = () => {
+const EventDetails = () => {
   const navigate = useNavigate();
-  const { formData, handleChange, handleSaveDraft, handleCursoChanged } = useFormContext();
-  
+  const { formData, handleChange, saveDraft, handleCursoChanged } =
+    useFormContext();
+
   const [errors, setErrors] = useState({});
   const [searchResults, setSearchResults] = useState([]);
   const [courseSelected, setCourseSelected] = useState("");
@@ -49,9 +50,11 @@ const DescricaoEvento = () => {
 
   const validateEventDescription = () => {
     const newErrors = {};
-    if (!formData.descricaoEvento?.trim()) newErrors.descricaoEvento = "Campo obrigatório.";
+    if (!formData.descricaoEvento?.trim())
+      newErrors.descricaoEvento = "Campo obrigatório.";
     if (!formData.courseId) newErrors.curso = "Campo obrigatório.";
-    if (!formData.publicoAlvo?.length) newErrors.publicoAlvo = "Selecione pelo menos um público alvo.";
+    if (!formData.publicoAlvo?.length)
+      newErrors.publicoAlvo = "Selecione pelo menos um público alvo.";
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -59,10 +62,12 @@ const DescricaoEvento = () => {
   // Handler para selecionar curso
   const handleCourseSelect = (e) => {
     const selectedName = e.target.value;
-    const selectedCourse = searchResults.find((curso) => curso.name === selectedName);
+    const selectedCourse = searchResults.find(
+      (curso) => curso.name === selectedName
+    );
     if (selectedCourse) {
-      setCourseSelected(selectedName);
-      handleCursoChanged(selectedName, selectedCourse.id);
+      setCourseSelected(selectedCourse.name);
+      handleCursoChanged(selectedCourse.name, selectedCourse.id);
     }
   };
 
@@ -75,29 +80,36 @@ const DescricaoEvento = () => {
     handleChange({ target: { name, value: updatedValues } });
   };
 
-  const handleNext = () => {
+  const handleNext = async () => {
     if (validateEventDescription()) {
-      handleSaveDraft();
-      navigate("/local-evento");
+      await saveDraft()
+      navigate("/event/logistics");
     }
   };
 
-  const renderError = (field) => errors[field] && <span className="error">{errors[field]}</span>;
+  const renderError = (field) =>
+    errors[field] && <span className="error">{errors[field]}</span>;
 
   return (
     <form>
       <div className="card">
         <div className="card-header">
-          <span onClick={() => navigate("/dados-pessoais")}>
-            <AiOutlineLeft size="20px" color="white" style={{ marginRight: 10 }} />
+          <span onClick={() => navigate("/event/basic-info")}>
+            <AiOutlineLeft
+              size="20px"
+              color="white"
+              style={{ marginRight: 10 }}
+            />
           </span>
         </div>
 
         <div className="card-body">
           <h4>Novo Evento</h4>
-          
+
           <div className="form-group mt-3">
-            <label htmlFor="descricaoEvento">Descrição do evento/ Objetivos</label>
+            <label htmlFor="descricaoEvento">
+              Descrição do evento/ Objetivos
+            </label>
             <textarea
               rows="2"
               className="form-control"
@@ -193,7 +205,9 @@ const DescricaoEvento = () => {
                   id={id}
                   value={id}
                   checked={formData.recursosNecessarios?.includes(id) || false}
-                  onChange={() => handleCheckboxChange("recursosNecessarios", id)}
+                  onChange={() =>
+                    handleCheckboxChange("recursosNecessarios", id)
+                  }
                 />
                 <label className="form-check-label" htmlFor={id}>
                   {label}
@@ -202,11 +216,14 @@ const DescricaoEvento = () => {
             ))}
           </div>
 
-          <TwoButtons handleSaveDraft={handleSaveDraft} handleNext={handleNext} />
+          <TwoButtons
+            saveDraft={saveDraft}
+            handleNext={handleNext}
+          />
         </div>
       </div>
     </form>
   );
 };
 
-export default DescricaoEvento;
+export default EventDetails;

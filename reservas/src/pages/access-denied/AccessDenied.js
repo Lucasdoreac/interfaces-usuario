@@ -1,8 +1,8 @@
 import React from "react";
-import "./AcessoNegado.scss";
+import "./AccessDenied.scss";
 import { useNavigate } from "react-router-dom";
 
-const AcessoNegado = () => {
+const AccessDenied = () => {
   const navigate = useNavigate();
 
   return (
@@ -26,4 +26,4 @@ const AcessoNegado = () => {
   );
 };
 
-export default AcessoNegado;
+export default AccessDenied;

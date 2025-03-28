@@ -2,11 +2,15 @@ import React, { useState } from "react";
 import { AiOutlineLeft } from "react-icons/ai";
 import { useNavigate } from "react-router-dom";
 import { useFormContext } from "../../context/FormContext";
+import TwoButtons from "../../components/TwoButtons";
 
-const LocalEvento = () => {
+const EventLogistics = () => {
   const navigate = useNavigate();
-  const { formData, handleChange, handleSaveDraft, handleSaveAlunoMonitor } = useFormContext();
-  const [alunosMonitores, setAlunosMonitores] = useState(formData.alunosMonitores || []);
+  const { formData, handleChange, handleSaveDraft, saveDraft, handleSaveAlunoMonitor } =
+    useFormContext();
+  const [alunosMonitores, setAlunosMonitores] = useState(
+    formData.alunosMonitores || []
+  );
   const [errors, setErrors] = useState({});
   const [logoPreview, setLogoPreview] = useState(null);
 
@@ -23,7 +27,9 @@ const LocalEvento = () => {
   };
 
   const handleAlunoChange = (index, value) => {
-    const updatedAlunos = alunosMonitores.map((aluno, i) => (i === index ? value : aluno));
+    const updatedAlunos = alunosMonitores.map((aluno, i) =>
+      i === index ? value : aluno
+    );
     setAlunosMonitores(updatedAlunos);
     handleSaveAlunoMonitor(updatedAlunos);
   };
@@ -39,24 +45,29 @@ const LocalEvento = () => {
   };
 
   const handleNext = async () => {
-    handleSaveDraft();
-    navigate("/escolha-horario");
+    await saveDraft()
+    navigate("/event/schedule");
   };
 
-  const renderError = (field) => errors[field] && <span className="error">{errors[field]}</span>;
+  const renderError = (field) =>
+    errors[field] && <span className="error">{errors[field]}</span>;
 
   return (
     <form>
       <div className="card">
         <div className="card-header">
-          <span onClick={() => navigate("/descricao-evento")}>
-            <AiOutlineLeft size="20px" color="white" style={{ marginRight: 10 }} />
+          <span onClick={() => navigate("/event/details")}>
+            <AiOutlineLeft
+              size="20px"
+              color="white"
+              style={{ marginRight: 10 }}
+            />
           </span>
         </div>
 
         <div className="card-body">
           <h4>Novo Evento</h4>
-          
+
           <div className="form-group mt-3">
             <label htmlFor="numeroParticipantes">Número de participantes</label>
             <input
@@ -75,22 +86,25 @@ const LocalEvento = () => {
 
           <div className="form-group mt-3">
             <label htmlFor="espacos">Espaço Necessário</label>
-            {["online", "auditorio", "hall", "salaAula", "laboratorioInfo"].map((espaco) => (
-              <div className="form-check" key={espaco}>
-                <input
-                  className="form-check-input"
-                  type="radio"
-                  name="espacos"
-                  id={espaco}
-                  value={espaco}
-                  checked={formData.espacos === espaco}
-                  onChange={handleChange}
-                />
-                <label className="form-check-label" htmlFor={espaco}>
-                  {espaco.charAt(0).toUpperCase() + espaco.slice(1).replace(/([A-Z])/g, " $1")}
-                </label>
-              </div>
-            ))}
+            {["online", "auditorio", "hall", "salaAula", "laboratorioInformática"].map(
+              (espaco) => (
+                <div className="form-check" key={espaco}>
+                  <input
+                    className="form-check-input"
+                    type="radio"
+                    name="espacos"
+                    id={espaco}
+                    value={espaco}
+                    checked={formData.espacos === espaco}
+                    onChange={handleChange}
+                  />
+                  <label className="form-check-label" htmlFor={espaco}>
+                    {espaco.charAt(0).toUpperCase() +
+                      espaco.slice(1).replace(/([A-Z])/g, " $1")}
+                  </label>
+                </div>
+              )
+            )}
             {renderError("espacos")}
           </div>
 
@@ -169,31 +183,41 @@ const LocalEvento = () => {
                 </button>
               </div>
             ))}
-            <button type="button" className="btn btn-outline-primary" onClick={handleAddAluno}>
+            <button
+              type="button"
+              className="btn btn-outline-primary"
+              onClick={handleAddAluno}
+            >
               Adicionar Aluno
             </button>
           </div>
 
           <div className="form-group mt-3">
             <label htmlFor="logo">Logo do Evento</label>
-            <input type="file" className="form-control" id="logo" name="logo" onChange={handleLogoUpload} />
+            <input
+              type="file"
+              className="form-control"
+              id="logo"
+              name="logo"
+              onChange={handleLogoUpload}
+            />
             {logoPreview && (
-              <img src={logoPreview} alt="Logo Preview" style={{ marginTop: "10px", maxWidth: "200px" }} />
+              <img
+                src={logoPreview}
+                alt="Logo Preview"
+                style={{ marginTop: "10px", maxWidth: "200px" }}
+              />
             )}
           </div>
 
-          <div className="form-group mt-3">
-            <button type="button" className="btn btn-outline-secondary" onClick={handleSaveDraft}>
-              Salvar Rascunho
-            </button>
-            <button type="button" className="btn btn-primary" onClick={handleNext}>
-              Próximo
-            </button>
-          </div>
+          <TwoButtons
+            saveDraft={saveDraft}
+            handleNext={handleNext}
+          />
         </div>
       </div>
     </form>
   );
 };
 
-export default LocalEvento;
+export default EventLogistics;

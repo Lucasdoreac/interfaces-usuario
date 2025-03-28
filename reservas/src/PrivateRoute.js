@@ -42,7 +42,7 @@ const PrivateRoute = ({ element: Component, ...rest }) => {
   return isAuthorized ? (
     <Component {...rest} />
   ) : (
-    <Navigate to="/acesso-negado" />
+    <Navigate to="/access-denied" />
   );
 };
 

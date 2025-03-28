@@ -17,7 +17,7 @@ const Navbar = () => {
                 </button>
             </div>
             <div className="nav right">
-        <span className="nav-link active" onClick={() => navigate('/organizador')}>
+        <span className="nav-link active" onClick={() => navigate('/organizer')}>
           <span className="nav-link-span">
             <span className="u-nav">Organizador</span>
           </span>

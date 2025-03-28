@@ -4,13 +4,13 @@ import DatePickerComponent from "../../components/date-picker/DatePickerComponen
 import InfiniteScrollRooms from "../../components/infinite-scroll-rooms/InfiniteScrollRooms";
 import { useNavigate } from "react-router-dom";
 import { useFormContext } from "../../context/FormContext";
-import "./EscolhaHorario.scss";
+import "./EventSchedule.scss";
 
-const EscolheHorario = () => {
+const EventSchedule = () => {
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [selectedPeriod, setSelectedPeriod] = useState();
   const [selectedRoom, setSelectedRoom] = useState(null);
-  const { formData, handleChange, handleRoomDataChange, handleSaveDraft } =
+  const { formData, handleChange, handleRoomDataChange } =
     useFormContext();
   const navigate = useNavigate();
 
@@ -22,6 +22,8 @@ const EscolheHorario = () => {
 
   const selectedTime = periodToTime[selectedPeriod];
 
+  const eventId = localStorage.getItem('eventId')
+
   const handleDateChange = (date) => {
     setSelectedDate(date);
   };
@@ -32,18 +34,17 @@ const EscolheHorario = () => {
 
   const handleRoomSelect = (roomId) => {
     setSelectedRoom(roomId);
-    handleRoomDataChange(roomId, selectedDate);
+    handleRoomDataChange(roomId, selectedDate, eventId);
   };
 
   const handleContinue = () => {
-    handleSaveDraft();
-    navigate("/confirmar-dados");
+    navigate("/event/confirm-data");
   };
 
   return (
     <div className="escolha-horario-container">
       <div className="card-header">
-        <span onClick={() => navigate("/local-evento")}>
+        <span onClick={() => navigate("/event/logistics")}>
           <AiOutlineLeft
             size="20px"
             color="white"
@@ -143,4 +144,4 @@ const EscolheHorario = () => {
   );
 };
 
-export default EscolheHorario;
+export default EventSchedule;

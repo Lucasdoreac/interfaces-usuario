@@ -1,19 +1,17 @@
 import React, { useState } from "react";
-import "./Organizador.scss";
+import "./Organizer.scss";
 import AvatarImage from "../../images/man.png";
 import { AiOutlineLeft } from "react-icons/ai";
 import { useNavigate } from "react-router-dom";
 import apiService from "../../services/client";
+import { useFormContext } from "../../context/FormContext";
 
-function Organizador() {
-  const [email, setEmail] = useState("");
+function Organizer() {
+  const { formData, handleChange } = useFormContext();
+  const email = formData.email || "";
   const [errors, setErro] = useState("");
   const [loading, setLoading] = useState(false);
-  const navigate = useNavigate(); // Navegação por URL
-
-  const handlerEmail = (event) => {
-    setEmail(event.target.value);
-  };
+  const navigate = useNavigate();
 
   const sendEmail = async (event) => {
     event.preventDefault();
@@ -32,12 +30,10 @@ function Organizador() {
       setErro("O campo e-mail é obrigatório.");
       return false;
     }
-
     if (!/^[a-zA-Z0-9._%+-]+@udf\.edu\.br$/.test(email)) {
       setErro("O campo e-mail está fora do formato permitido.");
       return false;
     }
-
     return true;
   };
 
@@ -66,9 +62,10 @@ function Organizador() {
             />
             <input
               type="email"
+              name="email" // importante para atualizar a propriedade correta
               placeholder="Digite seu email@udf.edu.br"
               value={email}
-              onChange={handlerEmail}
+              onChange={handleChange}
               className="form-control"
             />
             {errors && <span style={{ color: "red" }}>{errors}</span>}
@@ -89,4 +86,4 @@ function Organizador() {
   );
 }
 
-export default Organizador;
+export default Organizer;
