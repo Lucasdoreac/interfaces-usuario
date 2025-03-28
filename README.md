@@ -1,157 +1,198 @@
-<h1>
-    <a href="https://www.udf.edu.br/aluno/">
-     <img align="center" width="40px" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRDXbvV66Z7fLPFjwMmJxAL3RaqdLX165K8WA&s"></a>
-    <span>Execução Front-End do projeto LabTech</span>
-</h1>
+# Execução Front-End do Projeto LabTech
+
+[![UDF Aluno](https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRDXbvV66Z7fLPFjwMmJxAL3RaqdLX165K8WA&s)](https://www.udf.edu.br/aluno/)
+
+Este documento tem como objetivo orientar os novos integrantes do LabTech na execução do projeto Front-End, detalhando as instalações necessárias e soluções para erros comuns.
+
+---
+
+## Sumário
+
+- [Objetivo](#objetivo)
+- [Ferramentas](#ferramentas)
+- [Guia de Instalação de Ferramentas](#guia-de-instalação-de-ferramentas)
+  - [GitHub](#github)
+  - [Git](#git)
+  - [Visual Studio Code](#vscode)
+  - [Node.js e NVM](#nodejs-e-nvm)
+- [Execução do Projeto](#execução-do-projeto)
+- [Manual de Solução de Erros](#manual-de-solução-de-erros)
+  - [Erro: Execução de scripts desabilitada](#erro-execução-de-scripts-desabilitada)
+  - [Problemas com Yarn](#problemas-com-yarn)
+- [Referências](#referências)
+- [Créditos](#créditos)
+
+---
 
 ## Objetivo
 
-Orientar novos integrantes do LabTech na execução do projeto Front-End, incluindo manual de instalações necessárias e solução de erros frequêntes.
+Orientar os novos integrantes do LabTech na execução do projeto Front-End, com um manual de instalações necessárias e instruções para solucionar erros frequentes.
+
+---
 
 ## Ferramentas
 
-[![GitHub](https://img.shields.io/badge/GitHub-000?style=for-the-badge&logo=github&logoColor=30A3DC)](https://docs.github.com/)
-[![VsCode](https://img.shields.io/badge/vscode-000?style=for-the-badge&logo=vscode&logoColor=black)](https://code.visualstudio.com/download)
-[![Git](https://img.shields.io/badge/Git-000?style=for-the-badge&logo=git&logoColor=E94D5F)](https://git-scm.com/downloads/win)
-[![Node.js](https://img.shields.io/badge/Node.js-000?style=for-the-badge&logo=node.js&logoColor=green)](<[https://git-scm.com/doc](https://nodejs.org/en/download/package-manager)>)
-[![Yarn](https://img.shields.io/badge/yarn-000?style=for-the-badge&logo=yarn&logoColor=blue)](https://classic.yarnpkg.com/lang/en/docs/install/#windows-stable)
-[![nvm](https://img.shields.io/badge/nvm-000?style=for-the-badge&logo=nvm&logoColor=grenn)](https://github.com/coreybutler/nvm-windows/release)
+Utilize as ferramentas abaixo para desenvolver o projeto:
+
+[![GitHub](https://img.shields.io/badge/GitHub-000?style=for-the-badge&logo=github&logoColor=30A3DC)](https://docs.github.com/)  
+[![VsCode](https://img.shields.io/badge/vscode-000?style=for-the-badge&logo=vscode&logoColor=black)](https://code.visualstudio.com/download)  
+[![Git](https://img.shields.io/badge/Git-000?style=for-the-badge&logo=git&logoColor=E94D5F)](https://git-scm.com/downloads/win)  
+[![Node.js](https://img.shields.io/badge/Node.js-000?style=for-the-badge&logo=node.js&logoColor=green)](https://nodejs.org/en/download/package-manager)  
+[![Yarn](https://img.shields.io/badge/yarn-000?style=for-the-badge&logo=yarn&logoColor=blue)](https://classic.yarnpkg.com/lang/en/docs/install/#windows-stable)  
+[![NVM](https://img.shields.io/badge/nvm-000?style=for-the-badge&logo=nvm&logoColor=green)](https://github.com/coreybutler/nvm-windows/releases)
+
+---
 
 ## Guia de Instalação de Ferramentas
 
 ### GitHub
 
-GitHub é uma plataforma para desenvolvimento colaborativo que permite armazenar, compartilhar e gerenciar projetos de software.
+GitHub é uma plataforma de desenvolvimento colaborativo para armazenamento, compartilhamento e gerenciamento de projetos.
 
-> Acesse [github.com](https://github.com)
->
-> [Crie sua conta](https://github.com/signup?ref_cta=Sign+up&ref_loc=header+logged+out&ref_page=%2F%3Cuser-name%3E%2F%3Crepo-name%3E&source=header-repo&source_repo=coreybutler%2Fnvm-windows) (caso ainda não tenha)
+- Acesse: [github.com](https://github.com)
+- Crie sua conta: [Cadastre-se no GitHub](https://github.com/signup?ref_cta=Sign+up&ref_loc=header+logged+out&ref_page=%2F%3Cuser-name%3E%2F%3Crepo-name%3E&source=header-repo&source_repo=coreybutler%2Fnvm-windows)
 
 ### Git
 
-Git é uma ferramenta de controle de versão que permite gerenciar seu código.
+Git é um sistema de controle de versão que permite gerenciar seu código.
 
-> Acesse o [site oficial do Git](https://git-scm.com/downloads)
+- Baixe: [Site oficial do Git](https://git-scm.com/downloads)
 
-### VsCode
+### Visual Studio Code (VsCode)
 
-Visual Studio Code (VS Code) é uma IDE para desenvolvimento em várias linguagens.
+O VSCode é uma IDE robusta para desenvolvimento em diversas linguagens.
 
-> Acesse o [site oficial do VS Code](https://code.visualstudio.com/) e baixe a versão correspondente ao seu sistema operacional.
+- Baixe: [Site oficial do VS Code](https://code.visualstudio.com/)
 
-### Node.js
+### Node.js e NVM (Node Version Manager)
 
-Node.js é uma plataforma JavaScript que permite executar código JavaScript no lado do servidor.
-_não é necessário instalar o node diretamente, pois o NVM irá gerenciar as instalações_
+**Node.js:** Plataforma JavaScript para execução de código no servidor.  
+**Atenção:** Não é necessário instalar o Node.js diretamente, pois o NVM gerencia as versões instaladas.
 
-### NVM (Node Version Manager)
+**NVM:** Gerenciador de versões do Node.js que facilita o controle das instalações.
 
-É um gerenciador de versões do Node.JS, ele é responsável por gerenciar as versões instaladas na nossa máquina de desenvolvimento.
+- **Windows:** Baixe o instalador [nvm-setup.exe](https://github.com/coreybutler/nvm-windows/releases)
+- **Linux:** Siga as instruções em [nvm linux](https://github.com/nvm-sh/nvm)
 
-> Para instalar acesse no link [nvm](https://github.com/coreybutler/nvm-windows/releases) e baixe o executável "nvm-setup.exe"
+Após a instalação, verifique com:
 
-Siga as instruções do instalador.
+```bash
+nvm --version
+```
 
-Após a instalação, você pode verificar a instalação com o comando:
+> **Importante:** No projeto, utilizamos a versão v20 (veja o arquivo `.nvmrc`).
 
-    nvm --version
+Para instalar uma versão específica do Node.js:
 
-> [!IMPORTANT]
-> No projeto estamos utilizando a versão v20.
+```bash
+nvm install <versão>
+```
 
-Para instalar uma versão específica do Node.js, você pode usar o comando:
+Para alternar de versão:
 
-    nvm install <version>
+```bash
+nvm use <versão>
+```
 
-Para mudar de versão, use:
+---
 
-    nvm use <version>
+## Execução do Projeto
 
-### Yarn
+Após instalar as ferramentas, siga os passos abaixo:
 
-Yarn é um gerenciador de pacotes que facilita o gerenciamento de dependências em projetos.
+1. **Clone o repositório:**  
+   Abra o GitBash e execute:
 
-> Para instalação, execute o seguinte comando no terminal:
+   ```bash
+   git clone [link_do_repositorio]
+   ```
 
-    yern install
->
-    npm install --global yarn
+   > **Importante:** O link do repositório pode ser encontrado em GitHub > LabTech > interfaces_usuario > (<>code)> copiar link do repositório HTTPS.
 
-> [!IMPORTANT]
-> Verifique se o yarn foi instalado corretamente, executando o seguinte comando em terminal:
+2. **Instale as dependências com Yarn:**  
+   No terminal, execute:
 
-    yarn --version
+   ```bash
+   nvm use
+   npm install --global yarn
+   yarn install
+   ```
 
-## Execução do projeto
+   Verifique a instalação do Yarn:
 
-Após a instalação das ferramentas, vamos prosseguir com a execução do projeto.
+   ```bash
+   yarn --version
+   ```
 
-Execute o GitBash no seu computador, após a execução digite:
+3. **Inicie o projeto:**
 
-    $ git clone [link_do_repositorio]
+   ```bash
+   yarn start
+   ```
 
-> [!IMPORTANT]
-> O link do repositório você pode encontrar no GitHub>LabTech>interfaces_usuario>(<>code)>copiar link do repositorio HTTPS.
+   Isso abrirá o navegador no endereço: [http://localhost:3000](http://localhost:3000)
 
-Se o comando foir executado com sucesso você deve visualizar esse bash:
+---
 
-    Cloning into 'interfaces-usuario'...
-    remote: Enumerating objects: 337, done.
-    remote: Counting objects: 100% (337/337), done.
-    remote: Compressing objects: 100% (222/222), done.
-    remote: Total 337 (delta 126), reused 301 (delta 104), pack-reused 0 (from 0)
-    Receiving objects: 100% (337/337), 732.20 KiB | 5.27 MiB/s, done.
-    Resolving deltas: 100% (126/126), done.
+## Manual de Solução de Erros
 
-Agora execute no terminal o comando:
+### Erro: Execução de Scripts Desabilitada
 
-    yarn start
+> **Cuidado:**  
+> Erro: "Execução de scripts foi desabilitada neste sistema". Esse erro ocorre devido à política de segurança do PowerShell, que por padrão bloqueia a execução de scripts não assinados.
 
-Isso abrirá uma janela no browser com o endereço local: [http://localhost:3000](http://localhost:3000)
+**Solução:**
 
-###
+1. Abra o PowerShell como administrador.
+2. Verifique a política atual:
 
-## Manual de solução de erros
+   ```powershell
+   Get-ExecutionPolicy
+   ```
 
-### 1. Execução de scripts foi desabilitada neste sistema
+3. Altere a política para permitir scripts remotos assinados:
 
-> [!CAUTION]
-> Ocorreu um erro; Execução de scripts foi desabilitada neste sistema
+   ```powershell
+   Set-ExecutionPolicy -ExecutionPolicy RemoteSigned
+   ```
 
-Isto é uma política de segurança do Powershell para evitar que scripts maliciosos sejam executados indevidamente no seu sistema. Por isso, todos os scripts que não forem assinados terão sua execução bloqueada. Ou seja, a política de execução está como Restricted (que é o padrão).
+4. Após alterar, execute novamente o comando `yarn start` no terminal.
 
-> Solução:
->
-> Acesse seu Powershell como administrador e execute os seguintes comandos:
+### Problemas com Yarn
 
-    Get-ExecutionPolicy
-    Set-ExecutionPolicy -ExecutionPolicy RemoteSigned
+> **Atenção:**  
+> Caso ocorra erro durante a instalação de dependências (possivelmente devido a problemas de conexão com a internet), siga os passos abaixo:
 
-Após a execução dos comandos dentro do PowerShell, execute novamente o comando no terminal "yarn start".
-> [!WARNING]
-> Possivel erro com Year install falhando na hora da instalação, Caso Esse erro apareça indica que a sua conexão de rede está tendo problemas para baixar os pacotes do registro do Yarn.
-> 
-![image](https://github.com/user-attachments/assets/d470e347-46fe-4e4e-8b83-d2061c87a327)
+1. Limpe o cache do Yarn:
 
-> [!IMPORTANT]
-> Verifique sua conexão: Certifique-se de que sua conexão de internet está funcionando corretamente.
-
-
-> Solução para problema year install.
-> 
-> Abra promp comando e execute seguinte comando:
-
-1. Limpe o cache Year executando o comando no terminal:
    ```bash
    yarn cache clean
-2. Execute novamente no terminal:
+   ```
+
+2. Reinstale as dependências:
+
    ```bash
-   yern install
-3. Execute projeto:
-    ```bash
-    yarn start
-#### Para mais informações consulte: [Microsoft Documentation](https://learn.microsoft.com/pt-pt/powershell/module/microsoft.powershell.core/about/about_execution_policies?view=powershell-7.4)
+   yarn install
+   ```
 
-##
+3. Inicie o projeto:
 
-<div align="center">Criado por DW Corp LTDA</a>.</div>
+   ```bash
+   yarn start
+   ```
+
+Caso o problema persista, verifique sua conexão de internet.
+
+---
+
+## Referências
+
+- [Documentação do PowerShell - Execução de Políticas](https://learn.microsoft.com/pt-pt/powershell/module/microsoft.powershell.core/about/about_execution_policies?view=powershell-7.4)
+
+---
+
+## Créditos
+
+<div align="center">
+  Criado por DW Corp LTDA
+</div>

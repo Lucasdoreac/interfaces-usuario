@@ -31,6 +31,8 @@ function Organizer() {
       return false;
     }
     if (!/^[a-zA-Z0-9._%+-]+@udf\.edu\.br$/.test(email)) {
+      const allowed_emails = ["danrley.pereira@cs.udf.edu.br"];
+      if (allowed_emails.includes(email)) return true;
       setErro("O campo e-mail está fora do formato permitido.");
       return false;
     }
