@@ -1,42 +1,54 @@
-import React, { useState, useCallback, useRef } from "react";
+import React, { useState, useCallback, useRef, useEffect } from "react";
 import { AiOutlineLeft } from "react-icons/ai";
 import debounce from "lodash.debounce";
-import "./EventDetails.scss";
 import { useNavigate } from "react-router-dom";
+import "./EventDetails.scss";
 import { useFormContext } from "../../context/FormContext";
 import apiService from "../../services/client";
 import TwoButtons from "../../components/TwoButtons";
 
 const EventDetails = () => {
   const navigate = useNavigate();
-  const { formData, handleChange, saveDraft, handleCursoChanged } =
-    useFormContext();
+
+  const {
+    formData,
+    handleChange,
+    saveDraft,
+    handleCursoChanged,
+    loading,
+    resourcesTypes,
+    targetPublicTypes,
+    eventId,
+  } = useFormContext();
 
   const [errors, setErrors] = useState({});
   const [searchResults, setSearchResults] = useState([]);
   const [courseSelected, setCourseSelected] = useState("");
-  const [query, setQuery] = useState("");
-  const [loading, setLoading] = useState(false);
+  const [query, setQuery] = useState(formData.courseName || "");
+  const [localLoading, setLocalLoading] = useState(false);
+  // Toggle whether user is editing the course field
+  const [isEditingCourse, setIsEditingCourse] = useState(!formData.courseId);
 
-  // Cache para pesquisas já realizadas
+  // Cache for already performed searches
   const searchCache = useRef({});
 
-  // Função de busca debounced
-  const debouncedSearch = useCallback(
-    debounce(async (q) => {
+  // Debounced search function for courses
+  const debouncedSearch = useCallback(() => {
+    const debouncedFn = debounce(async (q) => {
       if (searchCache.current[q]) {
         setSearchResults(searchCache.current[q]);
         return;
       }
-      setLoading(true);
+      setLocalLoading(true);
+      setCourseSelected("");
       const result = await apiService.searchCourses(q);
       const courses = result?.courses || [];
       searchCache.current[q] = courses;
       setSearchResults(courses);
-      setLoading(false);
-    }, 2000),
-    []
-  );
+      setLocalLoading(false);
+    }, 2000);
+    return debouncedFn;
+  }, [searchCache])();
 
   const handleQueryChange = (e) => {
     const value = e.target.value;
@@ -59,7 +71,6 @@ const EventDetails = () => {
     return Object.keys(newErrors).length === 0;
   };
 
-  // Handler para selecionar curso
   const handleCourseSelect = (e) => {
     const selectedName = e.target.value;
     const selectedCourse = searchResults.find(
@@ -68,22 +79,38 @@ const EventDetails = () => {
     if (selectedCourse) {
       setCourseSelected(selectedCourse.name);
       handleCursoChanged(selectedCourse.name, selectedCourse.id);
+      // When a new course is selected, exit editing mode.
+      setIsEditingCourse(false);
     }
   };
 
-  // Handler para checkboxes (público alvo e recursos necessários)
-  const handleCheckboxChange = (name, value) => {
-    const currentValues = formData[name] || [];
-    const updatedValues = currentValues.includes(value)
-      ? currentValues.filter((item) => item !== value)
-      : [...currentValues, value];
-    handleChange({ target: { name, value: updatedValues } });
-  };
+  // If courseId exists but courseName is not set, fetch it and update formData.
+  useEffect(() => {
+    const fetchCourseIfNeeded = async () => {
+      if (formData.courseId && !formData.courseName) {
+        try {
+          const course = await apiService.getCourseById(formData.courseId);
+          if (course) {
+            handleCursoChanged(course.name, course.id);
+            setQuery(course.name);
+          }
+        } catch (error) {
+          console.error("Error fetching course data:", error);
+        }
+      }
+    };
+    fetchCourseIfNeeded();
+  }, [formData.courseId, formData.courseName, handleCursoChanged]);
 
   const handleNext = async () => {
     if (validateEventDescription()) {
-      await saveDraft()
-      navigate("/event/logistics");
+      const eventId = await saveDraft();
+      if (eventId) {
+        navigate(`/event/logistics?eventId=${eventId}`);
+        return;
+      }
+      navigate("/event/basic-info");
+      return;
     }
   };
 
@@ -91,10 +118,12 @@ const EventDetails = () => {
     errors[field] && <span className="error">{errors[field]}</span>;
 
   return (
-    <form>
+    <form onSubmit={(e) => e.preventDefault()}>
       <div className="card">
         <div className="card-header">
-          <span onClick={() => navigate("/event/basic-info")}>
+          <span
+            onClick={() => navigate(`/event/basic-info?eventId=${eventId}`)}
+          >
             <AiOutlineLeft
               size="20px"
               color="white"
@@ -104,122 +133,163 @@ const EventDetails = () => {
         </div>
 
         <div className="card-body">
-          <h4>Novo Evento</h4>
+          {loading ? (
+            <p>Carregando dados do evento...</p>
+          ) : (
+            <>
+              <h4>Novo Evento</h4>
 
-          <div className="form-group mt-3">
-            <label htmlFor="descricaoEvento">
-              Descrição do evento/ Objetivos
-            </label>
-            <textarea
-              rows="2"
-              className="form-control"
-              id="descricaoEvento"
-              name="descricaoEvento"
-              value={formData.descricaoEvento || ""}
-              onChange={handleChange}
-            />
-            {renderError("descricaoEvento")}
-          </div>
-
-          <div className="form-group mt-3">
-            <p>Curso Vinculado</p>
-            <div className="curso-search">
-              <div>
-                <label htmlFor="curso-search">Pesquisar/Filtrar</label>
-                <input
-                  type="text"
-                  id="curso-search"
+              <div className="form-group mt-3">
+                <label htmlFor="descricaoEvento">
+                  Descrição do evento/ Objetivos
+                </label>
+                <textarea
+                  rows="2"
                   className="form-control"
-                  placeholder="Buscar curso..."
-                  value={query}
-                  onChange={handleQueryChange}
+                  id="descricaoEvento"
+                  name="descricaoEvento"
+                  value={formData.descricaoEvento || ""}
+                  onChange={handleChange}
                 />
+                {renderError("descricaoEvento")}
               </div>
-              <div>
-                <label htmlFor="curso">
-                  {searchResults.length} cursos encontrados
-                </label>
-                {loading ? (
-                  <p>Pesquisando cursos...</p>
+
+              <div className="form-group mt-3">
+                <p>Curso Vinculado</p>
+                {isEditingCourse ? (
+                  <div className="curso-search">
+                    <div>
+                      <label htmlFor="curso-search">Pesquisar/Filtrar</label>
+                      <input
+                        type="text"
+                        id="curso-search"
+                        className="form-control"
+                        placeholder="Buscar curso..."
+                        value={query}
+                        onChange={handleQueryChange}
+                      />
+                    </div>
+                    <div>
+                      <label htmlFor="curso">
+                        {searchResults.length} cursos encontrados
+                      </label>
+                      {localLoading ? (
+                        <p>Pesquisando cursos...</p>
+                      ) : (
+                        <select
+                          id="curso"
+                          name="curso"
+                          value={courseSelected || formData.courseName || ""}
+                          onChange={handleCourseSelect}
+                          disabled={localLoading}
+                          className="form-control"
+                        >
+                          <option value="" disabled>
+                            Nome curso
+                          </option>
+                          {searchResults.map((curso) => (
+                            <option value={curso.name} key={curso.id}>
+                              {curso.name}
+                            </option>
+                          ))}
+                        </select>
+                      )}
+                      {renderError("curso")}
+                    </div>
+                  </div>
                 ) : (
-                  <select
-                    id="curso"
-                    name="curso"
-                    value={formData.courseName || courseSelected}
-                    onChange={handleCourseSelect}
-                    className="form-control"
-                  >
-                    <option value="" disabled>
-                      Nome curso
-                    </option>
-                    {searchResults.map((curso) => (
-                      <option value={curso.name} key={curso.id}>
-                        {curso.name}
-                      </option>
-                    ))}
-                  </select>
+                  <div>
+                    <input
+                      type="text"
+                      className="form-control"
+                      value={formData.courseName || ""}
+                      disabled
+                    />
+                    <button
+                      type="button"
+                      className="btn btn-warning btn-secondary"
+                      onClick={() => {
+                        // Reset course selection in context and local state.
+                        handleCursoChanged("", null);
+                        setCourseSelected("");
+                        setQuery("");
+                        setSearchResults([]);
+                        setIsEditingCourse(true);
+                      }}
+                      style={{ marginTop: "10px" }}
+                    >
+                      Alterar curso
+                    </button>
+                  </div>
                 )}
-                {renderError("curso")}
               </div>
-            </div>
-          </div>
 
-          <div className="form-group mt-3">
-            <label>Público alvo</label>
-            {[
-              { id: "alunosUDF", label: "Alunos UDF" },
-              { id: "professores", label: "Professores" },
-              { id: "publicoExterno", label: "Público Externo" },
-            ].map(({ id, label }) => (
-              <div className="form-check" key={id}>
-                <input
-                  className="form-check-input"
-                  type="checkbox"
-                  name="publicoAlvo"
-                  id={id}
-                  value={id}
-                  checked={formData.publicoAlvo?.includes(id) || false}
-                  onChange={() => handleCheckboxChange("publicoAlvo", id)}
-                />
-                <label className="form-check-label" htmlFor={id}>
-                  {label}
-                </label>
+              <div className="form-group mt-3">
+                <label>Público alvo</label>
+                {targetPublicTypes.map(({ id, label }) => (
+                  <div className="form-check" key={id}>
+                    <input
+                      className="form-check-input"
+                      type="checkbox"
+                      name="publicoAlvo"
+                      id={id}
+                      value={id}
+                      checked={formData.publicoAlvo?.includes(id) || false}
+                      onChange={() => {
+                        const currentValues = formData.publicoAlvo || [];
+                        const updatedValues = currentValues.includes(id)
+                          ? currentValues.filter((item) => item !== id)
+                          : [...currentValues, id];
+                        handleChange({
+                          target: { name: "publicoAlvo", value: updatedValues },
+                        });
+                      }}
+                    />
+                    <label className="form-check-label" htmlFor={id}>
+                      {label}
+                    </label>
+                  </div>
+                ))}
+                {renderError("publicoAlvo")}
               </div>
-            ))}
-            {renderError("publicoAlvo")}
-          </div>
 
-          <div className="form-group mt-3">
-            <label>Recursos Necessários</label>
-            {[
-              { id: "humanas", label: "Humanas" },
-              { id: "tecnologias", label: "Tecnologias" },
-              { id: "servicos", label: "Serviços" },
-              { id: "materiais", label: "Materiais" },
-            ].map(({ id, label }) => (
-              <div className="form-check" key={id}>
-                <input
-                  className="form-check-input"
-                  type="checkbox"
-                  name="recursosNecessarios"
-                  id={id}
-                  value={id}
-                  checked={formData.recursosNecessarios?.includes(id) || false}
-                  onChange={() =>
-                    handleCheckboxChange("recursosNecessarios", id)
-                  }
-                />
-                <label className="form-check-label" htmlFor={id}>
-                  {label}
-                </label>
+              <div className="form-group mt-3">
+                <label>Recursos Necessários</label>
+                {resourcesTypes.map(({ id, label }) => (
+                  <div className="form-check" key={id}>
+                    <input
+                      className="form-check-input"
+                      type="checkbox"
+                      name="recursosNecessarios"
+                      id={id}
+                      value={id}
+                      checked={
+                        formData.recursosNecessarios?.includes(id) || false
+                      }
+                      onChange={() => {
+                        const currentValues =
+                          formData.recursosNecessarios || [];
+                        const updatedValues = currentValues.includes(id)
+                          ? currentValues.filter((item) => item !== id)
+                          : [...currentValues, id];
+                        handleChange({
+                          target: {
+                            name: "recursosNecessarios",
+                            value: updatedValues,
+                          },
+                        });
+                      }}
+                    />
+                    <label className="form-check-label" htmlFor={id}>
+                      {label}
+                    </label>
+                  </div>
+                ))}
               </div>
-            ))}
-          </div>
 
-          <TwoButtons
-            saveDraft={saveDraft}
-            handleNext={handleNext}
-          />
+              <TwoButtons saveDraft={saveDraft} handleNext={handleNext} />
+            </>
+          )}
         </div>
       </div>
     </form>

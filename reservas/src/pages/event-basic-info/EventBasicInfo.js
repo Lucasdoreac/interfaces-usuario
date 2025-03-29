@@ -1,45 +1,35 @@
 import React, { useState, useEffect } from "react";
 import { AiOutlineLeft } from "react-icons/ai";
-import "./EventBasicInfo.scss";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import InputMask from "react-input-mask";
 import { useFormContext } from "../../context/FormContext";
-import apiService from "../../services/client";
 import TwoButtons from "../../components/TwoButtons";
+import "./EventBasicInfo.scss";
 
 const EventBasicInfo = () => {
   const navigate = useNavigate();
-  const { formData, handleChange, saveDraft, handleOdsChange } =
-    useFormContext();
+  const location = useLocation();
+  const query = new URLSearchParams(location.search);
+  const eventIdFromQuery = query.get("eventId"); // extract eventId from URL
 
-  const [listaTipoEvento, setListaTipoEvento] = useState([]);
-  const [listaODS, setListaODS] = useState([]);
+  const {
+    formData,
+    handleChange,
+    saveDraft,
+    handleOdsChange,
+    fillOutFormData,
+    eventTypes,
+    odsTypes,
+    loading,
+    setLoading,
+  } = useFormContext();
+
   const [erros, setErros] = useState({});
 
+  // On mount, fill the form with event data if editing or clear for new event
   useEffect(() => {
-    const fetchEventData = async () => {
-      try {
-        const data = await apiService.getTypes();
-        if (data?.types) {
-          setListaTipoEvento(
-            data.types
-              .find((item) => item.collection === "events")
-              ?.types.map((t) => t.type) || []
-          );
-          setListaODS(
-            data.types
-              .find((item) => item.collection === "ODS")
-              ?.types.map((ods) => `${ods.id} - ${ods.name} (${ods.type})`) ||
-              []
-          );
-        }
-      } catch (error) {
-        console.error("Failed to fetch event data:", error);
-      }
-    };
-
-    fetchEventData();
-  }, []);
+    fillOutFormData(eventIdFromQuery || "");
+  }, [eventIdFromQuery, fillOutFormData]);
 
   const validateForm = () => {
     const newErrors = {};
@@ -49,23 +39,24 @@ const EventBasicInfo = () => {
       newErrors.tituloEvento =
         "O campo nome do evento precisa ter mais caracteres!";
     }
-
     if (!formData.classificacao?.trim()) {
       newErrors.classificacao = "Defina uma classificação.";
     }
-
     if (!formData.ods?.trim()) {
       newErrors.ods = "Defina uma ODS.";
     }
-
     setErros(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
   const handleNext = async () => {
     if (validateForm()) {
-      await saveDraft()
-      navigate("/event/details");
+      setLoading(true);
+      const eventId = await saveDraft();
+      setLoading(false);
+      if (eventIdFromQuery || eventId) {
+        navigate(`/event/details?eventId=${eventIdFromQuery || eventId}`);
+      }
     }
   };
 
@@ -73,7 +64,7 @@ const EventBasicInfo = () => {
     erros[field] && <span style={{ color: "red" }}>{erros[field]}</span>;
 
   return (
-    <form>
+    <form onSubmit={(e) => e.preventDefault()}>
       <div>
         <div className="card-header">
           <div className="d-flex justify-content-start">
@@ -90,7 +81,7 @@ const EventBasicInfo = () => {
         <div className="card-body">
           <div className="row">
             <div className="col-md-12">
-              <h4>Novo Evento</h4>
+              <h4>{eventIdFromQuery ? "Editar Evento" : "Novo Evento"}</h4>
             </div>
           </div>
 
@@ -103,8 +94,9 @@ const EventBasicInfo = () => {
                 className="form-control"
                 id="formTitulo"
                 name="tituloEvento"
-                value={formData.tituloEvento}
+                value={formData.tituloEvento || ""}
                 onChange={handleChange}
+                disabled={loading}
               />
               {renderError("tituloEvento")}
             </div>
@@ -116,11 +108,11 @@ const EventBasicInfo = () => {
               <label htmlFor="formProfessor">Professor</label>
               <input
                 type="text"
-                disabled
+                disabled={loading}
                 className="form-control"
                 id="formProfessor"
                 name="nomeProfessor"
-                value={localStorage.getItem("userEmail")}
+                value={localStorage.getItem("userEmail") || ""}
               />
               {renderError("nomeProfessor")}
             </div>
@@ -134,9 +126,10 @@ const EventBasicInfo = () => {
                 mask="(99) 9 9999-9999"
                 id="telefone"
                 name="telefone"
-                placeholder="(XX) XXXXX-XXXX"
+                placeholder="(XX) X XXXX-XXXX"
                 value={formData.telefone || ""}
                 onChange={handleChange}
+                disabled={loading}
               >
                 {(inputProps) => (
                   <input
@@ -149,8 +142,10 @@ const EventBasicInfo = () => {
               </InputMask>
               {renderError("telefone")}
             </div>
+          </div>
 
-            {/* Classificação */}
+          {/* Classificação */}
+          <div className="row">
             <div className="col">
               <label htmlFor="classificacao">Classificação</label>
               <select
@@ -160,13 +155,14 @@ const EventBasicInfo = () => {
                 name="classificacao"
                 value={formData.classificacao || ""}
                 onChange={handleChange}
+                disabled={loading}
               >
                 <option value="" disabled>
                   Tipo do Evento
                 </option>
-                {listaTipoEvento.map((evt, index) => (
-                  <option value={evt} key={index}>
-                    {evt}
+                {eventTypes.map((evt, index) => (
+                  <option value={evt.type} key={index}>
+                    {evt.name}
                   </option>
                 ))}
               </select>
@@ -184,13 +180,14 @@ const EventBasicInfo = () => {
                 className="form-control"
                 value={formData.ods || ""}
                 onChange={handleOdsChange}
+                disabled={loading}
               >
                 <option value="" disabled>
                   ODS
                 </option>
-                {listaODS.map((ods, index) => (
-                  <option value={ods} key={index}>
-                    {ods}
+                {odsTypes.map((ods, index) => (
+                  <option value={ods.id} key={index}>
+                    {ods.formatted}
                   </option>
                 ))}
               </select>
@@ -198,10 +195,9 @@ const EventBasicInfo = () => {
             </div>
           </div>
 
-          <TwoButtons
-            saveDraft={saveDraft}
-            handleNext={handleNext}
-          />
+          {!loading && (
+            <TwoButtons saveDraft={saveDraft} handleNext={handleNext} />
+          )}
         </div>
       </div>
     </form>

@@ -4,11 +4,13 @@ import EnvImage from "../../images/email.png";
 import { AiOutlineLeft } from "react-icons/ai";
 import "./AuthCallBack.scss";
 import apiService from "../../services/client";
+import Loading from "../../components/Loading";
 
 const AuthCallBack = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const [email, setEmail] = useState("");
+  const [loading, setLoading] = useState(true);
+  const [emailState, setEmail] = useState("");
 
   const queryParams = useMemo(
     () => new URLSearchParams(location.search),
@@ -22,19 +24,30 @@ const AuthCallBack = () => {
   }, [queryParams]);
 
   const emailConfirmado = useCallback(async () => {
-    const { token, email } = getUserData();
+    // Start the loading process
+    setLoading(true);
 
-    if (email) {
-      if (token && (await apiService.validateToken(token, email))) {
-        localStorage.clear();
-        localStorage.setItem("userEmail", email);
-        localStorage.setItem("token", token);
-        return navigate("/event/basic-info");
-      }
-      setEmail(email);
-    } else {
+    await new Promise((resolve) => setTimeout(resolve, 2000));
+
+    const { token, email } = getUserData();
+    if (!email) {
+      localStorage.clear();
+      return navigate("/organizer");
+    }
+
+    setEmail(email); // Set email state early
+
+    if (token && (await apiService.validateToken(token, email))) {
+      localStorage.clear();
+      localStorage.setItem("userEmail", email);
+      localStorage.setItem("token", token);
+      return navigate("/my-events");
+    } else if (!!token) {
+      // Token exists but is invalid or expired
       return navigate("/access-denied");
     }
+
+    setLoading(false);
   }, [getUserData, navigate]);
 
   useEffect(() => {
@@ -56,28 +69,35 @@ const AuthCallBack = () => {
         </div>
       </div>
       <div className="card-body">
-        <div className="row">
-          <div className="col-md-12 text-center">
-            <img
-              className="img-man mb-2"
-              src={EnvImage}
-              style={{ width: "200px", backgroundColor: "transparent" }}
-              alt="man avatar"
-            />
-            <p>
-              Clique no link do e-mail que enviamos para <b>{email}</b>
-            </p>
-            <div className="mt-4">
-              <button
-                type="button"
-                className="btn btn-primary btn-lg"
-                onClick={emailConfirmado}
-              >
-                <b>Já Confirmei!</b>
-              </button>
+        {loading ? (
+          <div className="d-flex justify-content-center align-items-center">
+            <Loading />
+          </div>
+        ) : (
+          <div className="row">
+            <div className="col-md-12 text-center">
+              <img
+                className="img-man mb-2"
+                src={EnvImage}
+                style={{ width: "200px", backgroundColor: "transparent" }}
+                alt="man avatar"
+              />
+              <p>
+                Clique no botão de autorizar que enviamos para{" "}
+                <b>{emailState}</b>
+              </p>
+              <div className="mt-4">
+                <button
+                  type="button"
+                  className="btn btn-primary btn-lg"
+                  onClick={emailConfirmado}
+                >
+                  <b>Já Confirmei!</b>
+                </button>
+              </div>
             </div>
           </div>
-        </div>
+        )}
       </div>
     </div>
   );

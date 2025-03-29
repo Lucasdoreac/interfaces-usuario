@@ -5,6 +5,7 @@ const TwoButtons = ({ handleSaveDraft, handleNext }) => {
     <div className="d-flex mt-3 justify-content-center">
       <div className="d-flex justify-content-between" style={{ width: "50%" }}>
         <button
+          style={{ opacity: 0 }}
           type="button"
           className="btn btn-outline-secondary"
           onClick={handleSaveDraft}

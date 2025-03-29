@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from "react";
 import apiService from "../../services/client";
+import { Link } from "react-router-dom";
+import Loading from "../../components/Loading";
 
 const MyEvents = () => {
   const [events, setEvents] = useState([]);
@@ -62,14 +64,22 @@ const MyEvents = () => {
     }
   }, [userEmail]);
 
-  if (loading) return <p>Carregando seus eventos...</p>;
   if (error) return <p>{error}</p>;
 
   return (
     <div className="meus-eventos-container">
       <h2>Meus Eventos</h2>
-      {mergedData.length === 0 ? (
-        <p>Você ainda não possui eventos cadastrados.</p>
+      {loading ? (
+        <div className="d-flex justify-content-center align-items-center">
+          <Loading />
+        </div>
+      ) : mergedData.length === 0 ? (
+        <div className="d-flex flex-column align-items-center">
+          <p>Você ainda não possui eventos cadastrados.</p>
+          <Link className="btn btn-primary text-white" to="/event/basic-info">
+            Cadastrar Evento
+          </Link>
+        </div>
       ) : (
         <ul>
           {mergedData.map((item) => {
@@ -78,7 +88,7 @@ const MyEvents = () => {
             let sala = "Indefinido";
             let dia = "Indefinido";
             let horario = "Indefinido";
-            
+
             if (room) {
               sala = room.name || sala;
             }
@@ -106,6 +116,11 @@ const MyEvents = () => {
               </li>
             );
           })}
+          <div className="d-flex flex-column align-items-center">
+            <Link className="btn btn-primary text-white" to="/event/basic-info">
+              Cadastrar Evento
+            </Link>
+          </div>
         </ul>
       )}
     </div>

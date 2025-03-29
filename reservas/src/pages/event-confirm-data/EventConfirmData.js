@@ -7,32 +7,25 @@ import "./EventConfirmData.scss";
 
 const EventConfirmData = () => {
   const navigate = useNavigate();
-  const { formData } = useFormContext();
+  const { formData, eventId } = useFormContext();
   const [errors, setErrors] = useState({});
 
   const handleConfirm = async () => {
     if (validateForm()) {
       try {
-        const eventId = localStorage.getItem("eventId");
-
-        await apiService.submitEventData(formData, "requested", eventId);
-
-        const reservationData = {
-          roomId: formData.roomId,
-          reservationDate: formData.reservationDate,
-          eventId: eventId,
-        };
-
         const isReservationSaved = await apiService.submitReservationData(
-          reservationData
+          formData.roomId,
+          formData.reservationDate,
+          eventId
         );
         if (!isReservationSaved) {
-          console.error("Falha ao salvar a reserva.");
-          // redirecionar para erro na reserva
+          alert("Falha ao salvar a reserva.");
+          return;
         }
 
+        await apiService.submitEventData(formData, "requested", eventId);
         console.log("Form submitted", eventId);
-        navigate("/event/confirmation");
+        navigate(`/event/confirmation?eventId=${eventId}`);
       } catch (error) {
         console.error("Error submitting:", error);
       }
@@ -63,7 +56,7 @@ const EventConfirmData = () => {
   return (
     <div className="confirmar-dados-container">
       <div className="card-header">
-        <span onClick={() => navigate("/event/schedule")}>
+        <span onClick={() => navigate(`/event/schedule?eventId=${eventId}`)}>
           <AiOutlineLeft
             size="20px"
             color="white"

@@ -3,7 +3,7 @@ import axios from "axios";
 class ApiService {
   constructor() {
     this.http = axios.create({
-      baseURL: "http://localhost:5000",
+      baseURL: process.env.REACT_APP_API_BASE_URL || "http://localhost:5000",
     });
 
     this.http.interceptors.request.use((config) => {
@@ -24,6 +24,8 @@ class ApiService {
       const response = await this.http.post("/auth/send-link", null, {
         params: { email },
       });
+      localStorage.clear();
+      localStorage.setItem("userEmail", email);
       return !!response.data.message;
     } catch (error) {
       console.error(error);
@@ -38,21 +40,17 @@ class ApiService {
         params: params,
       });
       if (response.status === 200) return true;
+      localStorage.clear();
       return false;
     } catch (error) {
-      console.error();
+      localStorage.clear();
       return false;
     }
   }
 
   async getTypes() {
     try {
-      const apiKey = "test";
-      const response = await this.http.get("/types", {
-        headers: {
-          "X-API-Key": apiKey,
-        },
-      });
+      const response = await this.http.get("/types");
       return response.data;
     } catch (error) {
       console.error("Erro ao obter dados:", error);
@@ -68,6 +66,21 @@ class ApiService {
       return response.data;
     } catch (error) {
       console.error("Erro ao buscar cursos:", error);
+      return null;
+    }
+  }
+
+  async getCourseById(courseId) {
+    try {
+      const response = await this.http.get("/courses", {
+        params: { course_id: courseId },
+      });
+      if (response.status === 200) {
+        return response.data.courses;
+      }
+      return null;
+    } catch (error) {
+      console.error("Erro ao obter curso:", error);
       return null;
     }
   }

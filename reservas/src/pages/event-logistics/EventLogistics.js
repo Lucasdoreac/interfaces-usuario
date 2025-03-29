@@ -1,12 +1,16 @@
 import React, { useState } from "react";
 import { AiOutlineLeft } from "react-icons/ai";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { useFormContext } from "../../context/FormContext";
 import TwoButtons from "../../components/TwoButtons";
 
 const EventLogistics = () => {
   const navigate = useNavigate();
-  const { formData, handleChange, handleSaveDraft, saveDraft, handleSaveAlunoMonitor } =
+  const location = useLocation();
+  const queryParams = new URLSearchParams(location.search);
+  const eventId = queryParams.get("eventId");
+
+  const { formData, handleChange, saveDraft, handleSaveAlunoMonitor } =
     useFormContext();
   const [alunosMonitores, setAlunosMonitores] = useState(
     formData.alunosMonitores || []
@@ -45,18 +49,30 @@ const EventLogistics = () => {
   };
 
   const handleNext = async () => {
-    await saveDraft()
-    navigate("/event/schedule");
+    const savedDraftEventId = await saveDraft();
+    if (savedDraftEventId) {
+      navigate(`/event/schedule?eventId=${savedDraftEventId}`);
+    } else {
+      // Handle the error if the draft wasn't saved correctly
+      console.error("Draft was not saved correctly.");
+    }
   };
 
   const renderError = (field) =>
     errors[field] && <span className="error">{errors[field]}</span>;
 
   return (
-    <form>
+    <form onSubmit={(e) => e.preventDefault()}>
       <div className="card">
         <div className="card-header">
-          <span onClick={() => navigate("/event/details")}>
+          {/* Append eventId query parameter if available */}
+          <span
+            onClick={() =>
+              navigate(
+                "/event/details" + (eventId ? `?eventId=${eventId}` : "")
+              )
+            }
+          >
             <AiOutlineLeft
               size="20px"
               color="white"
@@ -86,25 +102,29 @@ const EventLogistics = () => {
 
           <div className="form-group mt-3">
             <label htmlFor="espacos">Espaço Necessário</label>
-            {["online", "auditorio", "hall", "salaAula", "laboratorioInformática"].map(
-              (espaco) => (
-                <div className="form-check" key={espaco}>
-                  <input
-                    className="form-check-input"
-                    type="radio"
-                    name="espacos"
-                    id={espaco}
-                    value={espaco}
-                    checked={formData.espacos === espaco}
-                    onChange={handleChange}
-                  />
-                  <label className="form-check-label" htmlFor={espaco}>
-                    {espaco.charAt(0).toUpperCase() +
-                      espaco.slice(1).replace(/([A-Z])/g, " $1")}
-                  </label>
-                </div>
-              )
-            )}
+            {[
+              "online",
+              "auditorio",
+              "hall",
+              "salaAula",
+              "laboratorioInformática",
+            ].map((espaco) => (
+              <div className="form-check" key={espaco}>
+                <input
+                  className="form-check-input"
+                  type="radio"
+                  name="espacos"
+                  id={espaco}
+                  value={espaco}
+                  checked={formData.espacos === espaco}
+                  onChange={handleChange}
+                />
+                <label className="form-check-label" htmlFor={espaco}>
+                  {espaco.charAt(0).toUpperCase() +
+                    espaco.slice(1).replace(/([A-Z])/g, " $1")}
+                </label>
+              </div>
+            ))}
             {renderError("espacos")}
           </div>
 
@@ -210,10 +230,7 @@ const EventLogistics = () => {
             )}
           </div>
 
-          <TwoButtons
-            saveDraft={saveDraft}
-            handleNext={handleNext}
-          />
+          <TwoButtons saveDraft={saveDraft} handleNext={handleNext} />
         </div>
       </div>
     </form>

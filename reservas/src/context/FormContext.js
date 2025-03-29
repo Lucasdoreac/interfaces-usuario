@@ -1,17 +1,143 @@
-import React, { createContext, useContext, useState, useEffect } from "react";
+import React, {
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+  useCallback,
+} from "react";
 import apiService from "../services/client";
 
 const FormContext = createContext();
 
 export const FormProvider = ({ children }) => {
+  // State for form data
   const [formData, setFormData] = useState(() => {
-    const saved = localStorage.getItem("formData");
-    return saved ? JSON.parse(saved) : {};
+    const savedData = localStorage.getItem("formData");
+    return savedData ? JSON.parse(savedData) : {};
   });
+  const [eventId, setEventId] = useState("");
+
+  // State for types data from API
+  const [eventTypes, setEventTypes] = useState([]);
+  const [odsTypes, setOdsTypes] = useState([]);
+  const [resourcesTypes, setResources] = useState([]);
+  const [targetPublicTypes, setTargetPublic] = useState([]);
+  const [roomTypes, setRoomTypes] = useState({});
+  const [logoUrl, setLogoUrl] = useState(null);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     localStorage.setItem("formData", JSON.stringify(formData));
   }, [formData]);
+
+  // Fetch types data from API and store in context
+  useEffect(() => {
+    const fetchTypes = async () => {
+      try {
+        const data = await apiService.getTypes();
+        if (data?.types) {
+          const eventsData = data.types.find(
+            (item) => item.collection === "events"
+          );
+          const odsData = data.types.find((item) => item.collection === "ODS");
+          setEventTypes(eventsData?.types || []);
+          // Store ODS types as objects with a formatted string for display
+          setOdsTypes(
+            odsData?.types.map((ods) => ({
+              id: ods.id,
+              name: ods.name,
+              type: ods.type,
+              formatted: `${ods.id} - ${ods.name} (${ods.type})`,
+            })) || []
+          );
+          const resourcesData = data.types.find(
+            (item) => item.collection === "resources"
+          );
+          const targetPublicData = data.types.find(
+            (item) => item.collection === "targetPublic"
+          );
+          setResources(resourcesData?.types || []);
+          setTargetPublic(targetPublicData?.types || []);
+          const roomTypesData = data.types.find(
+            (item) => item.collection === "rooms"
+          );
+          setRoomTypes(roomTypesData?.types || []);
+        }
+      } catch (error) {
+        console.error("Failed to fetch types data:", error);
+      }
+    };
+    fetchTypes();
+  }, []);
+
+  /**
+   * fillOutFormData:
+   * If an eventId is provided, fetch the event from the user's events response,
+   * map its fields to match the form field names, update context state and localStorage.
+   * If an empty string is provided, reset formData and clear eventId.
+   */
+  const fillOutFormData = useCallback(async (eventId = "") => {
+    localStorage.setItem("eventId", eventId);
+    localStorage.removeItem("formData");
+    setEventId(eventId);
+
+    if (!eventId) {
+      // New event: clear form data
+      setFormData({});
+      localStorage.removeItem("eventId");
+      localStorage.removeItem("formData");
+      return;
+    }
+    try {
+      const userEmail = localStorage.getItem("userEmail");
+      const response = await apiService.getUserEvents(userEmail);
+      const events = response?.events || [];
+      const eventToEdit = events.find(
+        (event) => String(event._id) === String(eventId)
+      );
+      if (eventToEdit) {
+        // Map API fields to the form's expected names.
+        const mappedEvent = await fromApiAnswerToFormData(eventToEdit);
+        setFormData(mappedEvent);
+        localStorage.setItem("formData", JSON.stringify(mappedEvent));
+        localStorage.setItem("eventId", eventId);
+      } else {
+        setFormData({});
+        localStorage.removeItem("eventId");
+      }
+    } catch (error) {
+      console.error("Error fetching event data:", error);
+    }
+  }, []);
+
+  const fromApiAnswerToFormData = async (eventToEdit) => {
+    const course = await apiService.getCourseById(eventToEdit.graduationId);
+    const courseName = course?.name || "";
+
+    return {
+      tituloEvento: eventToEdit.name,
+      telefone: eventToEdit.organizer.phone,
+      classificacao: eventToEdit.eventTypeId,
+      ods: eventToEdit.odsId,
+      odsId: eventToEdit.odsId,
+      odsName: odsTypes.find(
+        (ods) => String(ods.id) === String(eventToEdit.odsId)
+      )?.formatted,
+      descricaoEvento: eventToEdit.description,
+      courseId: eventToEdit.graduationId,
+      courseName: courseName,
+      publicoAlvo: eventToEdit.targetPublic,
+      recursosNecessarios: eventToEdit.resources,
+      numeroParticipantes: eventToEdit.expectedSubscribers,
+      espacos: eventToEdit.roomType,
+      trilha: eventToEdit.entrepreneuralPath ? "sim" : "nao",
+      trilhaDesc: eventToEdit.entrepreneuralPath,
+      projeto: eventToEdit.extensionProject ? "sim" : "nao",
+      projetoDesc: eventToEdit.extensionProject,
+      alunosMonitores: eventToEdit.studentsMonitors,
+      logo: "dwcorp.com.br:9000/labtech/email-icones/magic-link.png",
+    };
+  };
 
   const saveDraft = async () => {
     try {
@@ -22,7 +148,8 @@ export const FormProvider = ({ children }) => {
         existingEventId
       );
       localStorage.setItem("eventId", draftId);
-      console.log("Saved Draft ID: ", draftId);
+      setEventId(draftId);
+      return draftId;
     } catch (error) {
       console.error("Erro ao salvar draft:", error);
       return null;
@@ -34,16 +161,17 @@ export const FormProvider = ({ children }) => {
     setFormData((prevData) => ({ ...prevData, [name]: value }));
   };
 
+  // Updated handleOdsChange: use the selected ODS id and lookup its name if available
   const handleOdsChange = (e) => {
-    const { value } = e.target;
-    const parts = value.split(" - ");
-    const odsId = parts[0];
-    const odsName = parts[1]?.split(" (")[0].trim();
+    const selectedOdsId = e.target.value;
+    const selectedOds = odsTypes.find(
+      (ods) => String(ods.id) === String(selectedOdsId)
+    );
     setFormData((prevData) => ({
       ...prevData,
-      ods: value,
-      odsId,
-      odsName,
+      ods: selectedOdsId,
+      odsId: selectedOdsId,
+      odsName: selectedOds ? selectedOds.name : "",
     }));
   };
 
@@ -81,6 +209,15 @@ export const FormProvider = ({ children }) => {
         handleCursoChanged,
         handleRoomDataChange,
         handleSaveAlunoMonitor,
+        fillOutFormData,
+        eventTypes,
+        odsTypes,
+        resourcesTypes,
+        targetPublicTypes,
+        roomTypes,
+        loading,
+        eventId,
+        setLoading,
       }}
     >
       {children}
