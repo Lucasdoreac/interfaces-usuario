@@ -34,10 +34,7 @@ function App() {
 
                       {/* Organizer / Coordination Flow */}
                       <Route path="/organizer" element={<Organizer />} />
-                      <Route
-                        path="/auth/callback"
-                        element={<AuthCallBack />}
-                      />
+                      <Route path="/auth/callback" element={<AuthCallBack />} />
                       <Route
                         path="/coordination"
                         element={<EmailCoordination />}

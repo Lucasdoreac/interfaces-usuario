@@ -1,10 +1,27 @@
-import React from "react";
+import React, { useEffect } from "react";
 import "./Home.scss";
 import AvatarImage from "../../images/man.png";
 import { useNavigate } from "react-router-dom"; // Importar useNavigate para navegação
+import apiService from "../../services/client";
 
 const Home = () => {
-  const navigate = useNavigate(); // Usar useNavigate para navegação entre páginas
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const checkToken = async () => {
+      const userEmail = localStorage.getItem("userEmail");
+      const token = localStorage.getItem("token");
+
+      if (userEmail && token) {
+        const valid = await apiService.validateToken(token, userEmail);
+        if (valid) {
+          navigate("/my-events");
+        }
+      }
+    };
+
+    checkToken();
+  }, [navigate]);
 
   return (
     <div>

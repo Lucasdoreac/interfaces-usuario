@@ -2,7 +2,6 @@ import React, { useEffect, useState, useCallback, useMemo } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import EnvImage from "../../images/email.png";
 import { AiOutlineLeft } from "react-icons/ai";
-import "./AuthCallBack.scss";
 import apiService from "../../services/client";
 import Loading from "../../components/Loading";
 

@@ -3,7 +3,6 @@ import { AiOutlineLeft } from "react-icons/ai";
 import { useNavigate } from "react-router-dom";
 import { useFormContext } from "../../context/FormContext";
 import apiService from "../../services/client";
-import "./EventConfirmData.scss";
 
 const EventConfirmData = () => {
   const navigate = useNavigate();
