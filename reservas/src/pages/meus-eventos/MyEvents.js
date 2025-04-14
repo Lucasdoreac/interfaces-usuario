@@ -159,7 +159,7 @@ const MyEvents = () => {
                       const targetObj = targetPublicTypes.find(
                         (t) => t.id === tp
                       );
-                      return targetObj.label;
+                      return targetObj ? targetObj.label : "Não definido";
                     })
                     .join(", ")
                 : "Indefinido";
@@ -171,7 +171,7 @@ const MyEvents = () => {
                       const resourceObj = resourcesTypes.find(
                         (t) => t.id === r
                       );
-                      return resourceObj.label;
+                      return resourceObj ? resourceObj.label : "Não definido";
                     })
                     .join(", ")
                 : "Indefinido";

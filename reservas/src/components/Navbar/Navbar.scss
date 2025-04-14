@@ -52,7 +52,7 @@ body {
 }
 
 section {
-  height: 100vh;
+  height: 93vh;
 }
 
 #home {
@@ -96,7 +96,7 @@ section {
   display: flex;
   flex-direction: column;
   font-family: $headings-font;
-  height: 4em;
+  height: 7vh;
   overflow: hidden;
 
   &.nav-visible {

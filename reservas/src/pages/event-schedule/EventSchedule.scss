@@ -8,7 +8,7 @@
 }
 
 .scroll-container {
-  max-height: calc(100vh - 150px); /* ajuste conforme a altura do header */
+  max-height: 67vh;
   overflow-y: auto;
   padding: 10px;
 }
@@ -17,4 +17,36 @@
   display: flex;
   justify-content: flex-end;
   margin-top: 10px;
+}
+
+.search-container {
+  margin-bottom: 15px;
+  width: 100%;
+  
+  .search-input-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+    
+    .search-icon {
+      position: absolute;
+      left: 10px;
+      font-size: 20px;
+      color: #6c757d;
+    }
+    
+    .search-input {
+      width: 100%;
+      padding: 10px 10px 10px 40px;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+      font-size: 16px;
+      
+      &:focus {
+        outline: none;
+        border-color: #007bff;
+        box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+      }
+    }
+  }
 }

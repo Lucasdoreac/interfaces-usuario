@@ -133,11 +133,23 @@ class ApiService {
     }
   }
 
-  async getAvailableSlots(formattedDate, time, page = 1, page_size = 10) {
+  async getAvailableSlots(formattedDate, time, page = 1, page_size = 10, roomName = "") {
     try {
+      const params = { 
+        date: formattedDate, 
+        time: time, 
+        page, 
+        page_size 
+      };
+
+      if (roomName) {
+        params.room_name = roomName;
+      }
+      
       const response = await this.http.get("/rooms/available-rooms", {
-        params: { date: formattedDate, time: time, page, page_size },
+        params: params
       });
+      
       if (response.status === 200) {
         return response.data;
       }
@@ -147,7 +159,6 @@ class ApiService {
       return false;
     }
   }
-
   async submitReservationData(roomId, reservationDate, eventId) {
     try {
       const reservationData = { roomId, reservationDate, eventId };

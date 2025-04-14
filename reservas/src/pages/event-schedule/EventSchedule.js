@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { AiOutlineLeft } from "react-icons/ai";
+import { AiOutlineLeft, AiOutlineSearch } from "react-icons/ai";
 import DatePickerComponent from "../../components/date-picker/DatePickerComponent";
 import InfiniteScrollRooms from "../../components/infinite-scroll-rooms/InfiniteScrollRooms";
 import { useNavigate } from "react-router-dom";
@@ -10,6 +10,8 @@ const EventSchedule = () => {
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [selectedPeriod, setSelectedPeriod] = useState();
   const [selectedRoom, setSelectedRoom] = useState(null);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [debouncedQuery, setDebouncedQuery] = useState("");
   const { handleRoomDataChange, eventId } = useFormContext();
   const navigate = useNavigate();
 
@@ -36,6 +38,18 @@ const EventSchedule = () => {
 
   const handleContinue = () => {
     navigate(`/event/confirm-data?eventId=${eventId}`); // Add eventId as a query parameter
+  };
+
+  // Debounce para a busca
+  const handleSearchChange = (e) => {
+    const value = e.target.value;
+    setSearchQuery(value);
+    
+    // Debounce para evitar muitas requisições durante a digitação
+    clearTimeout(window.searchTimeout);
+    window.searchTimeout = setTimeout(() => {
+      setDebouncedQuery(value);
+    }, 500);
   };
 
   return (
@@ -104,10 +118,26 @@ const EventSchedule = () => {
               Salas disponíveis para {selectedDate.toLocaleDateString()} às{" "}
               {selectedTime}:
             </h3>
+            
+            {/* Barra de pesquisa */}
+            <div className="search-container">
+              <div className="search-input-wrapper">
+                <AiOutlineSearch className="search-icon" />
+                <input
+                  type="text"
+                  placeholder="Pesquisar salas por nome..."
+                  value={searchQuery}
+                  onChange={handleSearchChange}
+                  className="search-input"
+                />
+              </div>
+            </div>
+            
             <InfiniteScrollRooms
               date={selectedDate}
               time={selectedTime}
               onRoomSelect={handleRoomSelect}
+              roomName={debouncedQuery}
             />
           </>
         )}
