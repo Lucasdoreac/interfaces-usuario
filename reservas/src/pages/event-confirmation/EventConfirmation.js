@@ -6,7 +6,7 @@ const EventConfirmation = () => {
   const navigate = useNavigate();
 
   const handleViewEvents = () => {
-    navigate("/my-events"); // Rota para a página onde o usuário pode acompanhar o status dos eventos
+    navigate("/event/mine"); // Rota para a página onde o usuário pode acompanhar o status dos eventos
   };
 
   return (

@@ -6,6 +6,8 @@ import React, {
   useCallback,
 } from "react";
 import apiService from "../services/client";
+import EventStatus from "../utils/EventStatus";
+import { formatDateForMongoDB } from "../utils/dateUtils";
 
 const FormContext = createContext();
 
@@ -79,7 +81,6 @@ export const FormProvider = ({ children }) => {
   const fillOutFormData = useCallback(async (eventId = "") => {
     localStorage.setItem("eventId", eventId);
     localStorage.removeItem("formData");
-    setEventId(eventId);
 
     if (!eventId) {
       // New event: clear form data
@@ -88,6 +89,7 @@ export const FormProvider = ({ children }) => {
       localStorage.removeItem("formData");
       return;
     }
+    setEventId(eventId);
     try {
       const userEmail = localStorage.getItem("userEmail");
       const response = await apiService.getUserEvents(userEmail);
@@ -141,11 +143,10 @@ export const FormProvider = ({ children }) => {
 
   const saveDraft = async () => {
     try {
-      const existingEventId = localStorage.getItem("eventId");
       const draftId = await apiService.submitEventData(
         formData,
-        "draft",
-        existingEventId
+        EventStatus.DRAFT,
+        eventId || ""
       );
       localStorage.setItem("eventId", draftId);
       setEventId(draftId);
@@ -187,7 +188,7 @@ export const FormProvider = ({ children }) => {
     setFormData((prevData) => ({
       ...prevData,
       roomId,
-      reservationDate,
+      reservationDate: formatDateForMongoDB(reservationDate),
       eventId,
     }));
   };

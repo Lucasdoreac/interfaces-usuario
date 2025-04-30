@@ -68,7 +68,11 @@ const EventBasicInfo = () => {
       <div>
         <div className="card-header">
           <div className="d-flex justify-content-start">
-            <span onClick={() => navigate("/auth/callback")}>
+            <span
+              onClick={() =>
+                navigate(`/event/type-selection?eventId=${eventIdFromQuery}`)
+              }
+            >
               <AiOutlineLeft
                 style={{ margin: "0 10px 0 0" }}
                 size="20px"
@@ -108,11 +112,12 @@ const EventBasicInfo = () => {
               <label htmlFor="formProfessor">Professor</label>
               <input
                 type="text"
-                disabled={loading}
+                disabled={true}
                 className="form-control"
                 id="formProfessor"
                 name="nomeProfessor"
                 value={localStorage.getItem("userEmail") || ""}
+                onChange={() => {}}
               />
               {renderError("nomeProfessor")}
             </div>
@@ -141,32 +146,6 @@ const EventBasicInfo = () => {
                 )}
               </InputMask>
               {renderError("telefone")}
-            </div>
-          </div>
-
-          {/* Classificação */}
-          <div className="row">
-            <div className="col">
-              <label htmlFor="classificacao">Classificação</label>
-              <select
-                className="form-control"
-                style={{ width: 150 }}
-                id="classificacao"
-                name="classificacao"
-                value={formData.classificacao || ""}
-                onChange={handleChange}
-                disabled={loading}
-              >
-                <option value="" disabled>
-                  Tipo do Evento
-                </option>
-                {eventTypes.map((evt, index) => (
-                  <option value={evt.type} key={index}>
-                    {evt.name}
-                  </option>
-                ))}
-              </select>
-              {renderError("classificacao")}
             </div>
           </div>
 

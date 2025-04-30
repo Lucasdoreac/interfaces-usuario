@@ -26,7 +26,7 @@ class ApiService {
       });
       localStorage.clear();
       localStorage.setItem("userEmail", email);
-      return !!response.data.message;
+      return !!response.data;
     } catch (error) {
       console.error(error);
       return null;
@@ -124,41 +124,66 @@ class ApiService {
         params: { eventId },
       });
       if (response.status === 200) {
-        return response.data;
+        let reservation = response.data;
+
+        // Modify the date strings to change "GMT" to "GMT-3" before parsing
+        if (reservation && reservation.startAt) {
+          // Replace GMT with GMT-3 in the date strings
+          const startAtString = reservation.startAt.replace(" GMT", " GMT-3");
+          const endAtString = reservation.endAt.replace(" GMT", " GMT-3");
+
+          // Now parse the modified strings to Date objects
+          const startDate = new Date(startAtString);
+          const endDate = new Date(endAtString);
+
+          reservation = {
+            ...reservation,
+            startAt: startDate,
+            endAt: endDate,
+          };
+        }
+        return reservation;
       }
-      return false;
+      return null;
     } catch (error) {
-      console.error(error);
-      return false;
+      console.error("Error fetching reservations:", error);
+      return null;
     }
   }
 
-  async getAvailableSlots(formattedDate, time, page = 1, page_size = 10, roomName = "") {
+  async getAvailableSlots(
+    formattedDate,
+    time,
+    page = 1,
+    page_size = 10,
+    roomName = ""
+  ) {
     try {
-      const params = { 
-        date: formattedDate, 
-        time: time, 
-        page, 
-        page_size 
+      const params = {
+        date: formattedDate,
+        time: time,
+        page,
+        page_size,
       };
 
       if (roomName) {
         params.room_name = roomName;
       }
-      
+
       const response = await this.http.get("/rooms/available-rooms", {
-        params: params
+        params: params,
       });
-      
+
       if (response.status === 200) {
         return response.data;
       }
       return false;
     } catch (error) {
       console.error(error);
-      return false;
+      throw error;
     }
   }
+
   async submitReservationData(roomId, reservationDate, eventId) {
     try {
       const reservationData = { roomId, reservationDate, eventId };

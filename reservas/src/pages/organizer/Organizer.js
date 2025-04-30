@@ -1,24 +1,27 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import "./Organizer.scss";
 import AvatarImage from "../../images/man.png";
 import { AiOutlineLeft } from "react-icons/ai";
 import { useNavigate } from "react-router-dom";
 import apiService from "../../services/client";
-import { useFormContext } from "../../context/FormContext";
 
 function Organizer() {
-  const { formData, handleChange } = useFormContext();
-  const email = formData.email || "";
+  const [email, setEmail] = useState(() => localStorage.getItem("email") || "");
   const [errors, setErro] = useState("");
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+
+  const handleChange = (e) => {
+    setEmail(e.target.value);
+  };
 
   const sendEmail = async (event) => {
     event.preventDefault();
     if (validEmail()) {
       setLoading(true);
       localStorage.clear();
-      if (apiService.postAuthMail(email))
+      localStorage.setItem("email", email); // Save email to localStorage
+      if (await apiService.postAuthMail(email))
         navigate("/auth/callback?email=" + email);
       else setErro("Serviço indisponível");
       setLoading(false);
@@ -64,7 +67,7 @@ function Organizer() {
             />
             <input
               type="email"
-              name="email" // importante para atualizar a propriedade correta
+              name="email"
               placeholder="Digite seu email@udf.edu.br"
               value={email}
               onChange={handleChange}

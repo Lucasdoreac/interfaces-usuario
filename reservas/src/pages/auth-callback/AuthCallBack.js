@@ -40,7 +40,7 @@ const AuthCallBack = () => {
       localStorage.clear();
       localStorage.setItem("userEmail", email);
       localStorage.setItem("token", token);
-      return navigate("/my-events");
+      return navigate("/event/mine");
     } else if (!!token) {
       // Token exists but is invalid or expired
       return navigate("/access-denied");

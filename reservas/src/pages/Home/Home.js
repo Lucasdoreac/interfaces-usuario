@@ -15,7 +15,7 @@ const Home = () => {
       if (userEmail && token) {
         const valid = await apiService.validateToken(token, userEmail);
         if (valid) {
-          navigate("/my-events");
+          navigate("/event/mine");
         }
       }
     };

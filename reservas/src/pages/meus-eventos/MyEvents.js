@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import apiService from "../../services/client";
 import Loading from "../../components/Loading";
 import { useFormContext } from "../../context/FormContext";
+import EventStatus from "../../utils/EventStatus";
 
 const MyEvents = () => {
   const { eventTypes, odsTypes, targetPublicTypes, resourcesTypes } =
@@ -12,6 +13,56 @@ const MyEvents = () => {
   const [error, setError] = useState(null);
 
   const userEmail = localStorage.getItem("userEmail");
+
+  // Status text and color mapping
+  const getStatusText = (status) => {
+    switch (status) {
+      case EventStatus.WAITING:
+        return "Aguardando";
+      case EventStatus.APPROVED_BY_COORDENACAO:
+        return "Aprovado pela Coordenação";
+      case EventStatus.REJECTED_BY_COORDENACAO:
+        return "Rejeitado pela Coordenação";
+      case EventStatus.APPROVED_BY_REITORIA:
+        return "Aprovado pela Reitoria";
+      case EventStatus.REJECTED_BY_REITORIA:
+        return "Rejeitado pela Reitoria";
+      case EventStatus.REQUESTED_CHANGE:
+        return "Alterações Solicitadas";
+      case EventStatus.DIRECT_APPROVAL:
+        return "Aprovado Diretamente";
+      case EventStatus.Draft:
+        return "Rascunho";
+      default:
+        return status || "Desconhecido";
+    }
+  };
+
+  const getStatusColor = (status) => {
+    switch (status) {
+      case EventStatus.WAITING:
+        return "warning";
+      case EventStatus.APPROVED_BY_COORDENACAO:
+      case EventStatus.APPROVED_BY_REITORIA:
+      case EventStatus.DIRECT_APPROVAL:
+        return "success";
+      case EventStatus.REJECTED_BY_COORDENACAO:
+      case EventStatus.REJECTED_BY_REITORIA:
+        return "danger";
+      case EventStatus.REQUESTED_CHANGE:
+        return "warning";
+      case EventStatus.DRAFT:
+        return "secondary";
+      default:
+        return "info";
+    }
+  };
+
+  const canEditEvent = (status) => {
+    return (
+      status === EventStatus.REQUESTED_CHANGE || status === EventStatus.DRAFT
+    );
+  };
 
   useEffect(() => {
     const fetchUserEvents = async () => {
@@ -86,7 +137,10 @@ const MyEvents = () => {
       ) : mergedData.length === 0 ? (
         <div className="text-center">
           <p>Você ainda não possui eventos cadastrados.</p>
-          <Link className="btn btn-primary" to="/event/basic-info">
+          <Link
+            className="btn btn-primary text-white"
+            to="/event/type-selection"
+          >
             Cadastrar Evento
           </Link>
         </div>
@@ -98,21 +152,32 @@ const MyEvents = () => {
             let dia = "Indefinido";
             let horario = "Indefinido";
             if (reservation && reservation.startAt) {
+              // Create Date objects from the strings
               const startAt = new Date(reservation.startAt);
-              dia = startAt.toLocaleDateString("pt-BR");
               const endAt = new Date(reservation.endAt);
-              horario = `${startAt.toLocaleTimeString("pt-BR", {
-                hour: "2-digit",
-                minute: "2-digit",
-              })} - ${endAt.toLocaleTimeString("pt-BR", {
-                hour: "2-digit",
-                minute: "2-digit",
-              })}`;
+
+              // Format date normally for the day display
+              dia = startAt.toLocaleDateString("pt-BR");
+
+              // Format time using UTC methods to preserve the original hours
+              horario = `${startAt
+                .getUTCHours()
+                .toString()
+                .padStart(2, "0")}:${startAt
+                .getUTCMinutes()
+                .toString()
+                .padStart(2, "0")} - 
+                         ${endAt
+                           .getUTCHours()
+                           .toString()
+                           .padStart(2, "0")}:${endAt
+                .getUTCMinutes()
+                .toString()
+                .padStart(2, "0")}`;
             }
 
-            // Verifica se o evento pode ser editado
-            const canEdit =
-              item.status === "draft" || item.status === "changes-requested";
+            // Verifica se o evento pode ser editado usando a função auxiliar
+            const canEdit = canEditEvent(item.status);
 
             // Encontrar o nome do tipo de evento
             const eventTypeObj = eventTypes.find(
@@ -122,31 +187,9 @@ const MyEvents = () => {
               ? eventTypeObj.name
               : "Tipo Indefinido";
 
-            // Mapeamento do status para texto e cor do badge
-            const statusText =
-              item.status === "approved"
-                ? "Aprovado"
-                : item.status === "requested"
-                ? "Pendente"
-                : item.status === "changes-requested"
-                ? "Alterações Solicitadas"
-                : item.status === "denied"
-                ? "Rejeitado"
-                : item.status === "draft"
-                ? "Rascunho"
-                : item.status;
-            const badgeColor =
-              item.status === "approved"
-                ? "success"
-                : item.status === "requested"
-                ? "warning"
-                : item.status === "changes-requested"
-                ? "warning"
-                : item.status === "denied"
-                ? "danger"
-                : item.status === "draft"
-                ? "secondary"
-                : "info";
+            // Usar as funções auxiliares para status e cor
+            const statusText = getStatusText(item.status);
+            const badgeColor = getStatusColor(item.status);
 
             // ODS e Público-Alvo
             const ods =
@@ -267,7 +310,7 @@ const MyEvents = () => {
                     {canEdit && (
                       <Link
                         className="btn btn-outline-warning mt-2"
-                        to={`/event/basic-info?eventId=${item._id}`}
+                        to={`/event/type-selection?eventId=${item._id}`}
                       >
                         Editar Evento
                       </Link>
@@ -284,7 +327,10 @@ const MyEvents = () => {
             );
           })}
           <div className="col-12 text-center mt-3">
-            <Link className="btn btn-primary" to="/event/basic-info">
+            <Link
+              className="btn btn-primary text-white"
+              to="/event/type-selection"
+            >
               Cadastrar Evento
             </Link>
           </div>
