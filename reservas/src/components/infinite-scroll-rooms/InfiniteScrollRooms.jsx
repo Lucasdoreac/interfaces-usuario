@@ -33,20 +33,25 @@ const InfiniteScrollRooms = ({ date, time, onRoomSelect, userSearchInput = "" })
       
       if (response && response.data) {
         const newRooms = response.data;
-        setRooms(prevRooms => resetData ? newRooms : [...prevRooms, ...newRooms]);
+        
+        setRooms(prevRooms => {
+          const updatedRooms = resetData ? newRooms : [...prevRooms, ...newRooms];
+          return updatedRooms;
+        });
 
         // Atualiza a página e verifica se há mais dados com base na paginação
-        if (currentPage >= response.pagination.total_pages) {
+        if (newRooms.length === 0 || (response.pagination && currentPage >= response.pagination.total_pages)) {
           setHasMore(false);
         } else {
           setPage(currentPage + 1);
+          setHasMore(true);
         }
       } else {
         setHasMore(false);
       }
     } catch (error) {
       console.error("Erro ao buscar salas disponíveis:", error);
-      setError(error.response.data.error);
+      setError(error.response?.data?.error || "Erro ao carregar salas");
       setHasMore(false);
     } finally {
       setIsLoading(false);
@@ -57,19 +62,16 @@ const InfiniteScrollRooms = ({ date, time, onRoomSelect, userSearchInput = "" })
     setError(null);
   }, [userSearchInput]);
 
-  // Reset and fetch initial data when search parameters change
   useEffect(() => {
     setPage(1);
     setHasMore(true);
     setSelectedRoomId(null);
     fetchRooms(1, true);
-  }, [formattedDate, time, userSearchInput]);
+  }, [formattedDate, time, userSearchInput, fetchRooms]);
 
-  // Function to load more data
-  const loadMoreRooms = () => {
+  const loadMoreRooms = () => {    
     if (!isLoading && hasMore) {
-      fetchRooms(page, false);
-      return;
+      fetchRooms(page);
     }
   };
 
@@ -80,34 +82,41 @@ const InfiniteScrollRooms = ({ date, time, onRoomSelect, userSearchInput = "" })
     }
   };
 
-    return (
+  return (
     error ? (
       <div className="error-message">{error}</div>
     ) : (
-      <InfiniteScroll
-        dataLength={rooms.length}
-        next={loadMoreRooms}
-        hasMore={hasMore}
-        loader={<h4>Carregando mais salas...</h4>}
-        endMessage={<p>Você chegou ao fim da lista.</p>}
-      >
-        <div className="rooms-list">
-          {rooms.length > 0 ? (
-            rooms.map((room) => (
-              <div
-                key={room.id}
-                className={`room-card ${selectedRoomId === room.id ? "selected" : ""}`}
-                onClick={() => handleSelectRoom(room.id)}
-              >
-                <h3>{room.name}</h3>
-                <p>{room.campus}</p>
-              </div>
-            ))
-          ) : (
-            <p>Nenhuma sala encontrada.</p>
-          )}
-        </div>
-      </InfiniteScroll>
+      <div id="scrollableDiv" style={{ height: '60vh', overflow: 'auto' }}>
+        <InfiniteScroll
+          dataLength={rooms.length}
+          next={loadMoreRooms}
+          hasMore={hasMore}
+          loader={<h4>Carregando mais salas...</h4>}
+          endMessage={<p>Você chegou ao fim da lista.</p>}
+          scrollableTarget="scrollableDiv"
+        >
+          <div className="rooms-list">
+            {rooms.length > 0 ? (
+              rooms.map((room) => (
+                <div
+                  key={room.id}
+                  className={`room-card ${selectedRoomId === room.id ? "selected" : ""}`}
+                  onClick={() => handleSelectRoom(room.id)}
+                >
+                  <h3>{room.name}</h3>
+                  <p>{room.campus}</p>
+                </div>
+              ))
+            ) : (
+              isLoading ? (
+                <p>Carregando...</p>
+              ) : (
+                <p>Nenhuma sala encontrada.</p>
+              )
+            )}
+          </div>
+        </InfiniteScroll>
+      </div>
     )
   );
 };
