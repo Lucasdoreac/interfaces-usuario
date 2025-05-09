@@ -1,9 +1,74 @@
 
+body.light{
+  background-color: #fff;
+  color: #1d1d1d;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+body.light .card{
+  background-color: #fff;
+  color: #1d1d1d;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+body.dark{
+  background-color: #1d1d1d;
+  color: #fff;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+body.dark .card{
+  background-color: #1d1d1d;
+  color: #fff;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+.card {
+  margin-top:20px;
+}
+
+body.light #nav{
+  background-color: #fff;
+  color: #1d1d1d;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+body.dark #nav{
+  background-color: #1d1d1d;
+  color: #fff;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
 
 
+body.light input[type="email"] {
+  background-color: #fff;
+  color: #1d1d1d;
+  transition: background-color 0.3s ease, color 0.3s ease; 
+  border: 1px solid #1d1d1d ;
+  
+}
+body.dark input[type="email"] {
+  background-color: #1d1d1d;
+  color: #fff;
+  transition: background-color 0.3s ease, color 0.3s ease; 
+  border: 1px solid #fff;
+}
+
+body.light input[type="email"] ::placeholder {
+  color: #1d1d1d;
+  transition: background-color 0.3s ease, color 0.3s ease; 
+  opacity: 0.7;
+  font-weight: 300;
+
+}
+body.dark input[type="email"]::placeholder {
+  color: #fff;
+  transition: background-color 0.3s ease, color 0.3s ease;
+  opacity:0.7;
+  font-weight: 300;
+}
 
 .App-link {
   color: #61dafb;
+  align-items: center;;
 }
 
 @keyframes App-logo-spin {
@@ -36,7 +101,57 @@ input.input-danger {
   /* cor do texto */
 }
 
-section#paginaInicial {
+section#paginaIncial.dark {
   padding: 20px 50px;
-  background-color: #a0a0a0;
+  background-color: #1d1d1d;
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
+section#paginaInicial.light {
+  padding: 20px 50px;
+  background-color: #fff;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+//Acesso Negado ('event-schedule')
+body.dark .acesso-negado {
+  background-color: #1d1d1d;
+  color: #fff;
+  transition: background-color 0.3s ease, color 0.3s ease;
+  padding-bottom: 15px;
+}
+body.light .acesso-negado {
+  background-color: #fff;
+  color: #1d1d1d;
+  transition: background-color 0.3s ease, color 0.3s ease;
+  padding-bottom: 15px;
+}
+body.dark .acesso-negado .card-header {
+  background-color: #1d1d1d;
+  color: #fff;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+body.light .acesso-negado .card-header {
+  background-color: #1d1d1d;
+  color: #fff;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+body.dark .acesso-negado .card-body {
+  background-color: #1d1d1d;
+  color: #fff;
+  transition: background-color 0.3s ease, color 0.3s ease;
+  margin-top:10px; 
+  -webkit-box-shadow: 0 10px 25px rgba(0, 0, 0, 0.10) !important;
+    box-shadow: 0 5px 25px rgba(0, 0, 0, 0.5) !important; 
+}
+body.light .acesso-negado .card-body {
+  background-color: #fff;
+  color: #1d1d1d;
+  transition: background-color 0.3s ease, color 0.3s ease;
+  margin-top:10px;
+  -webkit-box-shadow: 0 10px 25px rgba(0, 0, 0, 0.10) !important;
+    box-shadow: 0 5px 25px rgba(0, 0, 0, 0.5) !important; 
+}
+
+//Organizer Button
+

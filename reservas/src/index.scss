@@ -16,7 +16,6 @@ code {
 }
 .card{
   border-width: 5px !important;
-  border-color: #fff !important;   
   border-radius: 15px !important;
   box-shadow: 0px 0px 46px -12px rgba(0,0,0,0.75)
 }
@@ -26,11 +25,10 @@ code {
     transform: scale(1.01) !important;
     transition: 0.1s all;
     -webkit-box-shadow: 0 10px 25px rgba(0, 0, 0, 0.10) !important;
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5) !important;    
+    box-shadow: 0 5px 25px rgba(0, 0, 0, 0.5) !important;    
   }
 .card-header{
   border-width: 5px !important;
-  border-color: #fff !important;   
   border-top-left-radius: 15px !important;
   border-top-right-radius:  15px !important;
 }
