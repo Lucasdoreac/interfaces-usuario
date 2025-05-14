@@ -207,6 +207,8 @@ const EventLogistics = () => {
               type="button"
               className="btn btn-outline-primary"
               onClick={handleAddAluno}
+              style={{marginLeft: "10px"}}
+
             >
               Adicionar Aluno
             </button>

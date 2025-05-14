@@ -4,13 +4,18 @@ import { useNavigate, useLocation } from "react-router-dom";
 import { useFormContext } from "../../context/FormContext";
 import TwoButtons from "../../components/TwoButtons";
 import "./EventTypeSelection.scss";
+import { ThemeContext } from "../../context/ThemeContext";
+import { useContext } from "react";
+
+
 
 const EventTypeSelection = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const query = new URLSearchParams(location.search);
   const eventIdFromQuery = query.get("eventId"); // extract eventId from URL
-
+  const { theme } = useContext(ThemeContext)
+  
   const {
     formData,
     handleChange,
@@ -20,14 +25,22 @@ const EventTypeSelection = () => {
     loading,
     setLoading,
   } = useFormContext();
-
+  
   const [erros, setErros] = useState({});
-
+  useEffect(() => {
+    if (theme == "dark"){
+      document.body.classList.add("dark-theme")
+    }
+    else {
+      document.body.classList.remove("dark-theme")
+    }
+  }, [theme]);
+  
   // On mount, fill the form with event data if editing or clear for new event
   useEffect(() => {
     fillOutFormData(eventIdFromQuery || "");
   }, [eventIdFromQuery, fillOutFormData]);
-
+  
   const validateForm = () => {
     const newErrors = {};
     if (!formData.classificacao?.trim()) {

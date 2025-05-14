@@ -4,6 +4,8 @@ import apiService from "../../services/client";
 import Loading from "../../components/Loading";
 import { useFormContext } from "../../context/FormContext";
 import EventStatus from "../../utils/EventStatus";
+import { ThemeContext } from "../../context/ThemeContext";
+import { useContext } from "react"
 
 const MyEvents = () => {
   const { eventTypes, odsTypes, targetPublicTypes, resourcesTypes } =
@@ -11,6 +13,7 @@ const MyEvents = () => {
   const [mergedData, setMergedData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const { theme } = useContext(ThemeContext);
 
   const userEmail = localStorage.getItem("userEmail");
 
@@ -57,6 +60,11 @@ const MyEvents = () => {
         return "info";
     }
   };
+  //Consts for dark Mode
+  const backGroundColor = theme === "dark"? "#1d1d1d" : "#fff";
+  const textColor = theme === "dark"? "#fff" : "#1d1d1d";
+  const transitionThemeMode = "background-color 0.3s ease, color 0.3s ease"
+
 
   const canEditEvent = (status) => {
     return (
@@ -237,7 +245,9 @@ const MyEvents = () => {
                       </span>
                     </h5>
                   </div>
-                  <div className="card-body">
+                  <div className="card-body"
+                  style={{lineHeight: "1.8 !important"}}
+                  >
                     <p className="card-title">{eventTypeName}</p>
                     <h6 className="card-subtitle card-muted">
                       <strong>Descrição:</strong>{" "}
@@ -311,13 +321,24 @@ const MyEvents = () => {
                       <Link
                         className="btn btn-outline-warning mt-2"
                         to={`/event/type-selection?eventId=${item._id}`}
+                        style={{
+                          background: backGroundColor,
+                          color: textColor,
+                          transition: transitionThemeMode
+                        }}
                       >
                         Editar Evento
                       </Link>
                     )}
                   </div>
                   <div className="card-footer text-muted text-center">
-                    <p className="mb-0">
+                    <p className="mb-0"
+                    style={{
+                          background: backGroundColor,
+                          color: textColor, 
+                          transition: transitionThemeMode
+                        }}
+                    >
                       <strong>Reserva:</strong> Sala: {sala} | Dia: {dia} |
                       Horário: {horario}
                     </p>

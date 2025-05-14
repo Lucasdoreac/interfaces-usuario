@@ -1,4 +1,13 @@
-.header-container {
+.header-container.dark{
+  position: sticky;
+  top: 0;
+  background-color: #1d1d1d;
+  z-index: 1000;
+  padding: 10px;
+  color: #fff !important;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+.header-container.light {
   position: sticky;
   top: 0;
   background-color: #fff;
