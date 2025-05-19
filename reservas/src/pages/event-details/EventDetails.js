@@ -6,26 +6,29 @@ import "./EventDetails.scss";
 import { useFormContext } from "../../context/FormContext";
 import apiService from "../../services/client";
 import TwoButtons from "../../components/TwoButtons";
+import Loading from "../../components/Loading";
+
 
 const EventDetails = () => {
   const navigate = useNavigate();
-
+  
   const {
     formData,
     handleChange,
     saveDraft,
     handleCursoChanged,
     loading,
+    setLoading,
     resourcesTypes,
     targetPublicTypes,
     eventId,
   } = useFormContext();
 
   const [errors, setErrors] = useState({});
+  const [searchLoading, setSearchLoading] = useState(false)
   const [searchResults, setSearchResults] = useState([]);
   const [courseSelected, setCourseSelected] = useState("");
   const [query, setQuery] = useState(formData.courseName || "");
-  const [localLoading, setLocalLoading] = useState(false);
   // Toggle whether user is editing the course field
   const [isEditingCourse, setIsEditingCourse] = useState(!formData.courseId);
 
@@ -39,13 +42,13 @@ const EventDetails = () => {
         setSearchResults(searchCache.current[q]);
         return;
       }
-      setLocalLoading(true);
+      setSearchLoading(true);
       setCourseSelected("");
       const result = await apiService.searchCourses(q);
       const courses = result?.courses || [];
       searchCache.current[q] = courses;
       setSearchResults(courses);
-      setLocalLoading(false);
+      setSearchLoading(false);
     }, 2000);
     return debouncedFn;
   }, [searchCache])();
@@ -88,6 +91,7 @@ const EventDetails = () => {
   useEffect(() => {
     const fetchCourseIfNeeded = async () => {
       if (formData.courseId && !formData.courseName) {
+        setLoading(true)
         try {
           const course = await apiService.getCourseById(formData.courseId);
           if (course) {
@@ -96,33 +100,42 @@ const EventDetails = () => {
           }
         } catch (error) {
           console.error("Error fetching course data:", error);
+        } finally{
+          setLoading(false);
         }
-      }
+      } 
     };
     fetchCourseIfNeeded();
   }, [formData.courseId, formData.courseName, handleCursoChanged]);
 
   const handleNext = async () => {
     if (validateEventDescription()) {
-      const eventId = await saveDraft();
-      if (eventId) {
-        navigate(`/event/logistics?eventId=${eventId}`);
-        return;
+       setLoading(true);
+       try{
+         const eventId = await saveDraft();
+         if (eventId) {
+           navigate(`/event/logistics?eventId=${eventId}`);
+           return;
+          }
+          navigate("/event/basic-info");
+        } finally{
+        }
       }
-      navigate("/event/basic-info");
-      return;
-    }
   };
 
   const renderError = (field) =>
     errors[field] && <span className="error">{errors[field]}</span>;
+
 
   return (
     <form onSubmit={(e) => e.preventDefault()}>
       <div className="card">
         <div className="card-header">
           <span
-            onClick={() => navigate(`/event/basic-info?eventId=${eventId}`)}
+            onClick={() => {
+              setLoading(true);
+              navigate(`/event/basic-info?eventId=${eventId}`)
+            }}
           >
             <AiOutlineLeft
               size="20px"
@@ -134,7 +147,9 @@ const EventDetails = () => {
 
         <div className="card-body">
           {loading ? (
-            <p>Carregando dados do evento...</p>
+            <div className="d-flex justify-content-center align-items-center" style={{minHeight:200}}>
+              <Loading />
+              </div>
           ) : (
             <>
               <h4>Novo Evento</h4>
@@ -173,7 +188,7 @@ const EventDetails = () => {
                       <label htmlFor="curso">
                         {searchResults.length} cursos encontrados
                       </label>
-                      {localLoading ? (
+                      {searchLoading ? (
                         <p>Pesquisando cursos...</p>
                       ) : (
                         <select
@@ -181,7 +196,7 @@ const EventDetails = () => {
                           name="curso"
                           value={courseSelected || formData.courseName || ""}
                           onChange={handleCourseSelect}
-                          disabled={localLoading}
+                          disabled={searchLoading}
                           className="form-control"
                         >
                           <option value="" disabled>

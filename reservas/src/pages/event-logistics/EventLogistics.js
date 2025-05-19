@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { AiOutlineLeft } from "react-icons/ai";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useFormContext } from "../../context/FormContext";
@@ -10,8 +10,13 @@ const EventLogistics = () => {
   const queryParams = new URLSearchParams(location.search);
   const eventId = queryParams.get("eventId");
 
-  const { formData, handleChange, saveDraft, handleSaveAlunoMonitor } =
+  const { formData, 
+          handleChange, 
+          saveDraft, 
+          handleSaveAlunoMonitor,
+          setLoading } =
     useFormContext();
+
   const [alunosMonitores, setAlunosMonitores] = useState(
     formData.alunosMonitores || []
   );
@@ -23,6 +28,10 @@ const EventLogistics = () => {
     setAlunosMonitores(updatedAlunos);
     handleSaveAlunoMonitor(updatedAlunos);
   };
+
+  useEffect(() => {
+    setLoading(false);
+  }, [setLoading]);
 
   const handleRemoveAluno = (index) => {
     const updatedAlunos = alunosMonitores.filter((_, i) => i !== index);
