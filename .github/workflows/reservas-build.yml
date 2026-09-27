@@ -1,0 +1,32 @@
+name: Reservas frontend build
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - "reservas/**"
+      - ".github/workflows/reservas-build.yml"
+  push:
+    branches: [main, "chore/**"]
+    paths:
+      - "reservas/**"
+      - ".github/workflows/reservas-build.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: reservas
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: reservas/.nvmrc
+          cache: yarn
+          cache-dependency-path: reservas/yarn.lock
+      - run: yarn install --frozen-lockfile --non-interactive
+      - run: yarn build
