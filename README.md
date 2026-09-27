@@ -80,7 +80,7 @@ Após a instalação, verifique com:
 nvm --version
 ```
 
-> **Importante:** No projeto, utilizamos a versão v20 (veja o arquivo `.nvmrc`).
+> **Importante:** O projeto usa Node.js v24.21.0 LTS (veja o arquivo `.nvmrc`). Esta é a versão LTS estável adotada pelo CI e pelo ambiente local.
 
 Para instalar uma versão específica do Node.js:
 
