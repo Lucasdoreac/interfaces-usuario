@@ -29,6 +29,7 @@ jobs:
           cache: yarn
           cache-dependency-path: reservas/yarn.lock
       - run: yarn install --frozen-lockfile --non-interactive
+      - run: yarn test --watchAll=false --runInBand
       # CRA fails production builds on the existing main-branch ESLint warnings
       # whenever CI=true. Keep those warnings visible without broadening this
       # dependency PR into unrelated source cleanup.
