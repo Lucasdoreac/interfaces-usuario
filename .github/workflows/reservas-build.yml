@@ -7,7 +7,7 @@ on:
       - "reservas/**"
       - ".github/workflows/reservas-build.yml"
   push:
-    branches: [main, "chore/**"]
+    branches: [main, "chore/**", "fix/**"]
     paths:
       - "reservas/**"
       - ".github/workflows/reservas-build.yml"
