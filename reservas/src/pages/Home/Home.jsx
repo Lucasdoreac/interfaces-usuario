@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 import "./Home.scss";
 import AvatarImage from "../../images/man.png";
-import { useNavigate } from "react-router-dom"; // Importar useNavigate para navegação
+import { useNavigate } from "react-router"; // Importar useNavigate para navegação
 import apiService from "../../services/client";
 
 const Home = () => {

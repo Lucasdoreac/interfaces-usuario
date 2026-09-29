@@ -1,7 +1,7 @@
 import React, { useState, useCallback, useRef, useEffect } from "react";
 import { AiOutlineLeft } from "react-icons/ai";
 import debounce from "lodash.debounce";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router";
 import "./EventDetails.scss";
 import { useFormContext } from "../../context/FormContext";
 import apiService from "../../services/client";

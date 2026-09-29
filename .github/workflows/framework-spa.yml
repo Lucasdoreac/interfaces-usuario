@@ -1,0 +1,39 @@
+name: Framework SPA
+
+on:
+  pull_request:
+  push:
+  workflow_dispatch:
+  merge_group:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  build-and-spa-fallback:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: reservas/.nvmrc
+          cache: yarn
+          cache-dependency-path: reservas/yarn.lock
+      - name: Enable Yarn
+        run: corepack enable
+      - name: Install locked dependencies
+        working-directory: reservas
+        run: yarn install --frozen-lockfile
+      - name: Audit locked dependencies
+        working-directory: reservas
+        run: yarn audit --level moderate --summary
+      - name: Build SPA
+        working-directory: reservas
+        run: yarn build
+      - name: Check production deep-link fallback
+        working-directory: reservas
+        run: yarn test

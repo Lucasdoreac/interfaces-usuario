@@ -1,5 +1,5 @@
 import "./Navbar.scss";
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router';
 
 const Navbar = () => {
     const navigate = useNavigate(); // useNavigate para alterar a URL

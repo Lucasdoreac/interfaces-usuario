@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Navigate } from "react-router-dom";
+import { Navigate } from "react-router";
 import apiService from "../src/services/client";
 import Loading from "./components/Loading";
 

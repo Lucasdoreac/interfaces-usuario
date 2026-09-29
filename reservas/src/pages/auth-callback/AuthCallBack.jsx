@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useCallback, useMemo } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router";
 import EnvImage from "../../images/email.png";
 import { AiOutlineLeft } from "react-icons/ai";
 import apiService from "../../services/client";
