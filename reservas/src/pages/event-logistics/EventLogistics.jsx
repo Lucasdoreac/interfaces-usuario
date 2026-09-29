@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { AiOutlineLeft } from "react-icons/ai";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router";
 import { useFormContext } from "../../context/FormContext";
 import TwoButtons from "../../components/TwoButtons";
 

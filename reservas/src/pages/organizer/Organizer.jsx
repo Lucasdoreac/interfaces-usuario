@@ -2,8 +2,9 @@ import React, { useState, useEffect } from "react";
 import "./Organizer.scss";
 import AvatarImage from "../../images/man.png";
 import { AiOutlineLeft } from "react-icons/ai";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router";
 import apiService from "../../services/client";
+import { isAllowedOrganizerEmail } from "../../utils/emailPolicy";
 
 function Organizer() {
   const [email, setEmail] = useState(() => localStorage.getItem("email") || "");
@@ -18,11 +19,15 @@ function Organizer() {
   const sendEmail = async (event) => {
     event.preventDefault();
     if (validEmail()) {
+      const normalizedEmail = email.trim();
       setLoading(true);
       localStorage.clear();
-      localStorage.setItem("email", email); // Save email to localStorage
-      if (await apiService.postAuthMail(email))
-        navigate("/auth/callback?email=" + email);
+      localStorage.setItem("email", normalizedEmail);
+      const result = await apiService.postAuthMail(normalizedEmail);
+      if (result?.dryRun)
+        setErro("Modo de teste ativo: nenhum e-mail foi enviado.");
+      else if (result)
+        navigate("/auth/callback?email=" + encodeURIComponent(normalizedEmail));
       else setErro("Serviço indisponível");
       setLoading(false);
     }
@@ -33,9 +38,7 @@ function Organizer() {
       setErro("O campo e-mail é obrigatório.");
       return false;
     }
-    if (!/^[a-zA-Z0-9._%+-]+@udf\.edu\.br$/.test(email)) {
-      const allowed_emails = ["danrley.pereira@cs.udf.edu.br"];
-      if (allowed_emails.includes(email)) return true;
+    if (!isAllowedOrganizerEmail(email, import.meta.env.VITE_AUTH_EMAIL_ALLOWLIST)) {
       setErro("O campo e-mail está fora do formato permitido.");
       return false;
     }

@@ -1,6 +1,6 @@
 import React from "react";
 import "./AccessDenied.scss";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router";
 
 const AccessDenied = () => {
   const navigate = useNavigate();

@@ -80,7 +80,7 @@ Após a instalação, verifique com:
 nvm --version
 ```
 
-> **Importante:** No projeto, utilizamos a versão v20 (veja o arquivo `.nvmrc`).
+> **Importante:** O frontend usa Node.js v26.10.0, definida em `reservas/.nvmrc`.
 
 Para instalar uma versão específica do Node.js:
 
@@ -109,13 +109,14 @@ Após instalar as ferramentas, siga os passos abaixo:
 
    > **Importante:** O link do repositório pode ser encontrado em GitHub > LabTech > interfaces_usuario > (<>code)> copiar link do repositório HTTPS.
 
-2. **Instale as dependências com Yarn:**  
+2. **Ative o Yarn 1.22.22 e instale as dependências:**
    No terminal, execute:
 
    ```bash
    nvm use
-   npm install --global yarn
-   yarn install
+   npm install --global yarn@1.22.22
+   cd reservas
+   yarn install --frozen-lockfile
    ```
 
    Verifique a instalação do Yarn:
@@ -124,13 +125,13 @@ Após instalar as ferramentas, siga os passos abaixo:
    yarn --version
    ```
 
-3. **Inicie o projeto:**
+3. **Inicie o React Router Framework em modo SPA:**
 
    ```bash
-   yarn start
+   yarn dev
    ```
 
-   Isso abrirá o navegador no endereço: [http://localhost:3000](http://localhost:3000)
+   Abra [http://localhost:3000](http://localhost:3000). A aplicação é uma SPA; não há servidor SSR em runtime.
 
 ---
 

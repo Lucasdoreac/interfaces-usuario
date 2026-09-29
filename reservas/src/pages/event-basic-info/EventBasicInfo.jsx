@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { AiOutlineLeft } from "react-icons/ai";
-import { useNavigate, useLocation } from "react-router-dom";
-import InputMask from "react-input-mask";
+import { useNavigate, useLocation } from "react-router";
+import { InputMask } from "@react-input/mask";
 import { useFormContext } from "../../context/FormContext";
 import TwoButtons from "../../components/TwoButtons";
 import "./EventBasicInfo.scss";
@@ -128,23 +128,18 @@ const EventBasicInfo = () => {
             <div className="col">
               <label htmlFor="telefone">Telefone</label>
               <InputMask
-                mask="(99) 9 9999-9999"
+                mask="(dd) d dddd-dddd"
+                replacement={{ d: /\d/ }}
                 id="telefone"
+                type="tel"
                 name="telefone"
                 placeholder="(XX) X XXXX-XXXX"
                 value={formData.telefone || ""}
                 onChange={handleChange}
                 disabled={loading}
-              >
-                {(inputProps) => (
-                  <input
-                    {...inputProps}
-                    type="text"
-                    className="form-control"
-                    style={{ width: 200 }}
-                  />
-                )}
-              </InputMask>
+                className="form-control"
+                style={{ width: 200 }}
+              />
               {renderError("telefone")}
             </div>
           </div>

@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { AiOutlineLeft, AiOutlineSearch } from "react-icons/ai";
 import DatePickerComponent from "../../components/date-picker/DatePickerComponent";
 import InfiniteScrollRooms from "../../components/infinite-scroll-rooms/InfiniteScrollRooms";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router";
 import { useFormContext } from "../../context/FormContext";
 import "./EventSchedule.scss";
 
