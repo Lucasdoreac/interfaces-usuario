@@ -3,6 +3,8 @@ import { AiOutlineLeft } from "react-icons/ai";
 import { useNavigate, useSearchParams } from "react-router";
 import { useFormContext } from "../../context/FormContext";
 import apiService from "../../services/client";
+import { summarizeEventData } from "../../utils/eventSummary";
+import "./EventConfirmData.scss";
 
 const EventConfirmData = () => {
   const navigate = useNavigate();
@@ -89,9 +91,14 @@ const EventConfirmData = () => {
         </span>
       </div>
       <h2>Confirmar Dados do Evento</h2>
-      <div className="dados-preview">
-        <pre>{JSON.stringify(formData, null, 2)}</pre>
-      </div>
+      <dl className="dados-preview">
+        {summarizeEventData(formData).map(({ label, value }) => (
+          <div key={label} className="dados-preview-item">
+            <dt>{label}</dt>
+            <dd>{value}</dd>
+          </div>
+        ))}
+      </dl>
       {errors.api && (
         <div className="alert alert-danger" role="alert">
           {errors.api}
