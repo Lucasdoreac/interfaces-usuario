@@ -97,6 +97,7 @@ section {
   flex-direction: column;
   font-family: $headings-font;
   height: 7vh;
+  min-height: 4em;
   overflow: hidden;
 
   &.nav-visible {
@@ -166,7 +167,9 @@ a:hover {
 }
 
 .btn-nav {
+  align-items: center;
   color: $color-primary;
+  display: inline-flex;
   padding-left: 2em;
   padding-right: 2em;
 }
