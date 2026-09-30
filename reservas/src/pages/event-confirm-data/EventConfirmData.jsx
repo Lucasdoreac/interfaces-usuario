@@ -18,23 +18,13 @@ const EventConfirmData = () => {
     }
 
     try {
-      const isReservationSaved = await apiService.submitReservationData(
-        formData.roomId,
-        formData.reservationDate,
-        eventId
-      );
-
-      if (!isReservationSaved) {
-        setErrors({
-          api: "Falha ao salvar a reserva. Tente novamente mais tarde.",
-        });
+      if (!eventId) {
+        setErrors({ api: "Evento não encontrado. Salve o rascunho novamente." });
         return;
       }
-
-      const event_submission = await apiService.submitEventData(
-        formData,
-        "requested",
-        eventId
+      const event_submission = await apiService.submitEventForApproval(
+        eventId,
+        formData
       );
       if (!event_submission) {
         setErrors({
@@ -102,6 +92,11 @@ const EventConfirmData = () => {
       <div className="dados-preview">
         <pre>{JSON.stringify(formData, null, 2)}</pre>
       </div>
+      {errors.api && (
+        <div className="alert alert-danger" role="alert">
+          {errors.api}
+        </div>
+      )}
       <button className="btn btn-primary" onClick={handleConfirm}>
         Confirmar
       </button>

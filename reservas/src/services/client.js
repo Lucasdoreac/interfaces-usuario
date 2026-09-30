@@ -137,6 +137,19 @@ export class ApiService {
     }
   }
 
+  async submitEventForApproval(eventId, data) {
+    try {
+      const response = await this.http.post(
+        `/events/${eventId}/submit`,
+        data,
+      );
+      return response.data.eventId;
+    } catch (error) {
+      console.error("Erro ao enviar dados:", error);
+      throw error;
+    }
+  }
+
   async getUserEvents(userEmail) {
     try {
       const response = await this.http.get("/events", {
@@ -215,18 +228,6 @@ export class ApiService {
     } catch (error) {
       console.error(error);
       throw error;
-    }
-  }
-
-  async submitReservationData(roomId, reservationDate, eventId) {
-    try {
-      const reservationData = { roomId, reservationDate, eventId };
-      const response = await this.http.post("/reservations", reservationData);
-      if (response.status === 201) return true;
-      return false;
-    } catch (error) {
-      console.error(error);
-      return false;
     }
   }
 
