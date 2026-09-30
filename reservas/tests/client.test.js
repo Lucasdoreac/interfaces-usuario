@@ -52,6 +52,35 @@ test("serializes query parameters and returns decoded JSON", async () => {
   assert.equal(requestUrl, "http://api.example.test/courses?course_name=Computer+Science");
 });
 
+test("submits an event and its reservation through one API request", async () => {
+  const calls = [];
+  const event = {
+    tituloEvento: "Palestra",
+    classificacao: "lecture",
+    roomId: "room-42",
+    reservationDate: "2031-03-12T10:00:00.000Z",
+  };
+  const api = new ApiService({
+    baseURL: "https://api.example.test",
+    storage: createStorage({ token: "jwt-123", userEmail: "owner@udf.edu.br" }),
+    fetchImpl: async (url, options) => {
+      calls.push({ url: String(url), options });
+      return new Response(JSON.stringify({ eventId: "event-123" }), {
+        status: 200,
+        headers: { "content-type": "application/json" },
+      });
+    },
+  });
+
+  assert.equal(await api.submitEventForApproval("event-123", event), "event-123");
+  assert.equal(calls.length, 1);
+  assert.equal(calls[0].url, "https://api.example.test/events/event-123/submit");
+  assert.equal(calls[0].options.method, "POST");
+  assert.deepEqual(JSON.parse(calls[0].options.body), event);
+  assert.equal(calls[0].options.headers.get("token"), "jwt-123");
+  assert.equal(calls[0].options.headers.get("email"), "owner@udf.edu.br");
+});
+
 test("returns null for a failed auth request", async () => {
   const api = new ApiService({
     baseURL: "http://api.example.test",
