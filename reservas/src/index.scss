@@ -28,9 +28,16 @@ code {
     -webkit-box-shadow: 0 10px 25px rgba(0, 0, 0, 0.10) !important;
     box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5) !important;    
   }
+// Every screen's card header is blue. This used to live in Organizer.scss, which
+// the old single-bundle build applied everywhere; with one stylesheet per route it
+// only applied after /organizer had been opened, leaving the home card's header a
+// pale grey strip.
 .card-header{
+  background-color: #0a2d7a !important;
+  color: #fff !important;
   border-width: 5px !important;
   border-color: #fff !important;   
+  border: 0 !important; // as in Organizer.scss before: it won over the two lines above
   border-top-left-radius: 15px !important;
   border-top-right-radius:  15px !important;
 }
