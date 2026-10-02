@@ -6,10 +6,13 @@ import {
   Scripts,
   ScrollRestoration,
 } from "react-router";
-import "bootstrap/dist/css/bootstrap.min.css";
 import "../src/index.scss";
 import "../src/App.scss";
 import Navbar from "../src/components/Navbar/Navbar";
+// Bootstrap last, as in the previous CRA entry (src/index.js): the app's own
+// rules (.nav, .card, .btn…) are written against that order, and loading
+// Bootstrap first lets the app CSS win ties it used to lose.
+import "bootstrap/dist/css/bootstrap.min.css";
 
 export function meta() {
   return [

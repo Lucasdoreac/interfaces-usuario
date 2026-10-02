@@ -26,3 +26,11 @@ test("the collapsed navbar is never shorter than its 4em contents", () => {
 test("the menu icon does not depend on FontAwesome, which the app never loads", () => {
   assert.doesNotMatch(navbar, /fa-bars/);
 });
+
+test("Bootstrap is imported after the app's own CSS, as in the previous CRA entry", () => {
+  const root = read("../app/root.jsx");
+  const order = [...root.matchAll(/^import\s+(?:[\w{}\s,*]+\s+from\s+)?"([^"]+)";/gm)].map((m) => m[1]);
+  const at = (needle) => order.findIndex((spec) => spec.includes(needle));
+  assert.ok(at("bootstrap") > at("index.scss") && at("bootstrap") > at("App.scss") && at("bootstrap") > at("Navbar"),
+    `bootstrap must come after index.scss, App.scss and the Navbar; got ${JSON.stringify(order)}`);
+});
