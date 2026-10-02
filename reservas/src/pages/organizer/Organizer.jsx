@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import "./Organizer.scss";
 import AvatarImage from "../../images/man.png";
 import BackButton from "../../components/BackButton";
@@ -12,6 +12,7 @@ function Organizer() {
   const [errors, setErro] = useState("");
   const [loading, setLoading] = useState(false);
   const [notice, setNotice] = useState("");
+  const emailRef = useRef(null);
   const navigate = useNavigate();
 
   const handleChange = (e) => {
@@ -39,15 +40,18 @@ function Organizer() {
     }
   };
 
+  // A validation error moves the focus to the invalid field, so keyboard and
+  // screen-reader users land where the correction is made (the alert is read via aria-describedby).
+  const invalidEmail = (message) => {
+    setErro(message);
+    emailRef.current?.focus();
+    return false;
+  };
+
   const validEmail = () => {
-    if (!email.trim()) {
-      setErro("O campo e-mail é obrigatório.");
-      return false;
-    }
-    if (!isAllowedOrganizerEmail(email, import.meta.env.VITE_AUTH_EMAIL_ALLOWLIST)) {
-      setErro("O campo e-mail está fora do formato permitido.");
-      return false;
-    }
+    if (!email.trim()) return invalidEmail("O campo e-mail é obrigatório.");
+    if (!isAllowedOrganizerEmail(email, import.meta.env.VITE_AUTH_EMAIL_ALLOWLIST))
+      return invalidEmail("O campo e-mail está fora do formato permitido.");
     return true;
   };
 
@@ -72,6 +76,7 @@ function Organizer() {
             </label>
             <input
               id="organizer-email"
+              ref={emailRef}
               type="email"
               name="email"
               inputMode="email"

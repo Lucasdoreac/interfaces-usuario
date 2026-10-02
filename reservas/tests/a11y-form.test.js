@@ -23,6 +23,21 @@ test("an error is announced and tied to the field", () => {
   assert.doesNotMatch(organizer, /color:\s*"red"/);
 });
 
+test("a validation error moves the focus to the e-mail input", () => {
+  assert.match(organizer, /useRef\(null\)/);
+  const ref = organizer.match(/const (\w+) = useRef\(null\)/)?.[1];
+  assert.ok(ref, "the component needs a ref for the e-mail input");
+  assert.match(input, new RegExp(`ref=\\{${ref}\\}`), "the ref is not attached to the e-mail input");
+  // Both validation branches go through the helper that sets the error and focuses the field.
+  const helper = organizer.match(/const (\w+) = \(message\) => \{([\s\S]*?)\n  \};/);
+  assert.ok(helper, "missing the error helper");
+  assert.match(helper[2], /setErro\(message\)/);
+  assert.match(helper[2], new RegExp(`${ref}\\.current\\??\\.focus\\(\\)`));
+  const validate = organizer.match(/const validEmail = \(\) => \{([\s\S]*?)\n  \};/)[1];
+  assert.equal((validate.match(new RegExp(`return ${helper[1]}\\(`, "g")) || []).length, 2);
+  assert.doesNotMatch(validate, /setErro\(/, "a branch sets the error without focusing the field");
+});
+
 test("the notice region is always mounted, not created with its text", () => {
   assert.match(organizer, /<div role="status" aria-live="polite"/);
   assert.doesNotMatch(organizer, /\{notice && /);
