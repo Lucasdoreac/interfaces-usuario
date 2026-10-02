@@ -16,19 +16,14 @@ const AuthCallBack = () => {
     [location.search]
   );
 
-  const getUserData = useCallback(() => {
-    const token = queryParams.get("hash") || localStorage.getItem("token");
-    const email = queryParams.get("email") || localStorage.getItem("userEmail");
-    return { token, email };
-  }, [queryParams]);
-
   const emailConfirmado = useCallback(async () => {
     // Start the loading process
     setLoading(true);
 
     await new Promise((resolve) => setTimeout(resolve, 2000));
 
-    const { token, email } = getUserData();
+    const linkToken = queryParams.get("hash");
+    const email = queryParams.get("email") || localStorage.getItem("userEmail");
     if (!email) {
       localStorage.clear();
       return navigate("/organizer");
@@ -36,18 +31,27 @@ const AuthCallBack = () => {
 
     setEmail(email); // Set email state early
 
-    if (token && (await apiService.validateToken(token, email))) {
-      localStorage.clear();
-      localStorage.setItem("userEmail", email);
-      localStorage.setItem("token", token);
+    // A session from an earlier visit (same address) keeps working on reload.
+    const stored = localStorage.getItem("token");
+    if (stored && localStorage.getItem("userEmail") === email &&
+        (await apiService.validateToken(stored, email))) {
       return navigate("/event/mine");
-    } else if (!!token) {
-      // Token exists but is invalid or expired
+    }
+
+    if (linkToken) {
+      // The link is single use: trade it for a session token.
+      const session = await apiService.exchangeToken(linkToken, email);
+      if (session) {
+        localStorage.clear();
+        localStorage.setItem("userEmail", email);
+        localStorage.setItem("token", session);
+        return navigate("/event/mine");
+      }
       return navigate("/access-denied");
     }
 
     setLoading(false);
-  }, [getUserData, navigate]);
+  }, [queryParams, navigate]);
 
   useEffect(() => {
     emailConfirmado();

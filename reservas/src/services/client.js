@@ -119,6 +119,28 @@ export class ApiService {
     }
   }
 
+  // The e-mailed link token is single use: trade it for a session token. The
+  // result is remembered per link so a repeated call (a double effect run) does
+  // not spend it twice.
+  exchangeToken(linkToken, email) {
+    this.exchanges ??= new Map();
+    const key = `${email}\0${linkToken}`;
+    if (!this.exchanges.has(key)) {
+      this.exchanges.set(key, this.exchangeOnce(linkToken, email));
+    }
+    return this.exchanges.get(key);
+  }
+
+  async exchangeOnce(linkToken, email) {
+    try {
+      const response = await this.http.post("/auth/exchange", { email, token: linkToken });
+      return typeof response.data?.token === "string" ? response.data.token : null;
+    } catch (error) {
+      if (error.status !== 503) console.error("Troca do link falhou:", error.status);
+      return null;
+    }
+  }
+
   async validateToken(token, email) {
     try {
       const params = new URLSearchParams({ token, email });

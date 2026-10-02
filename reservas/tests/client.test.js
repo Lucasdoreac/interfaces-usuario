@@ -253,3 +253,42 @@ test("the private-route loading screen can show the waking notice", async () => 
   const { WAKING_MESSAGE } = await import("../src/utils/wakingMessage.js");
   assert.match(WAKING_MESSAGE, /Servidor iniciando/);
 });
+
+test("exchangeToken trades the link in the request body and returns the session token", async () => {
+  let request;
+  const api = new ApiService({
+    baseURL: "https://api.example.test",
+    storage: createStorage(),
+    fetchImpl: async (url, options) => {
+      request = { url: String(url), options };
+      return json(200, { token: "session-token" });
+    },
+  });
+  assert.equal(await api.exchangeToken("link-token", "a@udf.edu.br"), "session-token");
+  assert.equal(request.url, "https://api.example.test/auth/exchange");
+  assert.equal(request.options.method, "POST");
+  assert.deepEqual(JSON.parse(request.options.body), { email: "a@udf.edu.br", token: "link-token" });
+});
+
+test("exchangeToken spends the link once even when called twice", async () => {
+  let calls = 0;
+  const api = new ApiService({
+    baseURL: "https://api.example.test",
+    storage: createStorage(),
+    fetchImpl: async () => { calls += 1; return json(200, { token: "session-token" }); },
+  });
+  const [a, b] = await Promise.all([
+    api.exchangeToken("link-token", "a@udf.edu.br"),
+    api.exchangeToken("link-token", "a@udf.edu.br"),
+  ]);
+  assert.deepEqual([a, b, calls], ["session-token", "session-token", 1]);
+});
+
+test("exchangeToken returns null for a used or invalid link", async () => {
+  const api = new ApiService({
+    baseURL: "https://api.example.test",
+    storage: createStorage(),
+    fetchImpl: async () => json(403, { message: "Invalid or expired link" }),
+  });
+  assert.equal(await api.exchangeToken("used", "a@udf.edu.br"), null);
+});
