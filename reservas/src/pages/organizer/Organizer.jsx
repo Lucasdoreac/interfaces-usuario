@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import "./Organizer.scss";
 import AvatarImage from "../../images/man.png";
-import { AiOutlineLeft } from "react-icons/ai";
+import BackButton from "../../components/BackButton";
 import { useNavigate } from "react-router";
 import apiService from "../../services/client";
 import { isAllowedOrganizerEmail } from "../../utils/emailPolicy";
@@ -55,17 +55,10 @@ function Organizer() {
     <div>
       <div className="card-header">
         <div className="d-flex justify-content-start">
-          <span onClick={() => navigate("/")}>
-            <AiOutlineLeft
-              size="20px"
-              color="white"
-              style={{ margin: "0px 10px 0px 0px" }}
-            />
-          </span>
-          <h5>Voltar</h5>
+          <BackButton onClick={() => navigate("/")} />
         </div>
       </div>
-      <div className="card-body">
+      <div className="card-body" aria-busy={loading}>
         <div className="row">
           <div className="col-md-12 text-center">
             <img
@@ -74,16 +67,32 @@ function Organizer() {
               style={{ width: "200px" }}
               alt="man avatar"
             />
+            <label htmlFor="organizer-email" className="visually-hidden">
+              E-mail institucional
+            </label>
             <input
+              id="organizer-email"
               type="email"
               name="email"
+              inputMode="email"
+              autoComplete="email"
+              required
               placeholder="Digite seu email@udf.edu.br"
               value={email}
               onChange={handleChange}
               className="form-control"
+              aria-invalid={errors ? "true" : undefined}
+              aria-describedby={errors ? "organizer-email-error" : undefined}
             />
-            {errors && <span style={{ color: "red" }}>{errors}</span>}
-            {notice && <span role="status" style={{ color: "#555" }}>{notice}</span>}
+            {errors && (
+              <p id="organizer-email-error" role="alert" className="form-error">
+                {errors}
+              </p>
+            )}
+            {/* Always mounted: a live region is announced when its text changes, not when it appears. */}
+            <div role="status" aria-live="polite" className="form-notice">
+              {notice}
+            </div>
             <div className="mt-4">
               <button
                 type="submit"

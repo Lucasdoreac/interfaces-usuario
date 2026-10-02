@@ -1,16 +1,19 @@
 import "./index.scss";
-function Loading() {
+function Loading({ label = "Carregando" }) {
   return (
-    <div className="lds-roller">
-      <div></div>
-      <div></div>
-      <div></div>
-      <div></div>
-      <div></div>
-      <div></div>
-      <div></div>
-      <div></div>
-    </div>
+    <>
+      <div className="lds-roller" aria-hidden="true">
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+      </div>
+      <span className="visually-hidden">{label}</span>
+    </>
   );
 }
 

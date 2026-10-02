@@ -1,23 +1,18 @@
 import "./Navbar.scss";
 import { useState } from "react";
 import { AiOutlineClose, AiOutlineMenu } from "react-icons/ai";
-import { useNavigate } from 'react-router';
+import { Link } from 'react-router';
 
 const Navbar = () => {
-    const navigate = useNavigate(); // useNavigate para alterar a URL
     const [menuOpen, setMenuOpen] = useState(false);
-
-    const go = (path) => {
-        setMenuOpen(false);
-        navigate(path);
-    };
+    const closeMenu = () => setMenuOpen(false);
 
     return (
         <nav id="nav" className={menuOpen ? "nav-visible" : undefined}>
             <div className="nav left">
         <span className="gradient skew">
           <h1 className="logo un-skew mt-4">
-            <span onClick={() => go('/')}>LabTech UDF</span>
+            <Link to="/" onClick={closeMenu}>LabTech UDF</Link>
           </h1>
         </span>
                 <button
@@ -33,11 +28,11 @@ const Navbar = () => {
                 </button>
             </div>
             <div id="nav-links" className="nav right">
-        <span className="nav-link active" onClick={() => go('/organizer')}>
+        <Link className="nav-link active" to="/organizer" onClick={closeMenu}>
           <span className="nav-link-span">
             <span className="u-nav">Organizador</span>
           </span>
-        </span>
+        </Link>
             </div>
         </nav>
     );
