@@ -65,16 +65,16 @@ test("submits an event and its reservation through one API request", async () =>
     storage: createStorage({ token: "jwt-123", userEmail: "owner@udf.edu.br" }),
     fetchImpl: async (url, options) => {
       calls.push({ url: String(url), options });
-      return new Response(JSON.stringify({ eventId: "event-123" }), {
+      return new Response(JSON.stringify({ eventId: "507f1f77bcf86cd799439011" }), {
         status: 200,
         headers: { "content-type": "application/json" },
       });
     },
   });
 
-  assert.equal(await api.submitEventForApproval("event-123", event), "event-123");
+  assert.equal(await api.submitEventForApproval("507f1f77bcf86cd799439011", event), "507f1f77bcf86cd799439011");
   assert.equal(calls.length, 1);
-  assert.equal(calls[0].url, "https://api.example.test/events/event-123/submit");
+  assert.equal(calls[0].url, "https://api.example.test/events/507f1f77bcf86cd799439011/submit");
   assert.equal(calls[0].options.method, "POST");
   assert.deepEqual(JSON.parse(calls[0].options.body), event);
   assert.equal(calls[0].options.headers.get("token"), "jwt-123");

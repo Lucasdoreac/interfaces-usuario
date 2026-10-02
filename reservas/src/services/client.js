@@ -1,3 +1,5 @@
+import { assertEventId } from "../utils/eventId.js";
+
 export class ApiService {
   constructor({
     baseURL = import.meta.env?.VITE_API_BASE_URL || "http://localhost:5000",
@@ -200,7 +202,7 @@ export class ApiService {
       let response;
       // Update an event object
       if (eventId) {
-        response = await this.http.put(`/events/${eventId}`, requestData);
+        response = await this.http.put(`/events/${assertEventId(eventId)}`, requestData);
       } else {
         // Create a new event object
         response = await this.http.post("/events", requestData);
@@ -215,7 +217,7 @@ export class ApiService {
   async submitEventForApproval(eventId, data) {
     try {
       const response = await this.http.post(
-        `/events/${eventId}/submit`,
+        `/events/${assertEventId(eventId)}/submit`,
         data,
       );
       return response.data.eventId;
