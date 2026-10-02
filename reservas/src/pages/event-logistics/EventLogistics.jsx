@@ -3,6 +3,11 @@ import { AiOutlineLeft } from "react-icons/ai";
 import { useNavigate, useLocation } from "react-router";
 import { useFormContext } from "../../context/FormContext";
 import TwoButtons from "../../components/TwoButtons";
+import {
+  descriptionDisabled,
+  staleDescriptionReset,
+  validateLogistics,
+} from "../../utils/eventLogistics";
 
 const EventLogistics = () => {
   const navigate = useNavigate();
@@ -48,7 +53,16 @@ const EventLogistics = () => {
     handleChange({ target: { name: "logo", value: file } });
   };
 
+  const handleSelectChange = (event) => {
+    handleChange(event);
+    const reset = staleDescriptionReset(event.target.name, event.target.value);
+    if (reset) handleChange({ target: reset });
+  };
+
   const handleNext = async () => {
+    const found = validateLogistics(formData);
+    setErrors(found);
+    if (Object.keys(found).length > 0) return;
     const savedDraftEventId = await saveDraft();
     if (savedDraftEventId) {
       navigate(`/event/schedule?eventId=${savedDraftEventId}`);
@@ -135,7 +149,7 @@ const EventLogistics = () => {
                 id="trilha"
                 name="trilha"
                 value={formData.trilha || "nao"}
-                onChange={handleChange}
+                onChange={handleSelectChange}
                 className="form-control"
               >
                 <option value="nao">Não</option>
@@ -151,6 +165,7 @@ const EventLogistics = () => {
                 name="trilhaDesc"
                 value={formData.trilhaDesc || ""}
                 onChange={handleChange}
+                disabled={descriptionDisabled(formData.trilha || "nao")}
               />
               {renderError("trilhaDesc")}
             </div>
@@ -163,7 +178,7 @@ const EventLogistics = () => {
                 id="projeto"
                 name="projeto"
                 value={formData.projeto || "nao"}
-                onChange={handleChange}
+                onChange={handleSelectChange}
                 className="form-control"
               >
                 <option value="nao">Não</option>
@@ -179,6 +194,7 @@ const EventLogistics = () => {
                 name="projetoDesc"
                 value={formData.projetoDesc || ""}
                 onChange={handleChange}
+                disabled={descriptionDisabled(formData.projeto || "nao")}
               />
               {renderError("projetoDesc")}
             </div>

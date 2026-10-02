@@ -3,6 +3,7 @@ import { AiOutlineLeft } from "react-icons/ai";
 import debounce from "lodash.debounce";
 import { useNavigate } from "react-router";
 import "./EventDetails.scss";
+import { showCourseSearch } from "../../utils/courseField";
 import { useFormContext } from "../../context/FormContext";
 import apiService from "../../services/client";
 import TwoButtons from "../../components/TwoButtons";
@@ -27,7 +28,8 @@ const EventDetails = () => {
   const [query, setQuery] = useState(formData.courseName || "");
   const [localLoading, setLocalLoading] = useState(false);
   // Toggle whether user is editing the course field
-  const [isEditingCourse, setIsEditingCourse] = useState(!formData.courseId);
+  const [editingCourse, setEditingCourse] = useState(false);
+  const isEditingCourse = showCourseSearch({ courseId: formData.courseId, editing: editingCourse });
 
   // Cache for already performed searches
   const searchCache = useRef({});
@@ -80,7 +82,7 @@ const EventDetails = () => {
       setCourseSelected(selectedCourse.name);
       handleCursoChanged(selectedCourse.name, selectedCourse.id);
       // When a new course is selected, exit editing mode.
-      setIsEditingCourse(false);
+      setEditingCourse(false);
     }
   };
 
@@ -214,7 +216,7 @@ const EventDetails = () => {
                         setCourseSelected("");
                         setQuery("");
                         setSearchResults([]);
-                        setIsEditingCourse(true);
+                        setEditingCourse(true);
                       }}
                       style={{ marginTop: "10px" }}
                     >
