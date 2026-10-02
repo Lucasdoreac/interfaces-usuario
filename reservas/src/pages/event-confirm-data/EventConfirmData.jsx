@@ -1,9 +1,11 @@
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import { AiOutlineLeft } from "react-icons/ai";
 import { useNavigate, useSearchParams } from "react-router";
 import { useFormContext } from "../../context/FormContext";
 import apiService from "../../services/client";
 import { summarizeEventData } from "../../utils/eventSummary";
+import Loading from "../../components/Loading";
+import { runSingleFlight } from "../../utils/singleFlight";
 import "./EventConfirmData.scss";
 
 const EventConfirmData = () => {
@@ -13,8 +15,10 @@ const EventConfirmData = () => {
 
   const { formData } = useFormContext();
   const [errors, setErrors] = useState({});
+  const [submitting, setSubmitting] = useState(false);
+  const flight = useRef(false);
 
-  const handleConfirm = async () => {
+  const submitEvent = async () => {
     if (!validateForm()) {
       return; // Stop execution if validation fails
     }
@@ -43,6 +47,8 @@ const EventConfirmData = () => {
       });
     }
   };
+
+  const handleConfirm = () => runSingleFlight(flight, submitEvent, setSubmitting);
 
   const validateForm = () => {
     const newErrors = {};
@@ -104,9 +110,10 @@ const EventConfirmData = () => {
           {errors.api}
         </div>
       )}
-      <button className="btn btn-primary" onClick={handleConfirm}>
-        Confirmar
+      <button className="btn btn-primary" onClick={handleConfirm} disabled={submitting}>
+        {submitting ? "Enviando..." : "Confirmar"}
       </button>
+      {submitting && <Loading />}
     </div>
   );
 };
