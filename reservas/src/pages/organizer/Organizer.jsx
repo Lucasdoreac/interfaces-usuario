@@ -69,6 +69,7 @@ function Organizer() {
         </div>
       </div>
       <div className="card-body">
+        <form onSubmit={sendEmail} noValidate>
         <div className="row">
           <div className="col-md-12 text-center">
             <img
@@ -91,7 +92,6 @@ function Organizer() {
             <div className="mt-4">
               <button
                 type="submit"
-                onClick={sendEmail}
                 className="btn btn-primary btn-lg"
                 disabled={loading}
               >
@@ -100,6 +100,7 @@ function Organizer() {
             </div>
           </div>
         </div>
+        </form>
       </div>
     </div>
   );
