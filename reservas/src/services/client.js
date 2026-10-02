@@ -3,15 +3,47 @@ export class ApiService {
     baseURL = import.meta.env?.VITE_API_BASE_URL || "http://localhost:5000",
     fetchImpl = globalThis.fetch,
     storage = globalThis.localStorage,
+    wakeTimeoutMs = 90000,
   } = {}) {
     this.baseURL = baseURL.replace(/\/$/, "");
     this.fetchImpl = fetchImpl.bind(globalThis);
     this.storage = storage;
+    this.wakeTimeoutMs = wakeTimeoutMs;
+    this.wakingListener = null;
     this.http = {
       get: (path, config) => this.request("GET", path, undefined, config),
       post: (path, data, config) => this.request("POST", path, data, config),
       put: (path, data, config) => this.request("PUT", path, data, config),
     };
+  }
+
+  setWakingListener(listener) {
+    this.wakingListener = listener;
+  }
+
+  // The API answers 503 with `wake_url` (the public Auth /health) when Auth is
+  // asleep. Only an https /health URL is followed; the request is opaque.
+  safeWakeUrl(value) {
+    try {
+      const url = new URL(value);
+      return url.protocol === "https:" && url.pathname === "/health" && !url.search ? url.href : null;
+    } catch {
+      return null;
+    }
+  }
+
+  // A request from the browser wakes the free-plan service (the API's cannot),
+  // and is held until it is up, so waiting for it is the wait for Auth.
+  async wakeService(url) {
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), this.wakeTimeoutMs);
+    try {
+      await this.fetchImpl(url, { mode: "no-cors", cache: "no-store", signal: controller.signal });
+    } catch {
+      // Still asleep or unreachable: the retry below reports the final error.
+    } finally {
+      clearTimeout(timer);
+    }
   }
 
   async request(method, path, data, config = {}) {
@@ -43,6 +75,14 @@ export class ApiService {
     const responseData = contentType.includes("json")
       ? await response.json()
       : await response.text();
+    if (response.status === 503 && !config.afterWake) {
+      const wakeUrl = this.safeWakeUrl(responseData?.wake_url);
+      if (wakeUrl) {
+        this.wakingListener?.();
+        await this.wakeService(wakeUrl);
+        return this.request(method, path, data, { ...config, afterWake: true });
+      }
+    }
     if (!response.ok) {
       const error = new Error(`Request failed with status code ${response.status}`);
       error.status = response.status;
@@ -77,7 +117,8 @@ export class ApiService {
       this.storage?.clear();
       return false;
     } catch (error) {
-      this.storage?.clear();
+      // Auth unavailable (503) says nothing about the token: keep the session.
+      if (error.status !== 503) this.storage?.clear();
       return false;
     }
   }

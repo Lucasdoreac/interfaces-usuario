@@ -10,6 +10,7 @@ function Organizer() {
   const [email, setEmail] = useState(() => localStorage.getItem("email") || "");
   const [errors, setErro] = useState("");
   const [loading, setLoading] = useState(false);
+  const [notice, setNotice] = useState("");
   const navigate = useNavigate();
 
   const handleChange = (e) => {
@@ -23,7 +24,12 @@ function Organizer() {
       setLoading(true);
       localStorage.clear();
       localStorage.setItem("email", normalizedEmail);
+      setNotice("");
+      apiService.setWakingListener(() =>
+        setNotice("Servidor iniciando; isso pode levar cerca de 1 minuto. Aguarde, vamos tentar de novo automaticamente."));
       const result = await apiService.postAuthMail(normalizedEmail);
+      apiService.setWakingListener(null);
+      setNotice("");
       if (result?.dryRun)
         setErro("Modo de teste ativo: nenhum e-mail foi enviado.");
       else if (result)
@@ -77,6 +83,7 @@ function Organizer() {
               className="form-control"
             />
             {errors && <span style={{ color: "red" }}>{errors}</span>}
+            {notice && <span role="status" style={{ color: "#555" }}>{notice}</span>}
             <div className="mt-4">
               <button
                 type="submit"

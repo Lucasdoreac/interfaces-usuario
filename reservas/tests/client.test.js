@@ -142,3 +142,82 @@ test("calls the injected fetch function with the global receiver", async () => {
   await api.request("GET", "/health");
   assert.equal(receiver, globalThis);
 });
+
+const WAKE = "https://auth.example.test/health";
+
+function json(status, body) {
+  return new Response(JSON.stringify(body), { status, headers: { "content-type": "application/json" } });
+}
+
+test("503 with wake_url wakes Auth from the browser and retries once", async () => {
+  const calls = [];
+  let waking = 0;
+  const api = new ApiService({
+    baseURL: "https://api.example.test",
+    storage: createStorage(),
+    fetchImpl: async (url, options) => {
+      calls.push({ url: String(url), mode: options?.mode });
+      if (String(url) === WAKE) return new Response(null, { status: 200 });
+      return calls.filter((c) => c.url.startsWith("https://api")).length === 1
+        ? json(503, { error: "Authentication service unavailable", wake_url: WAKE })
+        : json(200, { sent: true });
+    },
+  });
+  api.setWakingListener(() => { waking += 1; });
+  assert.equal(await api.postAuthMail("a@udf.edu.br"), true);
+  assert.deepEqual(calls.map((c) => c.url.split("?")[0]), [
+    "https://api.example.test/auth/send-link", WAKE, "https://api.example.test/auth/send-link",
+  ]);
+  assert.equal(calls[1].mode, "no-cors");
+  assert.equal(waking, 1);
+});
+
+test("a second 503 after the wake is reported, not retried again", async () => {
+  let apiCalls = 0;
+  const api = new ApiService({
+    baseURL: "https://api.example.test",
+    storage: createStorage(),
+    fetchImpl: async (url) => {
+      if (String(url) === WAKE) return new Response(null, { status: 200 });
+      apiCalls += 1;
+      return json(503, { error: "unavailable", wake_url: WAKE });
+    },
+  });
+  assert.equal(await api.postAuthMail("a@udf.edu.br"), null);
+  assert.equal(apiCalls, 2);
+});
+
+test("wake_url that is not an https /health URL is ignored", async () => {
+  for (const wake of ["http://auth.example.test/health", "https://evil.example.test/steal", "https://auth.example.test/health?x=1", "nope"]) {
+    const urls = [];
+    const api = new ApiService({
+      baseURL: "https://api.example.test",
+      storage: createStorage(),
+      fetchImpl: async (url) => { urls.push(String(url)); return json(503, { error: "unavailable", wake_url: wake }); },
+    });
+    assert.equal(await api.postAuthMail("a@udf.edu.br"), null);
+    assert.equal(urls.length, 1, wake);
+  }
+});
+
+test("validateToken keeps the session when Auth is unavailable (503)", async () => {
+  const storage = createStorage({ token: "jwt-123", userEmail: "a@udf.edu.br" });
+  const api = new ApiService({
+    baseURL: "https://api.example.test",
+    storage,
+    fetchImpl: async () => json(503, { error: "unavailable" }),
+  });
+  assert.equal(await api.validateToken("jwt-123", "a@udf.edu.br"), false);
+  assert.equal(storage.getItem("token"), "jwt-123");
+});
+
+test("validateToken still clears the session on a real denial (403)", async () => {
+  const storage = createStorage({ token: "jwt-123" });
+  const api = new ApiService({
+    baseURL: "https://api.example.test",
+    storage,
+    fetchImpl: async () => json(403, { error: "Token validation failed" }),
+  });
+  assert.equal(await api.validateToken("jwt-123", "a@udf.edu.br"), false);
+  assert.equal(storage.getItem("token"), null);
+});
