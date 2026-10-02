@@ -59,6 +59,7 @@ const AuthCallBack = () => {
         </div>
       </div>
       <div className="card-body">
+        <h1 className="visually-hidden">Entrar</h1>
         {loading ? (
           <div className="d-flex justify-content-center align-items-center">
             <Loading />
@@ -70,7 +71,7 @@ const AuthCallBack = () => {
                 className="img-man mb-2"
                 src={EnvImage}
                 style={{ width: "200px", backgroundColor: "transparent" }}
-                alt="man avatar"
+                alt=""
               />
               {needsClick ? (
                 <>

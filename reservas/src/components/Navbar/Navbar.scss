@@ -35,11 +35,6 @@ button {
   cursor: pointer;
 }
 
-button:focus,
-input:focus {
-  outline: 0;
-}
-
 html {
   scroll-behavior: smooth;
 }
@@ -133,14 +128,15 @@ span.gradient {
   }
 }
 
-h1.logo {
+.logo {
+  margin-bottom: 0.5rem;
   font-weight: 300;
   font-size: 1.75em;
   line-height: 0.75em;
   color: $color-neutral-lt;
 }
 
-h1.logo #{$a-tags} {
+.logo #{$a-tags} {
   text-decoration: none;
   color: $color-neutral-lt;
 }

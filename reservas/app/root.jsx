@@ -50,9 +50,9 @@ export default function Root() {
         <div>
           <div className="row justify-content-center">
             <div className="col-md-12 col-sm-12 col-12">
-              <div className="card">
+              <main className="card">
                 <Outlet />
-              </div>
+              </main>
             </div>
           </div>
         </div>
