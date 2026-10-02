@@ -90,11 +90,11 @@ const EventTypeSelection = () => {
         <div className="card-body">
           <div className="row">
             <div className="col-md-12">
-              <h4>
+              <h1 className="h4">
                 {eventIdFromQuery
                   ? "Editar Tipo de Evento"
                   : "Selecione o Tipo de Evento"}
-              </h4>
+              </h1>
             </div>
           </div>
 

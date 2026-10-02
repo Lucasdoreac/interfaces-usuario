@@ -31,17 +31,19 @@ const Home = () => {
         </div>
       </div>
       <div className="card-body">
+        <h1 className="visually-hidden">Reservas UDF</h1>
         <div className="row">
           <div className="col-md-12 text-center">
             <img
               className="img-man"
               src={AvatarImage}
               style={{ width: "200px" }}
-              alt="man avatar"
+              alt=""
             />
             <div className="mt-4">
               {/* O botão agora usa onClick para navegação */}
               <button
+                type="button"
                 className="btn btn-outline-primary btn-lg"
                 onClick={() => navigate("/organizer")} // Navegar para a página "Organizador"
               >

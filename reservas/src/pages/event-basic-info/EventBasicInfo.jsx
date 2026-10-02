@@ -85,7 +85,7 @@ const EventBasicInfo = () => {
         <div className="card-body">
           <div className="row">
             <div className="col-md-12">
-              <h4>{eventIdFromQuery ? "Editar Evento" : "Novo Evento"}</h4>
+              <h1 className="h4">{eventIdFromQuery ? "Editar Evento" : "Novo Evento"}</h1>
             </div>
           </div>
 

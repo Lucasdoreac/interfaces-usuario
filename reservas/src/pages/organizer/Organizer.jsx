@@ -66,13 +66,14 @@ function Organizer() {
         </div>
       </div>
       <div className="card-body">
+        <h1 className="visually-hidden">Organizador</h1>
         <div className="row">
           <div className="col-md-12 text-center">
             <img
               className="img-man mb-2"
               src={AvatarImage}
               style={{ width: "200px" }}
-              alt="man avatar"
+              alt=""
             />
             <input
               type="email"
