@@ -136,7 +136,14 @@ span.gradient {
   color: $color-neutral-lt;
 }
 
-.logo #{$a-tags} {
+// Cada seletor leva o prefixo .logo: com "a, a:hover" soltos só o primeiro era
+// escopado e `a:link` (cor primária, mais abaixo) vencia o texto branco do logo
+// sobre a parte escura do gradiente.
+.logo a,
+.logo a:link,
+.logo a:visited,
+.logo a:active,
+.logo a:hover {
   text-decoration: none;
   color: $color-neutral-lt;
 }
