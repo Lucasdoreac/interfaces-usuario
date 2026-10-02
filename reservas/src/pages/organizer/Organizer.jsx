@@ -5,6 +5,7 @@ import { AiOutlineLeft } from "react-icons/ai";
 import { useNavigate } from "react-router";
 import apiService from "../../services/client";
 import { isAllowedOrganizerEmail } from "../../utils/emailPolicy";
+import { WAKING_MESSAGE } from "../../utils/wakingMessage";
 
 function Organizer() {
   const [email, setEmail] = useState(() => localStorage.getItem("email") || "");
@@ -25,10 +26,9 @@ function Organizer() {
       localStorage.clear();
       localStorage.setItem("email", normalizedEmail);
       setNotice("");
-      apiService.setWakingListener(() =>
-        setNotice("Servidor iniciando; isso pode levar cerca de 1 minuto. Aguarde, vamos tentar de novo automaticamente."));
+      const stopWaking = apiService.onWaking(() => setNotice(WAKING_MESSAGE));
       const result = await apiService.postAuthMail(normalizedEmail);
-      apiService.setWakingListener(null);
+      stopWaking();
       setNotice("");
       if (result?.dryRun)
         setErro("Modo de teste ativo: nenhum e-mail foi enviado.");

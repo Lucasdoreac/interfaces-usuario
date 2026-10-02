@@ -163,13 +163,14 @@ test("503 with wake_url wakes Auth from the browser and retries once", async () 
         : json(200, { sent: true });
     },
   });
-  api.setWakingListener(() => { waking += 1; });
+  const stop = api.onWaking(() => { waking += 1; });
   assert.equal(await api.postAuthMail("a@udf.edu.br"), true);
   assert.deepEqual(calls.map((c) => c.url.split("?")[0]), [
     "https://api.example.test/auth/send-link", WAKE, "https://api.example.test/auth/send-link",
   ]);
   assert.equal(calls[1].mode, "no-cors");
   assert.equal(waking, 1);
+  stop();
 });
 
 test("a second 503 after the wake is reported, not retried again", async () => {
@@ -220,4 +221,35 @@ test("validateToken still clears the session on a real denial (403)", async () =
   });
   assert.equal(await api.validateToken("jwt-123", "a@udf.edu.br"), false);
   assert.equal(storage.getItem("token"), null);
+});
+
+test("concurrent requests to a sleeping service share one wake call", async () => {
+  let wakes = 0;
+  const calls = {};
+  let release;
+  const gate = new Promise((resolve) => { release = resolve; });
+  const api = new ApiService({
+    baseURL: "https://api.example.test",
+    storage: createStorage(),
+    fetchImpl: async (url) => {
+      const path = new URL(String(url)).pathname;
+      if (String(url) === WAKE) { wakes += 1; await gate; return new Response(null, { status: 200 }); }
+      calls[path] = (calls[path] || 0) + 1;
+      return calls[path] === 1 ? json(503, { error: "unavailable", wake_url: WAKE }) : json(200, { ok: path });
+    },
+  });
+  const notified = [];
+  api.onWaking(() => notified.push(1));
+  const both = Promise.all([api.http.get("/auth/validate"), api.http.get("/types")]);
+  await new Promise((resolve) => setTimeout(resolve, 20));
+  release();
+  const [a, b] = await both;
+  assert.equal(wakes, 1);
+  assert.deepEqual([a.data.ok, b.data.ok], ["/auth/validate", "/types"]);
+  assert.equal(notified.length, 2);
+});
+
+test("the private-route loading screen can show the waking notice", async () => {
+  const { WAKING_MESSAGE } = await import("../src/utils/wakingMessage.js");
+  assert.match(WAKING_MESSAGE, /Servidor iniciando/);
 });

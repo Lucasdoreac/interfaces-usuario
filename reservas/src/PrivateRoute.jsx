@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Navigate } from "react-router";
 import apiService from "../src/services/client";
 import Loading from "./components/Loading";
+import { WAKING_MESSAGE } from "./utils/wakingMessage";
 
 const LOCAL_STORAGE_KEYS = {
   TOKEN: "token",
@@ -10,8 +11,11 @@ const LOCAL_STORAGE_KEYS = {
 
 const PrivateRoute = ({ element: Component, ...rest }) => {
   const [isAuthorized, setIsAuthorized] = useState(null);
+  const [waking, setWaking] = useState(false);
   const token = localStorage.getItem(LOCAL_STORAGE_KEYS.TOKEN);
   const email = localStorage.getItem(LOCAL_STORAGE_KEYS.EMAIL);
+
+  useEffect(() => apiService.onWaking(() => setWaking(true)), []);
 
   useEffect(() => {
     const validateUserToken = async () => {
@@ -30,11 +34,13 @@ const PrivateRoute = ({ element: Component, ...rest }) => {
       <div
         style={{
           display: "flex",
+          flexDirection: "column",
           justifyContent: "center",
           alignItems: "center",
         }}
       >
         <Loading />
+        {waking && <p role="status" style={{ color: "#555" }}>{WAKING_MESSAGE}</p>}
       </div>
     );
   }

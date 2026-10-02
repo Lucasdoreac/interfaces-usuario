@@ -9,7 +9,8 @@ export class ApiService {
     this.fetchImpl = fetchImpl.bind(globalThis);
     this.storage = storage;
     this.wakeTimeoutMs = wakeTimeoutMs;
-    this.wakingListener = null;
+    this.wakingListeners = new Set();
+    this.pendingWakes = new Map();
     this.http = {
       get: (path, config) => this.request("GET", path, undefined, config),
       post: (path, data, config) => this.request("POST", path, data, config),
@@ -17,8 +18,10 @@ export class ApiService {
     };
   }
 
-  setWakingListener(listener) {
-    this.wakingListener = listener;
+  // Subscribe to "a service is being woken"; returns the unsubscribe function.
+  onWaking(listener) {
+    this.wakingListeners.add(listener);
+    return () => this.wakingListeners.delete(listener);
   }
 
   // The API answers 503 with `wake_url` (the public Auth /health) when Auth is
@@ -34,7 +37,16 @@ export class ApiService {
 
   // A request from the browser wakes the free-plan service (the API's cannot),
   // and is held until it is up, so waiting for it is the wait for Auth.
-  async wakeService(url) {
+  // Concurrent requests that hit the same sleeping service share one wake call.
+  wakeService(url) {
+    if (!this.pendingWakes.has(url)) {
+      const pending = this.wakeOnce(url).finally(() => this.pendingWakes.delete(url));
+      this.pendingWakes.set(url, pending);
+    }
+    return this.pendingWakes.get(url);
+  }
+
+  async wakeOnce(url) {
     const controller = new AbortController();
     const timer = setTimeout(() => controller.abort(), this.wakeTimeoutMs);
     try {
@@ -78,7 +90,7 @@ export class ApiService {
     if (response.status === 503 && !config.afterWake) {
       const wakeUrl = this.safeWakeUrl(responseData?.wake_url);
       if (wakeUrl) {
-        this.wakingListener?.();
+        this.wakingListeners.forEach((listener) => listener());
         await this.wakeService(wakeUrl);
         return this.request(method, path, data, { ...config, afterWake: true });
       }
