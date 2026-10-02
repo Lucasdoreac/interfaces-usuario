@@ -4,58 +4,52 @@ import EnvImage from "../../images/email.png";
 import { AiOutlineLeft } from "react-icons/ai";
 import apiService from "../../services/client";
 import Loading from "../../components/Loading";
+import { resolveCallback, signIn } from "../../utils/callbackFlow";
 
 const AuthCallBack = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const [loading, setLoading] = useState(true);
   const [emailState, setEmail] = useState("");
+  const [needsClick, setNeedsClick] = useState(false);
 
   const queryParams = useMemo(
     () => new URLSearchParams(location.search),
     [location.search]
   );
 
-  const emailConfirmado = useCallback(async () => {
-    // Start the loading process
+  const checkSession = useCallback(async () => {
     setLoading(true);
-
-    await new Promise((resolve) => setTimeout(resolve, 2000));
-
-    const linkToken = queryParams.get("hash");
     const email = queryParams.get("email") || localStorage.getItem("userEmail");
-    if (!email) {
+    const linkToken = queryParams.get("hash");
+    if (email) setEmail(email);
+
+    const result = await resolveCallback({ api: apiService, storage: localStorage, email, linkToken });
+    if (result.action === "organizer") {
       localStorage.clear();
       return navigate("/organizer");
     }
-
-    setEmail(email); // Set email state early
-
-    // A session from an earlier visit (same address) keeps working on reload.
-    const stored = localStorage.getItem("token");
-    if (stored && localStorage.getItem("userEmail") === email &&
-        (await apiService.validateToken(stored, email))) {
-      return navigate("/event/mine");
-    }
-
-    if (linkToken) {
-      // The link is single use: trade it for a session token.
-      const session = await apiService.exchangeToken(linkToken, email);
-      if (session) {
-        localStorage.clear();
-        localStorage.setItem("userEmail", email);
-        localStorage.setItem("token", session);
-        return navigate("/event/mine");
-      }
-      return navigate("/access-denied");
-    }
-
+    if (result.action === "events") return navigate("/event/mine");
+    setNeedsClick(result.action === "needs-click");
     setLoading(false);
   }, [queryParams, navigate]);
 
+  // Only the stored session is checked on load; the link is spent on the click below.
   useEffect(() => {
-    emailConfirmado();
-  }, [emailConfirmado]);
+    checkSession();
+  }, [checkSession]);
+
+  const enter = async () => {
+    setLoading(true);
+    const result = await signIn({
+      api: apiService,
+      storage: localStorage,
+      email: emailState,
+      linkToken: queryParams.get("hash"),
+    });
+    if (result.action === "events") return navigate("/event/mine");
+    return navigate("/access-denied");
+  };
 
   return (
     <div>
@@ -85,19 +79,38 @@ const AuthCallBack = () => {
                 style={{ width: "200px", backgroundColor: "transparent" }}
                 alt="man avatar"
               />
-              <p>
-                Clique no botão de autorizar que enviamos para{" "}
-                <b>{emailState}</b>
-              </p>
-              <div className="mt-4">
-                <button
-                  type="button"
-                  className="btn btn-primary btn-lg"
-                  onClick={emailConfirmado}
-                >
-                  <b>Já Confirmei!</b>
-                </button>
-              </div>
+              {needsClick ? (
+                <>
+                  <p>
+                    Entrar como <b>{emailState}</b>
+                  </p>
+                  <div className="mt-4">
+                    <button
+                      type="button"
+                      className="btn btn-primary btn-lg"
+                      onClick={enter}
+                    >
+                      <b>Entrar</b>
+                    </button>
+                  </div>
+                </>
+              ) : (
+                <>
+                  <p>
+                    Clique no botão de autorizar que enviamos para{" "}
+                    <b>{emailState}</b>
+                  </p>
+                  <div className="mt-4">
+                    <button
+                      type="button"
+                      className="btn btn-primary btn-lg"
+                      onClick={checkSession}
+                    >
+                      <b>Já Confirmei!</b>
+                    </button>
+                  </div>
+                </>
+              )}
             </div>
           </div>
         )}
