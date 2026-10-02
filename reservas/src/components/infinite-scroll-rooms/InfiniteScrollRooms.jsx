@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import InfiniteScroll from 'react-infinite-scroll-component';
 import apiService from '../../services/client';
+import { hasMoreRoomPages, roomLoadErrorMessage } from './roomPagination.js';
 import './InfiniteScrollRooms.scss';
 
 const InfiniteScrollRooms = ({ date, time, onRoomSelect, userSearchInput = "" }) => {
@@ -31,22 +32,22 @@ const InfiniteScrollRooms = ({ date, time, onRoomSelect, userSearchInput = "" })
         userSearchInput
       );
       
-      if (response && response.data) {
+      if (response && Array.isArray(response.data)) {
         const newRooms = response.data;
         setRooms(prevRooms => resetData ? newRooms : [...prevRooms, ...newRooms]);
 
-        // Atualiza a página e verifica se há mais dados com base na paginação
-        if (currentPage >= response.pagination.total_pages) {
-          setHasMore(false);
-        } else {
+        if (hasMoreRoomPages(newRooms, response.pagination, currentPage)) {
           setPage(currentPage + 1);
+          setHasMore(true);
+        } else {
+          setHasMore(false);
         }
       } else {
         setHasMore(false);
       }
     } catch (error) {
       console.error("Erro ao buscar salas disponíveis:", error);
-      setError(error.response.data.error);
+      setError(roomLoadErrorMessage(error));
       setHasMore(false);
     } finally {
       setIsLoading(false);
