@@ -4,6 +4,7 @@ import apiService from "../../services/client";
 import Loading from "../../components/Loading";
 import { useFormContext } from "../../context/FormContext";
 import EventStatus from "../../utils/EventStatus";
+import { changeRequestMessage, statusLabel } from "../../utils/eventStatusLabel";
 
 const MyEvents = () => {
   const { eventTypes, odsTypes, targetPublicTypes, resourcesTypes } =
@@ -14,30 +15,7 @@ const MyEvents = () => {
 
   const userEmail = localStorage.getItem("userEmail");
 
-  // Status text and color mapping
-  const getStatusText = (status) => {
-    switch (status) {
-      case EventStatus.WAITING:
-        return "Aguardando";
-      case EventStatus.APPROVED_BY_COORDENACAO:
-        return "Aprovado pela Coordenação";
-      case EventStatus.REJECTED_BY_COORDENACAO:
-        return "Rejeitado pela Coordenação";
-      case EventStatus.APPROVED_BY_REITORIA:
-        return "Aprovado pela Reitoria";
-      case EventStatus.REJECTED_BY_REITORIA:
-        return "Rejeitado pela Reitoria";
-      case EventStatus.REQUESTED_CHANGE:
-        return "Alterações Solicitadas";
-      case EventStatus.DIRECT_APPROVAL:
-        return "Aprovado Diretamente";
-      case EventStatus.Draft:
-        return "Rascunho";
-      default:
-        return status || "Desconhecido";
-    }
-  };
-
+  // Status color mapping
   const getStatusColor = (status) => {
     switch (status) {
       case EventStatus.WAITING:
@@ -188,7 +166,8 @@ const MyEvents = () => {
               : "Tipo Indefinido";
 
             // Usar as funções auxiliares para status e cor
-            const statusText = getStatusText(item.status);
+            const statusText = statusLabel(item.status);
+            const requestedChange = changeRequestMessage(item);
             const badgeColor = getStatusColor(item.status);
 
             // ODS e Público-Alvo
@@ -238,6 +217,12 @@ const MyEvents = () => {
                     </h5>
                   </div>
                   <div className="card-body">
+                    {item.status === EventStatus.REQUESTED_CHANGE && (
+                      <div className="alert alert-warning" role="alert">
+                        <strong>A Coordenação pediu alterações.</strong>
+                        {requestedChange && <p className="mb-0">{requestedChange}</p>}
+                      </div>
+                    )}
                     <p className="card-title">{eventTypeName}</p>
                     <h6 className="card-subtitle card-muted">
                       <strong>Descrição:</strong>{" "}
@@ -312,7 +297,9 @@ const MyEvents = () => {
                         className="btn btn-outline-warning mt-2"
                         to={`/event/type-selection?eventId=${item._id}`}
                       >
-                        Editar Evento
+                        {item.status === EventStatus.REQUESTED_CHANGE
+                          ? "Corrigir e reenviar"
+                          : "Editar Evento"}
                       </Link>
                     )}
                   </div>
