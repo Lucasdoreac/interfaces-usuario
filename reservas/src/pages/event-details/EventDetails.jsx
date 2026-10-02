@@ -139,7 +139,7 @@ const EventDetails = () => {
             <p>Carregando dados do evento...</p>
           ) : (
             <>
-              <h4>Novo Evento</h4>
+              <h1 className="h4">Novo Evento</h1>
 
               <div className="form-group mt-3">
                 <label htmlFor="descricaoEvento">

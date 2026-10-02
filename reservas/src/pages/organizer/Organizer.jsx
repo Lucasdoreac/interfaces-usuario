@@ -66,6 +66,7 @@ function Organizer() {
         </div>
       </div>
       <div className="card-body" aria-busy={loading}>
+        <h1 className="visually-hidden">Organizador</h1>
         <form onSubmit={sendEmail} noValidate>
         <div className="row">
           <div className="col-md-12 text-center">
@@ -73,7 +74,7 @@ function Organizer() {
               className="img-man mb-2"
               src={AvatarImage}
               style={{ width: "200px" }}
-              alt="man avatar"
+              alt=""
             />
             <label htmlFor="organizer-email" className="visually-hidden">
               E-mail institucional

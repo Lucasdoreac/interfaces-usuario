@@ -100,7 +100,7 @@ const EventSchedule = () => {
         </span>
       </div>
       <div className="header-container">
-        <h2>Escolha o Dia e Horário</h2>
+        <h1 className="h2">Escolha o Dia e Horário</h1>
         <DatePickerComponent
           selectedDate={selectedDate}
           onDateChange={handleDateChange}
@@ -138,6 +138,7 @@ const EventSchedule = () => {
         {selectedRoom && (
           <div className="continue-button-containers">
             <button
+              type="button"
               className="btn btn-primary continue-button"
               onClick={handleContinue}
             >

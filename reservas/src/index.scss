@@ -61,3 +61,16 @@ code {
   margin: 8px 0 0;
   min-height: 0;
 }
+
+/* Keyboard focus: dark blue ring (12.6:1 on white), white on the blue header.
+   Bootstrap removes the outline on .btn/.form-control :focus-visible and loads after
+   this file, hence !important. Mouse clicks do not match :focus-visible. */
+:focus-visible {
+  outline: 3px solid #0a2d7a !important;
+  outline-offset: 2px !important;
+}
+
+.card-header :focus-visible,
+span.gradient :focus-visible {
+  outline-color: #fff !important;
+}

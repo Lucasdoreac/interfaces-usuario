@@ -129,7 +129,7 @@ const MyEvents = () => {
 
   return (
     <div className="container my-4">
-      <h2 className="mb-4">Meus Eventos</h2>
+      <h1 className="h2 mb-4">Meus Eventos</h1>
       {loading ? (
         <div className="d-flex justify-content-center align-items-center">
           <Loading />

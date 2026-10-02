@@ -99,7 +99,7 @@ const EventConfirmData = () => {
           />
         </span>
       </div>
-      <h2>Confirmar Dados do Evento</h2>
+      <h1 className="h2">Confirmar Dados do Evento</h1>
       <dl className="dados-preview">
         {summarizeEventData(formData).map(({ label, value }) => (
           <div key={label} className="dados-preview-item">
@@ -113,7 +113,7 @@ const EventConfirmData = () => {
           {errors.api}
         </div>
       )}
-      <button className="btn btn-primary" onClick={handleConfirm} disabled={submitting}>
+      <button type="button" className="btn btn-primary" onClick={handleConfirm} disabled={submitting}>
         {submitting ? "Enviando..." : "Confirmar"}
       </button>
       {submitting && <Loading />}
