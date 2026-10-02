@@ -5,6 +5,7 @@ import Loading from "../../components/Loading";
 import { useFormContext } from "../../context/FormContext";
 import EventStatus from "../../utils/EventStatus";
 import { eventCardView, statusLabel } from "../../utils/eventStatusLabel";
+import { safeHttpUrl } from "../../utils/safeUrl";
 
 const MyEvents = () => {
   const { eventTypes, odsTypes, targetPublicTypes, resourcesTypes } =
@@ -161,6 +162,8 @@ const MyEvents = () => {
 
             // Usar as funções auxiliares para status e cor
             const statusText = statusLabel(item.status);
+            const logoUrl = safeHttpUrl(item.eventLogo);
+            const subscriptionUrl = safeHttpUrl(item.subscriptionLink);
             const badgeColor = getStatusColor(item.status);
 
             // ODS e Público-Alvo
@@ -194,9 +197,10 @@ const MyEvents = () => {
             return (
               <div className="col-md-6 mb-4" key={item._id}>
                 <div className="card h-100 shadow">
-                  {item.eventLogo && (
+                  {logoUrl && (
                     <img
-                      src={item.eventLogo}
+                      src={logoUrl}
+                      referrerPolicy="no-referrer"
                       className="card-img-top"
                       alt={`${item.name} logo`}
                     />
@@ -272,11 +276,11 @@ const MyEvents = () => {
                           {item.studentsMonitors.join(", ")}
                         </h6>
                       )}
-                    {item.subscriptionLink && (
+                    {subscriptionUrl && (
                       <h6 className="card-subtitle card-muted">
                         <strong>Link de Inscrição:</strong>{" "}
                         <a
-                          href={item.subscriptionLink}
+                          href={subscriptionUrl}
                           target="_blank"
                           rel="noopener noreferrer"
                         >
