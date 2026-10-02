@@ -20,7 +20,7 @@
   },
   "scripts": {
     "dev": "react-router dev --host 0.0.0.0 --port 3000",
-    "build": "react-router build",
+    "build": "react-router build && node scripts/externalize-boot.mjs",
     "test": "node --test tests",
     "start": "react-router dev --host 0.0.0.0 --port 3000"
   },
