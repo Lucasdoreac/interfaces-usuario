@@ -1,7 +1,7 @@
 import "./Navbar.scss";
 import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 import { AiOutlineClose, AiOutlineMenu } from "react-icons/ai";
-import { useLocation, useNavigate } from 'react-router';
+import { Link, useLocation, useNavigate } from 'react-router';
 import apiService from "../../services/client";
 import { logoutNavigationState } from "../../utils/logoutNotice";
 import { endSession, hasSession, subscribeSession } from "../../utils/session";
@@ -22,6 +22,8 @@ const Navbar = () => {
     useEffect(() => {
         if (location.state?.loggedOut) endSession(globalThis.localStorage);
     }, [location]);
+
+    const closeMenu = () => setMenuOpen(false);
 
     const go = (path, state) => {
         setMenuOpen(false);
@@ -49,7 +51,7 @@ const Navbar = () => {
             <div className="nav left">
         <span className="gradient skew">
           <h1 className="logo un-skew mt-4">
-            <span onClick={() => go('/')}>LabTech UDF</span>
+            <Link to="/" onClick={closeMenu}>LabTech UDF</Link>
           </h1>
         </span>
                 <button
@@ -65,11 +67,11 @@ const Navbar = () => {
                 </button>
             </div>
             <div id="nav-links" className="nav right">
-        <span className="nav-link active" onClick={() => go('/organizer')}>
+        <Link className="nav-link active" to="/organizer" onClick={closeMenu}>
           <span className="nav-link-span">
             <span className="u-nav">Organizador</span>
           </span>
-        </span>
+        </Link>
               {loggedIn && (
                 <button type="button" id="logout" className="nav-link" onClick={logout}>
                   <span className="nav-link-span">

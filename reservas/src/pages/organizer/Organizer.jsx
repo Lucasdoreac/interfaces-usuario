@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import "./Organizer.scss";
 import AvatarImage from "../../images/man.png";
-import { AiOutlineLeft } from "react-icons/ai";
+import BackButton from "../../components/BackButton";
 import { useLocation, useNavigate } from "react-router";
 import apiService from "../../services/client";
 import { isAllowedOrganizerEmail } from "../../utils/emailPolicy";
@@ -13,6 +13,7 @@ function Organizer() {
   const [errors, setErro] = useState("");
   const [loading, setLoading] = useState(false);
   const [notice, setNotice] = useState("");
+  const emailRef = useRef(null);
   const navigate = useNavigate();
   const location = useLocation();
   const logoutNotice = logoutNoticeFrom(location.state);
@@ -42,15 +43,18 @@ function Organizer() {
     }
   };
 
+  // A validation error moves the focus to the invalid field, so keyboard and
+  // screen-reader users land where the correction is made (the alert is read via aria-describedby).
+  const invalidEmail = (message) => {
+    setErro(message);
+    emailRef.current?.focus();
+    return false;
+  };
+
   const validEmail = () => {
-    if (!email.trim()) {
-      setErro("O campo e-mail é obrigatório.");
-      return false;
-    }
-    if (!isAllowedOrganizerEmail(email, import.meta.env.VITE_AUTH_EMAIL_ALLOWLIST)) {
-      setErro("O campo e-mail está fora do formato permitido.");
-      return false;
-    }
+    if (!email.trim()) return invalidEmail("O campo e-mail é obrigatório.");
+    if (!isAllowedOrganizerEmail(email, import.meta.env.VITE_AUTH_EMAIL_ALLOWLIST))
+      return invalidEmail("O campo e-mail está fora do formato permitido.");
     return true;
   };
 
@@ -58,17 +62,11 @@ function Organizer() {
     <div>
       <div className="card-header">
         <div className="d-flex justify-content-start">
-          <span onClick={() => navigate("/")}>
-            <AiOutlineLeft
-              size="20px"
-              color="white"
-              style={{ margin: "0px 10px 0px 0px" }}
-            />
-          </span>
-          <h5>Voltar</h5>
+          <BackButton onClick={() => navigate("/")} />
         </div>
       </div>
-      <div className="card-body">
+      <div className="card-body" aria-busy={loading}>
+        <form onSubmit={sendEmail} noValidate>
         <div className="row">
           <div className="col-md-12 text-center">
             <img
@@ -77,21 +75,37 @@ function Organizer() {
               style={{ width: "200px" }}
               alt="man avatar"
             />
+            <label htmlFor="organizer-email" className="visually-hidden">
+              E-mail institucional
+            </label>
             <input
+              id="organizer-email"
+              ref={emailRef}
               type="email"
               name="email"
+              inputMode="email"
+              autoComplete="email"
+              required
               placeholder="Digite seu email@udf.edu.br"
               value={email}
               onChange={handleChange}
               className="form-control"
+              aria-invalid={errors ? "true" : undefined}
+              aria-describedby={errors ? "organizer-email-error" : undefined}
             />
-            {errors && <span style={{ color: "red" }}>{errors}</span>}
-            {logoutNotice && <p role="status" style={{ color: "#555" }}>{logoutNotice}</p>}
-            {notice && <span role="status" style={{ color: "#555" }}>{notice}</span>}
+            {errors && (
+              <p id="organizer-email-error" role="alert" className="form-error">
+                {errors}
+              </p>
+            )}
+            {/* Always mounted: a live region is announced when its text changes, not when it appears. */}
+            <div role="status" aria-live="polite" className="form-notice">
+              {notice}
+            </div>
+            {logoutNotice && <p role="status" className="form-notice">{logoutNotice}</p>}
             <div className="mt-4">
               <button
                 type="submit"
-                onClick={sendEmail}
                 className="btn btn-primary btn-lg"
                 disabled={loading}
               >
@@ -100,6 +114,7 @@ function Organizer() {
             </div>
           </div>
         </div>
+        </form>
       </div>
     </div>
   );

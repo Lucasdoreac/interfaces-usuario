@@ -46,6 +46,9 @@ const PrivateRoute = ({ element: Component, ...rest }) => {
   if (isAuthorized === null) {
     return (
       <div
+        role="status"
+        aria-live="polite"
+        aria-busy="true"
         style={{
           display: "flex",
           flexDirection: "column",
@@ -54,7 +57,7 @@ const PrivateRoute = ({ element: Component, ...rest }) => {
         }}
       >
         <Loading />
-        {waking && <p role="status" style={{ color: "#555" }}>{WAKING_MESSAGE}</p>}
+        <p className="form-notice">{waking ? WAKING_MESSAGE : ""}</p>
       </div>
     );
   }
