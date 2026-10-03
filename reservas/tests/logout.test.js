@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { test } from "node:test";
 import { endSession, hasSession } from "../src/utils/session.js";
+import { LOGOUT_UNCONFIRMED_MESSAGE, logoutNavigationState, logoutNoticeFrom } from "../src/utils/logoutNotice.js";
 
 function createStorage(values = {}) {
   return {
@@ -37,7 +38,7 @@ test("#17 the session is cleared after the navigation to the login page, not bef
   // Clearing first made the page being left redirect to "acesso negado".
   const navbar = readFileSync(new URL("../src/components/Navbar/Navbar.jsx", import.meta.url), "utf8");
   const logout = navbar.match(/const logout = async \(\) => \{[\s\S]*?\n    \};/)[0];
-  assert.match(logout, /go\('\/organizer', \{ loggedOut: true \}\)/);
+  assert.match(logout, /go\('\/organizer', logoutNavigationState\(confirmed\)\)/);
   assert.doesNotMatch(logout, /endSession/);
   assert.match(navbar, /useEffect\(\(\) => \{\s*if \(location\.state\?\.loggedOut\) endSession\(globalThis\.localStorage\);/);
 });
@@ -114,6 +115,28 @@ test("the Sair button asks the server before the local session is cleared, and c
   const logout = navbar.match(/const logout = async \(\) => \{[\s\S]*?\n    \};/)[0];
   assert.ok(logout.indexOf("await apiService.logoutSession()") !== -1);
   assert.ok(logout.indexOf("await apiService.logoutSession()") < logout.indexOf("go('/organizer'"));
-  assert.match(logout, /finally \{[\s\S]*go\('\/organizer', \{ loggedOut: true \}\)/);   // navigation (and so the clearing) runs on failure too
+  assert.match(logout, /finally \{[\s\S]*go\('\/organizer', logoutNavigationState\(confirmed\)\)/);   // navigation (and so the clearing) runs on failure too
   assert.match(navbar, /if \(leaving\.current\) return;/);                                // a second click does not start a second logout
+});
+
+test("the login notice is decided from the server result: confirmed shows nothing, anything else warns", () => {
+  assert.deepEqual(logoutNavigationState(true), { loggedOut: true });
+  assert.deepEqual(logoutNavigationState(false), { loggedOut: true, logoutUnconfirmed: true });
+  assert.deepEqual(logoutNavigationState(undefined), { loggedOut: true, logoutUnconfirmed: true });
+  assert.equal(logoutNoticeFrom({ loggedOut: true }), "");
+  assert.equal(logoutNoticeFrom(null), "");
+  assert.equal(logoutNoticeFrom({ loggedOut: true, logoutUnconfirmed: true }), LOGOUT_UNCONFIRMED_MESSAGE);
+  assert.match(LOGOUT_UNCONFIRMED_MESSAGE, /saiu neste navegador/);
+  assert.match(LOGOUT_UNCONFIRMED_MESSAGE, /12 horas/);
+});
+
+test("the Navbar passes the server result on and the login page shows it in a status region, only from navigation state", () => {
+  const navbar = readFileSync(new URL("../src/components/Navbar/Navbar.jsx", import.meta.url), "utf8");
+  const logout = navbar.match(/const logout = async \(\) => \{[\s\S]*?\n    \};/)[0];
+  assert.match(logout, /confirmed = \(await apiService\.logoutSession\(\)\) === true/);
+  assert.equal((logout.match(/logoutSession\(/g) || []).length, 1);   // no automatic repeat
+  assert.doesNotMatch(logout, /token/i);                               // the token is never carried
+  const organizer = readFileSync(new URL("../src/pages/organizer/Organizer.jsx", import.meta.url), "utf8");
+  assert.match(organizer, /logoutNoticeFrom\(location\.state\)/);
+  assert.match(organizer, /role="status"[^>]*>\{logoutNotice\}/);
 });

@@ -2,9 +2,10 @@ import React, { useState, useEffect } from "react";
 import "./Organizer.scss";
 import AvatarImage from "../../images/man.png";
 import { AiOutlineLeft } from "react-icons/ai";
-import { useNavigate } from "react-router";
+import { useLocation, useNavigate } from "react-router";
 import apiService from "../../services/client";
 import { isAllowedOrganizerEmail } from "../../utils/emailPolicy";
+import { logoutNoticeFrom } from "../../utils/logoutNotice";
 import { WAKING_MESSAGE } from "../../utils/wakingMessage";
 
 function Organizer() {
@@ -13,6 +14,8 @@ function Organizer() {
   const [loading, setLoading] = useState(false);
   const [notice, setNotice] = useState("");
   const navigate = useNavigate();
+  const location = useLocation();
+  const logoutNotice = logoutNoticeFrom(location.state);
 
   const handleChange = (e) => {
     setEmail(e.target.value);
@@ -83,6 +86,7 @@ function Organizer() {
               className="form-control"
             />
             {errors && <span style={{ color: "red" }}>{errors}</span>}
+            {logoutNotice && <p role="status" style={{ color: "#555" }}>{logoutNotice}</p>}
             {notice && <span role="status" style={{ color: "#555" }}>{notice}</span>}
             <div className="mt-4">
               <button
