@@ -1,78 +1,40 @@
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import InfiniteScroll from 'react-infinite-scroll-component';
 import apiService from '../../services/client';
-import { hasMoreRoomPages, roomLoadErrorMessage } from './roomPagination.js';
+import { createRoomsLoader } from './roomPagination.js';
 import './InfiniteScrollRooms.scss';
 
 const InfiniteScrollRooms = ({ date, time, onRoomSelect, userSearchInput = "" }) => {
-  const [rooms, setRooms] = useState([]);
-  const [page, setPage] = useState(1);
   const pageSize = 10;
-  const [hasMore, setHasMore] = useState(true);
+  const [{ rooms, hasMore, error }, setLoaderState] = useState({
+    rooms: [],
+    hasMore: true,
+    error: null,
+  });
   const [selectedRoomId, setSelectedRoomId] = useState(null);
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState(null);
 
   // Formata a data para o formato "YYYY-MM-DD"
   const formattedDate = date.toISOString().split('T')[0];
 
-  // Use useCallback to prevent recreating this function on every render
-  const fetchRooms = useCallback(async (currentPage = 1, resetData = false) => {
-    if (isLoading) return;
-    
-    setIsLoading(true);
-    if(resetData) setRooms([]);
-    setError(null);
-    try {
-      const response = await apiService.getAvailableSlots(
-        formattedDate, 
-        time, 
-        currentPage, 
-        pageSize, 
-        userSearchInput
-      );
-      
-      if (response && Array.isArray(response.data)) {
-        const newRooms = response.data;
-        setRooms(prevRooms => resetData ? newRooms : [...prevRooms, ...newRooms]);
+  // O controlador descarta respostas de filtros antigos e guarda o pedido em andamento.
+  const loaderRef = useRef(null);
+  if (!loaderRef.current) {
+    loaderRef.current = createRoomsLoader({
+      fetchPage: (page, filter) =>
+        apiService.getAvailableSlots(filter.date, filter.time, page, pageSize, filter.search),
+      onChange: setLoaderState,
+    });
+  }
+  const loader = loaderRef.current;
 
-        if (hasMoreRoomPages(newRooms, response.pagination, currentPage)) {
-          setPage(currentPage + 1);
-          setHasMore(true);
-        } else {
-          setHasMore(false);
-        }
-      } else {
-        setHasMore(false);
-      }
-    } catch (error) {
-      console.error("Erro ao buscar salas disponíveis:", error);
-      setError(roomLoadErrorMessage(error));
-      setHasMore(false);
-    } finally {
-      setIsLoading(false);
-    }
-  }, [formattedDate, time, pageSize, userSearchInput]);
-  
+  // Reinicia e busca a primeira página quando os filtros mudam
   useEffect(() => {
-    setError(null);
-  }, [userSearchInput]);
-
-  // Reset and fetch initial data when search parameters change
-  useEffect(() => {
-    setPage(1);
-    setHasMore(true);
     setSelectedRoomId(null);
-    fetchRooms(1, true);
-  }, [formattedDate, time, userSearchInput]);
+    loader.setFilter({ date: formattedDate, time, search: userSearchInput });
+    return () => loader.cancel();
+  }, [loader, formattedDate, time, userSearchInput]);
 
-  // Function to load more data
-  const loadMoreRooms = () => {
-    if (!isLoading && hasMore) {
-      fetchRooms(page, false);
-      return;
-    }
-  };
+  const loadMoreRooms = () => loader.loadMore();
 
   const handleSelectRoom = (roomId) => {
     setSelectedRoomId(roomId);
@@ -83,7 +45,12 @@ const InfiniteScrollRooms = ({ date, time, onRoomSelect, userSearchInput = "" })
 
     return (
     error ? (
-      <div className="error-message">{error}</div>
+      <div className="error-message" role="alert">
+        <p>{error}</p>
+        <button type="button" className="btn btn-outline-primary" onClick={() => loader.retry()}>
+          Tentar novamente
+        </button>
+      </div>
     ) : (
       <InfiniteScroll
         dataLength={rooms.length}
