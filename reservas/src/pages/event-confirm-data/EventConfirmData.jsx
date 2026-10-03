@@ -6,6 +6,7 @@ import apiService from "../../services/client";
 import { summarizeEventData } from "../../utils/eventSummary";
 import Loading from "../../components/Loading";
 import { runSingleFlight } from "../../utils/singleFlight";
+import { clearStoredDraftId } from "../../utils/draftCreateLock";
 import "./EventConfirmData.scss";
 
 const EventConfirmData = () => {
@@ -39,6 +40,8 @@ const EventConfirmData = () => {
         return;
       }
       console.log("Form submitted", eventId);
+      // O evento enviado não é mais editável: outro separador não deve reutilizá-lo.
+      clearStoredDraftId(localStorage);
       navigate(`/event/confirmation?eventId=${eventId}`);
     } catch (error) {
       console.error("Error submitting:", error);

@@ -33,3 +33,10 @@ export async function saveDraftCoordinated({ eventId, storage, locks, send }) {
     return id;
   });
 }
+
+// Depois do envio final para aprovação o evento deixa de ser editável: o id
+// guardado precisa sair do storage, senão outro separador sem estado o reutilizaria
+// (PUT -> 409) em vez de criar um rascunho novo.
+export function clearStoredDraftId(storage) {
+  storage.removeItem("eventId");
+}
