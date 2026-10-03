@@ -1,23 +1,41 @@
 import "./Navbar.scss";
-import { useState } from "react";
+import { useEffect, useState, useSyncExternalStore } from "react";
 import { AiOutlineClose, AiOutlineMenu } from "react-icons/ai";
-import { useNavigate } from 'react-router';
+import { Link, useLocation, useNavigate } from 'react-router';
+import { endSession, hasSession, subscribeSession } from "../../utils/session";
 
 const Navbar = () => {
     const navigate = useNavigate(); // useNavigate para alterar a URL
+    const location = useLocation();
     const [menuOpen, setMenuOpen] = useState(false);
+    const loggedIn = useSyncExternalStore(
+        subscribeSession,
+        () => hasSession(globalThis.localStorage),
+        () => false,
+    );
 
-    const go = (path) => {
+    // The session is removed only after the navigation to the login page has
+    // committed. Clearing it first lets the page being left see a missing token
+    // and redirect to "acesso negado" before the login page opens.
+    useEffect(() => {
+        if (location.state?.loggedOut) endSession(globalThis.localStorage);
+    }, [location]);
+
+    const closeMenu = () => setMenuOpen(false);
+
+    const go = (path, state) => {
         setMenuOpen(false);
-        navigate(path);
+        navigate(path, state ? { state } : undefined);
     };
+
+    const logout = () => go('/organizer', { loggedOut: true });
 
     return (
         <nav id="nav" className={menuOpen ? "nav-visible" : undefined}>
             <div className="nav left">
         <span className="gradient skew">
           <div className="logo un-skew mt-4">
-            <span onClick={() => go('/')}>LabTech UDF</span>
+            <Link to="/" onClick={closeMenu}>LabTech UDF</Link>
           </div>
         </span>
                 <button
@@ -33,11 +51,18 @@ const Navbar = () => {
                 </button>
             </div>
             <div id="nav-links" className="nav right">
-        <span className="nav-link active" onClick={() => go('/organizer')}>
+        <Link className="nav-link active" to="/organizer" onClick={closeMenu}>
           <span className="nav-link-span">
             <span className="u-nav">Organizador</span>
           </span>
-        </span>
+        </Link>
+              {loggedIn && (
+                <button type="button" id="logout" className="nav-link" onClick={logout}>
+                  <span className="nav-link-span">
+                    <span className="u-nav">Sair</span>
+                  </span>
+                </button>
+              )}
             </div>
         </nav>
     );

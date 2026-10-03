@@ -38,6 +38,30 @@ code {
   padding: 10px 20px !important;
 }
 
+.back-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 0;
+  color: inherit;
+  font-size: 1.25rem; /* the size of the h5 it replaces */
+  font-weight: 500;
+  line-height: 1.2;
+  margin-bottom: 0.5rem; /* the h5 margin: keeps the card header the height it had */
+}
+
+.form-error {
+  color: #b00020; /* 7.3:1 on white; the red used before is 4.0:1 */
+  margin: 8px 0 0;
+  font-size: 0.95rem;
+}
+
+.form-notice {
+  color: #555555; /* 7.5:1 on white, the color the notice already had */
+  margin: 8px 0 0;
+  min-height: 0;
+}
+
 /* Keyboard focus: dark blue ring (12.6:1 on white), white on the blue header.
    Bootstrap removes the outline on .btn/.form-control :focus-visible and loads after
    this file, hence !important. Mouse clicks do not match :focus-visible. */

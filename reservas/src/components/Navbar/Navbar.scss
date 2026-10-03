@@ -177,6 +177,17 @@ a:hover {
   padding-right: 2em;
 }
 
+// .nav-link used to be a <span> and took the Bootstrap blue; as an <a> it would pick up the
+// a:link/a:hover rules and the gradient of .nav a:link.active. Keep today's look.
+#nav a.nav-link {
+  color: #0d6efd;
+  text-decoration: none;
+  background: none;
+}
+#nav a.nav-link:hover {
+  text-decoration: none;
+}
+
 @media (min-width: 800px) {
   #nav-wrapper {
     overflow: hidden;
@@ -241,4 +252,11 @@ a:hover {
   100% {
     padding-right: 5em;
   }
+}
+
+#nav #logout {
+  background: none;
+  border: 0;
+  cursor: pointer;
+  font: inherit;
 }
