@@ -2,9 +2,10 @@ import React, { useState, useEffect, useRef } from "react";
 import "./Organizer.scss";
 import AvatarImage from "../../images/man.png";
 import BackButton from "../../components/BackButton";
-import { useNavigate } from "react-router";
+import { useLocation, useNavigate } from "react-router";
 import apiService from "../../services/client";
 import { isAllowedOrganizerEmail } from "../../utils/emailPolicy";
+import { logoutNoticeFrom } from "../../utils/logoutNotice";
 import { WAKING_MESSAGE } from "../../utils/wakingMessage";
 
 function Organizer() {
@@ -14,6 +15,8 @@ function Organizer() {
   const [notice, setNotice] = useState("");
   const emailRef = useRef(null);
   const navigate = useNavigate();
+  const location = useLocation();
+  const logoutNotice = logoutNoticeFrom(location.state);
 
   const handleChange = (e) => {
     setEmail(e.target.value);
@@ -100,6 +103,7 @@ function Organizer() {
             <div role="status" aria-live="polite" className="form-notice">
               {notice}
             </div>
+            {logoutNotice && <p role="status" className="form-notice">{logoutNotice}</p>}
             <div className="mt-4">
               <button
                 type="submit"
