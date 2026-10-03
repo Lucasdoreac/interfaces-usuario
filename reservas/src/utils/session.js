@@ -2,6 +2,15 @@
 // The session is the token and e-mail kept in localStorage by the login callback.
 export const hasSession = (storage) => Boolean(storage?.getItem("token") && storage?.getItem("userEmail"));
 
+// Decides, from a "storage" event fired by ANOTHER tab, whether the session this tab was
+// using is gone: the token or e-mail was removed, or the whole storage was cleared (key null).
+// Same-tab announcements carry no key and are ignored; the other tab already navigated away.
+export function sessionEndedByStorageEvent(event, storage) {
+  if (!event) return false;
+  const touchesSession = event.key === null || event.key === "token" || event.key === "userEmail";
+  return touchesSession && !hasSession(storage);
+}
+
 const SESSION_EVENT = "labtech:session";
 
 // Lets components follow the session without reloading: other tabs fire
