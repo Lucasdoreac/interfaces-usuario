@@ -9,6 +9,7 @@ import apiService from "../services/client";
 import EventStatus from "../utils/EventStatus";
 import { formatDateForMongoDB } from "../utils/dateUtils";
 import { saveDraftCoordinated } from "../utils/draftCreateLock";
+import { draftSaveFailure } from "../utils/draftSaveFailure";
 
 const FormContext = createContext();
 
@@ -19,6 +20,7 @@ export const FormProvider = ({ children }) => {
     return savedData ? JSON.parse(savedData) : {};
   });
   const [eventId, setEventId] = useState("");
+  const [saveFailure, setSaveFailure] = useState(null);
 
   // State for types data from API
   const [eventTypes, setEventTypes] = useState([]);
@@ -80,6 +82,7 @@ export const FormProvider = ({ children }) => {
    * If an empty string is provided, reset formData and clear eventId.
    */
   const fillOutFormData = useCallback(async (eventId = "") => {
+    setSaveFailure(null);
     localStorage.setItem("eventId", eventId);
     localStorage.removeItem("formData");
 
@@ -143,6 +146,7 @@ export const FormProvider = ({ children }) => {
   };
 
   const saveDraft = async () => {
+    setSaveFailure(null);
     try {
       // Sem eventId no estado, a criação passa pelo lock entre separadores.
       const draftId = await saveDraftCoordinated({
@@ -155,6 +159,7 @@ export const FormProvider = ({ children }) => {
       return draftId;
     } catch (error) {
       console.error("Erro ao salvar draft:", error);
+      setSaveFailure(draftSaveFailure(error));
       return null;
     }
   };
@@ -207,6 +212,7 @@ export const FormProvider = ({ children }) => {
       value={{
         formData,
         saveDraft,
+        saveFailure,
         handleChange,
         handleOdsChange,
         handleCursoChanged,
