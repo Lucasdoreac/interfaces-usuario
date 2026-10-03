@@ -1,8 +1,10 @@
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import { AiOutlineLeft } from "react-icons/ai";
 import { useNavigate, useLocation } from "react-router";
 import { useFormContext } from "../../context/FormContext";
 import TwoButtons from "../../components/TwoButtons";
+import Loading from "../../components/Loading";
+import { runSingleFlight } from "../../utils/singleFlight";
 import {
   descriptionDisabled,
   staleDescriptionReset,
@@ -21,6 +23,8 @@ const EventLogistics = () => {
     formData.alunosMonitores || []
   );
   const [errors, setErrors] = useState({});
+  const [submitting, setSubmitting] = useState(false);
+  const flight = useRef(false);
   const [logoPreview, setLogoPreview] = useState(null);
 
   const handleAddAluno = () => {
@@ -59,18 +63,23 @@ const EventLogistics = () => {
     if (reset) handleChange({ target: reset });
   };
 
-  const handleNext = async () => {
-    const found = validateLogistics(formData);
-    setErrors(found);
-    if (Object.keys(found).length > 0) return;
-    const savedDraftEventId = await saveDraft();
-    if (savedDraftEventId) {
-      navigate(`/event/schedule?eventId=${savedDraftEventId}`);
-    } else {
-      // Handle the error if the draft wasn't saved correctly
-      console.error("Draft was not saved correctly.");
-    }
-  };
+  const handleNext = () =>
+    runSingleFlight(
+      flight,
+      async () => {
+        const found = validateLogistics(formData);
+        setErrors(found);
+        if (Object.keys(found).length > 0) return;
+        const savedDraftEventId = await saveDraft();
+        if (savedDraftEventId) {
+          navigate(`/event/schedule?eventId=${savedDraftEventId}`);
+        } else {
+          // Handle the error if the draft wasn't saved correctly
+          console.error("Draft was not saved correctly.");
+        }
+      },
+      setSubmitting
+    );
 
   const renderError = (field) =>
     errors[field] && <span className="error">{errors[field]}</span>;
@@ -246,7 +255,8 @@ const EventLogistics = () => {
             )}
           </div>
 
-          <TwoButtons saveDraft={saveDraft} handleNext={handleNext} />
+          <TwoButtons saveDraft={saveDraft} handleNext={handleNext} disabled={submitting} />
+          {submitting && <Loading />}
         </div>
       </div>
     </form>
