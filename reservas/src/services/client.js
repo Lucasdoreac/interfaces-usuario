@@ -4,11 +4,13 @@ export class ApiService {
     fetchImpl = globalThis.fetch,
     storage = globalThis.localStorage,
     wakeTimeoutMs = 90000,
+    logoutTimeoutMs = 5000,
   } = {}) {
     this.baseURL = baseURL.replace(/\/$/, "");
     this.fetchImpl = fetchImpl.bind(globalThis);
     this.storage = storage;
     this.wakeTimeoutMs = wakeTimeoutMs;
+    this.logoutTimeoutMs = logoutTimeoutMs;
     this.wakingListeners = new Set();
     this.pendingWakes = new Map();
     this.http = {
@@ -102,6 +104,31 @@ export class ApiService {
       throw error;
     }
     return { status: response.status, data: responseData };
+  }
+
+  // Ends the session at the Auth service (through the API) so the token stops working there too.
+  // Best effort and bounded: leaving must never wait for, or fail because of, a sleeping or
+  // unreachable service, so there is no wake-and-retry and nothing here throws. The caller
+  // clears the local session afterwards either way. Resolves true only when the server confirmed.
+  async logoutSession() {
+    const token = this.storage?.getItem("token");
+    const email = this.storage?.getItem("userEmail");
+    if (!token || !email) return false;
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), this.logoutTimeoutMs);
+    try {
+      const response = await this.fetchImpl(new URL(`${this.baseURL}/auth/logout`), {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, token }),
+        signal: controller.signal,
+      });
+      return response.ok;
+    } catch {
+      return false;
+    } finally {
+      clearTimeout(timer);
+    }
   }
 
   async postAuthMail(email) {
