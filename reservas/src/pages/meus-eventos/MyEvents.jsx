@@ -4,7 +4,7 @@ import apiService from "../../services/client";
 import Loading from "../../components/Loading";
 import { useFormContext } from "../../context/FormContext";
 import EventStatus from "../../utils/EventStatus";
-import { safeHttpUrl } from "../../utils/safeUrl";
+import { linkText, safeHttpUrl } from "../../utils/safeUrl";
 
 const MyEvents = () => {
   const { eventTypes, odsTypes, targetPublicTypes, resourcesTypes } =
@@ -304,7 +304,7 @@ const MyEvents = () => {
                           target="_blank"
                           rel="noopener noreferrer"
                         >
-                          {item.subscriptionLink}
+                          {linkText(item.subscriptionLink, subscriptionUrl)}
                         </a>
                       </h6>
                     )}
