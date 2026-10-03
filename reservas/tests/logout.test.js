@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { test } from "node:test";
-import { endSession, hasSession } from "../src/utils/session.js";
+import { endSession, hasSession, sessionEndedByStorageEvent } from "../src/utils/session.js";
 import { LOGOUT_UNCONFIRMED_MESSAGE, logoutNavigationState, logoutNoticeFrom } from "../src/utils/logoutNotice.js";
 
 function createStorage(values = {}) {
@@ -52,6 +52,35 @@ test("#17 ending the session announces it to this tab", () => {
     delete globalThis.window;
   }
   assert.deepEqual(events, ["labtech:session"]);
+});
+
+test("#44 another tab ending the session is detected from the storage event", () => {
+  const empty = createStorage();
+  const alive = createStorage({ token: "t", userEmail: "a@udf.edu.br" });
+  // localStorage.clear() in the other tab: key is null
+  assert.equal(sessionEndedByStorageEvent({ key: null }, empty), true);
+  // token or e-mail removed
+  assert.equal(sessionEndedByStorageEvent({ key: "token", newValue: null }, createStorage({ userEmail: "a@udf.edu.br" })), true);
+  assert.equal(sessionEndedByStorageEvent({ key: "userEmail", newValue: null }, createStorage({ token: "t" })), true);
+  // unrelated keys, a still valid session, same-tab announcements and no event do not close the tab
+  assert.equal(sessionEndedByStorageEvent({ key: "formData", newValue: null }, empty), false);
+  assert.equal(sessionEndedByStorageEvent({ key: null }, alive), false);
+  assert.equal(sessionEndedByStorageEvent({ key: "token", newValue: "novo" }, alive), false);
+  assert.equal(sessionEndedByStorageEvent({ type: "labtech:session" }, empty), false);
+  assert.equal(sessionEndedByStorageEvent(undefined, empty), false);
+});
+
+test("#44 every private route listens through PrivateRoute and leaves for /organizer", () => {
+  // Wiring check only (no browser): the listener lives in the guard all private routes share.
+  const guard = readFileSync(new URL("../src/PrivateRoute.jsx", import.meta.url), "utf8");
+  assert.match(guard, /addEventListener\("storage", onStorage\)/);
+  assert.match(guard, /removeEventListener\("storage", onStorage\)/);
+  assert.match(guard, /sessionEndedByStorageEvent\(event, globalThis\.localStorage\)/);
+  assert.match(guard, /setIsAuthorized\(false\);\s*navigate\("\/organizer"/);
+  for (const route of ["event-type-selection", "event-schedule", "event-confirm-data", "event-confirmation", "my-events"]) {
+    const source = readFileSync(new URL(`../app/routes/${route}.jsx`, import.meta.url), "utf8");
+    assert.match(source, /<PrivateRoute /, `${route} must use PrivateRoute`);
+  }
 });
 
 // --- server-side logout (the Auth deletes the session) ---------------------------------------
