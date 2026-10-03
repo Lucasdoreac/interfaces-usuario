@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
-import { saveDraftCoordinated } from "../src/utils/draftCreateLock.js";
+import { readFileSync } from "node:fs";
+import { clearStoredDraftId, saveDraftCoordinated } from "../src/utils/draftCreateLock.js";
 
 const ID = "64b7f0c2a1b2c3d4e5f60718";
 
@@ -9,6 +10,7 @@ function createStorage(values = {}) {
     values: { ...values },
     getItem(key) { return this.values[key] ?? null; },
     setItem(key, value) { this.values[key] = value; },
+    removeItem(key) { delete this.values[key]; },
   };
 }
 
@@ -88,4 +90,33 @@ test("a failed create releases the lock and stores nothing", async () => {
   const api = fakeApi(storage);
   await saveDraftCoordinated({ eventId: "", storage, locks, send: api.send });
   assert.equal(api.calls.create, 1);
+});
+
+test("after the final submission a coordinated create with empty state creates, it does not reuse the submitted id", async () => {
+  const storage = createStorage({ eventId: ID });
+  clearStoredDraftId(storage);
+  assert.equal(storage.getItem("eventId"), null);
+  const api = fakeApi(storage);
+  await saveDraftCoordinated({ eventId: "", storage, locks: fakeLocks(), send: api.send });
+  assert.equal(api.calls.create, 1);
+  assert.deepEqual(api.calls.update, []);
+});
+
+test("without clearing, a second tab would reuse the submitted id (the gap the clear closes)", async () => {
+  const storage = createStorage({ eventId: ID });
+  const api = fakeApi(storage);
+  await saveDraftCoordinated({ eventId: "", storage, locks: fakeLocks(), send: api.send });
+  assert.equal(api.calls.create, 0);
+  assert.deepEqual(api.calls.update, [ID]);
+});
+
+test("the final submission clears the stored id only after the approval request succeeds", () => {
+  const source = readFileSync(new URL("../src/pages/event-confirm-data/EventConfirmData.jsx", import.meta.url), "utf8");
+  const submit = source.indexOf("submitEventForApproval(");
+  const guard = source.indexOf("if (!event_submission)");
+  const clear = source.indexOf("clearStoredDraftId(localStorage)");
+  const nav = source.indexOf("navigate(`/event/confirmation");
+  assert.ok(submit > 0 && guard > submit, "submit then guard");
+  assert.ok(clear > guard, "clear only after the success guard");
+  assert.ok(nav > clear, "clear before navigating");
 });
