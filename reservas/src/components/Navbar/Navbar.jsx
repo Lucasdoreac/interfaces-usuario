@@ -3,6 +3,7 @@ import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 import { AiOutlineClose, AiOutlineMenu } from "react-icons/ai";
 import { useLocation, useNavigate } from 'react-router';
 import apiService from "../../services/client";
+import { logoutNavigationState } from "../../utils/logoutNotice";
 import { endSession, hasSession, subscribeSession } from "../../utils/session";
 
 const Navbar = () => {
@@ -33,11 +34,13 @@ const Navbar = () => {
     const logout = async () => {
         if (leaving.current) return;
         leaving.current = true;
+        let confirmed = false;
         try {
-            await apiService.logoutSession();
+            confirmed = (await apiService.logoutSession()) === true;
         } finally {
             leaving.current = false;
-            go('/organizer', { loggedOut: true });
+            // Sai sempre; se o servidor não confirmou, a tela de login avisa (sem repetir a chamada).
+            go('/organizer', logoutNavigationState(confirmed));
         }
     };
 
