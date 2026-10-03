@@ -4,6 +4,7 @@ import apiService from "../../services/client";
 import Loading from "../../components/Loading";
 import { useFormContext } from "../../context/FormContext";
 import EventStatus from "../../utils/EventStatus";
+import { eventCardView, statusLabel } from "../../utils/eventStatusLabel";
 import { linkText, safeHttpUrl } from "../../utils/safeUrl";
 
 const MyEvents = () => {
@@ -15,30 +16,7 @@ const MyEvents = () => {
 
   const userEmail = localStorage.getItem("userEmail");
 
-  // Status text and color mapping
-  const getStatusText = (status) => {
-    switch (status) {
-      case EventStatus.WAITING:
-        return "Aguardando";
-      case EventStatus.APPROVED_BY_COORDENACAO:
-        return "Aprovado pela Coordenação";
-      case EventStatus.REJECTED_BY_COORDENACAO:
-        return "Rejeitado pela Coordenação";
-      case EventStatus.APPROVED_BY_REITORIA:
-        return "Aprovado pela Reitoria";
-      case EventStatus.REJECTED_BY_REITORIA:
-        return "Rejeitado pela Reitoria";
-      case EventStatus.REQUESTED_CHANGE:
-        return "Alterações Solicitadas";
-      case EventStatus.DIRECT_APPROVAL:
-        return "Aprovado Diretamente";
-      case EventStatus.Draft:
-        return "Rascunho";
-      default:
-        return status || "Desconhecido";
-    }
-  };
-
+  // Status color mapping
   const getStatusColor = (status) => {
     switch (status) {
       case EventStatus.WAITING:
@@ -57,12 +35,6 @@ const MyEvents = () => {
       default:
         return "info";
     }
-  };
-
-  const canEditEvent = (status) => {
-    return (
-      status === EventStatus.REQUESTED_CHANGE || status === EventStatus.DRAFT
-    );
   };
 
   useEffect(() => {
@@ -130,7 +102,7 @@ const MyEvents = () => {
 
   return (
     <div className="container my-4">
-      <h2 className="mb-4">Meus Eventos</h2>
+      <h1 className="h2 mb-4">Meus Eventos</h1>
       {loading ? (
         <div className="d-flex justify-content-center align-items-center">
           <Loading />
@@ -177,8 +149,8 @@ const MyEvents = () => {
                 .padStart(2, "0")}`;
             }
 
-            // Verifica se o evento pode ser editado usando a função auxiliar
-            const canEdit = canEditEvent(item.status);
+            // Aviso de alterações e link de edição vêm do helper testado
+            const { changeNotice, editLink } = eventCardView(item);
 
             // Encontrar o nome do tipo de evento
             const eventTypeObj = eventTypes.find(
@@ -189,7 +161,7 @@ const MyEvents = () => {
               : "Tipo Indefinido";
 
             // Usar as funções auxiliares para status e cor
-            const statusText = getStatusText(item.status);
+            const statusText = statusLabel(item.status);
             const logoUrl = safeHttpUrl(item.eventLogo);
             const subscriptionUrl = safeHttpUrl(item.subscriptionLink);
             const badgeColor = getStatusColor(item.status);
@@ -242,6 +214,14 @@ const MyEvents = () => {
                     </h5>
                   </div>
                   <div className="card-body">
+                    {changeNotice && (
+                      <div className="alert alert-warning" role="alert">
+                        <strong>{changeNotice.heading}</strong>
+                        {changeNotice.message && (
+                          <p className="mb-0">{changeNotice.message}</p>
+                        )}
+                      </div>
+                    )}
                     <p className="card-title">{eventTypeName}</p>
                     <h6 className="card-subtitle card-muted">
                       <strong>Descrição:</strong>{" "}
@@ -311,12 +291,12 @@ const MyEvents = () => {
                     <h6 className="card-subtitle card-muted">
                       <strong>Público Alvo:</strong> {targetPublicLabels}
                     </h6>
-                    {canEdit && (
+                    {editLink && (
                       <Link
                         className="btn btn-outline-warning mt-2"
-                        to={`/event/type-selection?eventId=${item._id}`}
+                        to={editLink.to}
                       >
-                        Editar Evento
+                        {editLink.label}
                       </Link>
                     )}
                   </div>
