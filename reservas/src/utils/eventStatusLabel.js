@@ -22,3 +22,23 @@ export function changeRequestMessage(item) {
       : "";
   return message || null;
 }
+
+export const CHANGE_REQUEST_HEADING = "A Coordenação pediu alterações.";
+
+// What My Events shows for an event: the change-request notice (the reason may be
+// absent for events from before it was stored) and the edit link with its label.
+export function eventCardView(item) {
+  const requested = item?.status === EventStatus.REQUESTED_CHANGE;
+  const editable = requested || item?.status === EventStatus.DRAFT;
+  return {
+    changeNotice: requested
+      ? { heading: CHANGE_REQUEST_HEADING, message: changeRequestMessage(item) }
+      : null,
+    editLink: editable
+      ? {
+          label: requested ? "Corrigir e reenviar" : "Editar Evento",
+          to: `/event/type-selection?eventId=${item._id}`,
+        }
+      : null,
+  };
+}

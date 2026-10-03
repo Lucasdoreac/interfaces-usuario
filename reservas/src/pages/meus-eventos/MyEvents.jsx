@@ -4,7 +4,7 @@ import apiService from "../../services/client";
 import Loading from "../../components/Loading";
 import { useFormContext } from "../../context/FormContext";
 import EventStatus from "../../utils/EventStatus";
-import { changeRequestMessage, statusLabel } from "../../utils/eventStatusLabel";
+import { eventCardView, statusLabel } from "../../utils/eventStatusLabel";
 
 const MyEvents = () => {
   const { eventTypes, odsTypes, targetPublicTypes, resourcesTypes } =
@@ -34,12 +34,6 @@ const MyEvents = () => {
       default:
         return "info";
     }
-  };
-
-  const canEditEvent = (status) => {
-    return (
-      status === EventStatus.REQUESTED_CHANGE || status === EventStatus.DRAFT
-    );
   };
 
   useEffect(() => {
@@ -154,8 +148,8 @@ const MyEvents = () => {
                 .padStart(2, "0")}`;
             }
 
-            // Verifica se o evento pode ser editado usando a função auxiliar
-            const canEdit = canEditEvent(item.status);
+            // Aviso de alterações e link de edição vêm do helper testado
+            const { changeNotice, editLink } = eventCardView(item);
 
             // Encontrar o nome do tipo de evento
             const eventTypeObj = eventTypes.find(
@@ -167,7 +161,6 @@ const MyEvents = () => {
 
             // Usar as funções auxiliares para status e cor
             const statusText = statusLabel(item.status);
-            const requestedChange = changeRequestMessage(item);
             const badgeColor = getStatusColor(item.status);
 
             // ODS e Público-Alvo
@@ -217,10 +210,12 @@ const MyEvents = () => {
                     </h5>
                   </div>
                   <div className="card-body">
-                    {item.status === EventStatus.REQUESTED_CHANGE && (
+                    {changeNotice && (
                       <div className="alert alert-warning" role="alert">
-                        <strong>A Coordenação pediu alterações.</strong>
-                        {requestedChange && <p className="mb-0">{requestedChange}</p>}
+                        <strong>{changeNotice.heading}</strong>
+                        {changeNotice.message && (
+                          <p className="mb-0">{changeNotice.message}</p>
+                        )}
                       </div>
                     )}
                     <p className="card-title">{eventTypeName}</p>
@@ -292,14 +287,12 @@ const MyEvents = () => {
                     <h6 className="card-subtitle card-muted">
                       <strong>Público Alvo:</strong> {targetPublicLabels}
                     </h6>
-                    {canEdit && (
+                    {editLink && (
                       <Link
                         className="btn btn-outline-warning mt-2"
-                        to={`/event/type-selection?eventId=${item._id}`}
+                        to={editLink.to}
                       >
-                        {item.status === EventStatus.REQUESTED_CHANGE
-                          ? "Corrigir e reenviar"
-                          : "Editar Evento"}
+                        {editLink.label}
                       </Link>
                     )}
                   </div>
