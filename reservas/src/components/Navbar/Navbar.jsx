@@ -1,7 +1,9 @@
 import "./Navbar.scss";
-import { useEffect, useState, useSyncExternalStore } from "react";
+import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 import { AiOutlineClose, AiOutlineMenu } from "react-icons/ai";
 import { Link, useLocation, useNavigate } from 'react-router';
+import apiService from "../../services/client";
+import { logoutNavigationState } from "../../utils/logoutNotice";
 import { endSession, hasSession, subscribeSession } from "../../utils/session";
 
 const Navbar = () => {
@@ -28,7 +30,21 @@ const Navbar = () => {
         navigate(path, state ? { state } : undefined);
     };
 
-    const logout = () => go('/organizer', { loggedOut: true });
+    // The server is told first (bounded, never throws), while the token is still stored; the local
+    // session is then cleared by the effect above whether or not that call worked.
+    const leaving = useRef(false);
+    const logout = async () => {
+        if (leaving.current) return;
+        leaving.current = true;
+        let confirmed = false;
+        try {
+            confirmed = (await apiService.logoutSession()) === true;
+        } finally {
+            leaving.current = false;
+            // Sai sempre; se o servidor não confirmou, a tela de login avisa (sem repetir a chamada).
+            go('/organizer', logoutNavigationState(confirmed));
+        }
+    };
 
     return (
         <nav id="nav" className={menuOpen ? "nav-visible" : undefined}>
