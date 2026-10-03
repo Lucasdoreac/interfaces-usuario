@@ -1,5 +1,6 @@
 import { Link, Outlet, useLocation } from "react-router";
 import { FormProvider } from "../../src/context/FormContext";
+import StepIndicator from "../../src/components/StepIndicator/StepIndicator";
 import { hasInvalidEventIdParam } from "../../src/utils/eventId";
 
 export default function EventLayoutRoute() {
@@ -16,6 +17,7 @@ export default function EventLayoutRoute() {
   }
   return (
     <FormProvider>
+      <StepIndicator />
       <Outlet />
     </FormProvider>
   );
