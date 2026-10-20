@@ -5,6 +5,8 @@ import InfiniteScrollRooms from "../../components/infinite-scroll-rooms/Infinite
 import { useNavigate, useLocation } from "react-router-dom";
 import { useFormContext } from "../../context/FormContext";
 import "./EventSchedule.scss";
+import { ThemeContext } from "../../context/ThemeContext";
+import { useContext } from "react";
 
 const EventSchedule = () => {
   const [selectedDate, setSelectedDate] = useState(new Date());
@@ -12,6 +14,7 @@ const EventSchedule = () => {
   const [selectedRoom, setSelectedRoom] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [debouncedQuery, setDebouncedQuery] = useState("");
+  const {theme} = useContext(ThemeContext);
 
   // Pego o eventId e a classificação (tipo de evento) do contexto do formulário
   const { handleRoomDataChange, formData } = useFormContext();
@@ -99,7 +102,9 @@ const EventSchedule = () => {
           />
         </span>
       </div>
-      <div className="header-container">
+      <div className="header-container"
+    style={{marginLeft: "10px"}}>
+      
         <h2>Escolha o Dia e Horário</h2>
         <DatePickerComponent
           selectedDate={selectedDate}
@@ -122,6 +127,7 @@ const EventSchedule = () => {
               value="Tarde"
               checked={selectedPeriod === "Tarde"}
               onChange={handlePeriodChange}
+              style={{marginLeft: "10px"}}
             />
             Tarde
           </label>
@@ -131,6 +137,7 @@ const EventSchedule = () => {
               value="Noite"
               checked={selectedPeriod === "Noite"}
               onChange={handlePeriodChange}
+              style={{marginLeft: "10px"}}
             />
             Noite
           </label>
