@@ -17,43 +17,49 @@ import MyEvents from "./pages/meus-eventos/MyEvents";
 import EventSchedule from "./pages/event-schedule/EventSchedule";
 import EventConfirmData from "./pages/event-confirm-data/EventConfirmData";
 import EventTypeSelection from "./pages/event-type-selection/EventTypeSelection";
+import ThemeToggleButton from "./components/Button/ThemeToggleButton";
+import { ThemeProvider } from "./context/ThemeContext";
 
 function App() {
   return (
-    <BrowserRouter>
-      <div className="App">
-        <Navbar />
-        <section id="paginaInicial" className="section-padding">
-          <div>
-            <div className="row justify-content-center">
-              <div className="col-md-12 col-sm-12 col-12">
-                <div className="card">
-                  <Routes>
-                    {/* Home */}
-                    <Route path="/" element={<Home />} />
+    <ThemeProvider>
+      <BrowserRouter>
+        <div className="App">
+          <Navbar />
+          <ThemeToggleButton />
+          
+          <section id="paginaInicial" className="section-padding">
+            <div>
+              <div className="row justify-content-center">
+                <div className="col-md-12 col-sm-12 col-12">
+                  <div className="card">
+                    <Routes>
+                      {/* Home */}
+                      <Route path="/" element={<Home />} />
 
-                    {/* Organizer / Coordination Flow */}
-                    <Route path="/organizer" element={<Organizer />} />
-                    <Route path="/auth/callback" element={<AuthCallBack />} />
+                      {/* Organizer / Coordination Flow */}
+                      <Route path="/organizer" element={<Organizer />} />
+                      <Route path="/auth/callback" element={<AuthCallBack />} />
 
-                    {/* Event Routes with FormProvider */}
-                    <Route
-                      path="/event/*"
-                      element={
-                        <FormProvider>
-                          <EventRoutes />
-                        </FormProvider>
-                      }
-                    />
-                    <Route path="/access-denied" element={<AccessDenied />} />
-                  </Routes>
+                      {/* Event Routes with FormProvider */}
+                      <Route
+                        path="/event/*"
+                        element={
+                          <FormProvider>
+                            <EventRoutes />
+                          </FormProvider>
+                        }
+                      />
+                      <Route path="/access-denied" element={<AccessDenied />} />
+                    </Routes>
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
-        </section>
-      </div>
-    </BrowserRouter>
+          </section>
+        </div>
+      </BrowserRouter>
+    </ThemeProvider>
   );
 }
 
