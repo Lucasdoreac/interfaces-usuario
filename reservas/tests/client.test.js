@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
-import { ApiService } from "../src/services/client.js";
+import { ApiService, resolveApiBaseUrl } from "../src/services/client.js";
 
 function createStorage(values = {}) {
   return {
@@ -143,4 +143,15 @@ test("calls the injected fetch function with the global receiver", async () => {
 
   await api.request("GET", "/health");
   assert.equal(receiver, globalThis);
+});
+
+test("accepts VITE_API_BASE_URL and the CRA-style REACT_APP_API_BASE_URL", () => {
+  assert.equal(resolveApiBaseUrl({ VITE_API_BASE_URL: "https://vite.test" }), "https://vite.test");
+  assert.equal(resolveApiBaseUrl({ REACT_APP_API_BASE_URL: "https://cra.test" }), "https://cra.test");
+  assert.equal(
+    resolveApiBaseUrl({ VITE_API_BASE_URL: "https://vite.test", REACT_APP_API_BASE_URL: "https://cra.test" }),
+    "https://vite.test",
+  );
+  assert.equal(resolveApiBaseUrl({}), "http://localhost:5000");
+  assert.equal(resolveApiBaseUrl(undefined), "http://localhost:5000");
 });

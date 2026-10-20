@@ -1,8 +1,15 @@
 import { clearAuthStorage } from "../utils/authStorage.js";
 
+const DEFAULT_API_BASE_URL = "http://localhost:5000";
+
+// Aceita VITE_API_BASE_URL e a REACT_APP_API_BASE_URL herdada do CRA.
+export function resolveApiBaseUrl(env) {
+  return env?.VITE_API_BASE_URL || env?.REACT_APP_API_BASE_URL || DEFAULT_API_BASE_URL;
+}
+
 export class ApiService {
   constructor({
-    baseURL = import.meta.env?.VITE_API_BASE_URL || "http://localhost:5000",
+    baseURL = resolveApiBaseUrl(import.meta.env),
     fetchImpl = globalThis.fetch,
     storage = globalThis.localStorage,
   } = {}) {
