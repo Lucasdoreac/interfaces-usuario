@@ -26,8 +26,8 @@ async function findAvailablePort() {
 }
 
 before(async () => {
-  if (!existsSync(resolve(projectRoot, "build/client/index.html"))) {
-    throw new Error("Execute yarn build antes de yarn test para gerar a SPA usada pela prévia.");
+  if (!existsSync(resolve(projectRoot, "build/index.html"))) {
+    throw new Error("Execute yarn build antes de yarn test (o pretest faz isso) para gerar a SPA usada pela prévia.");
   }
   const port = await findAvailablePort();
   previewUrl = `http://127.0.0.1:${port}`;
