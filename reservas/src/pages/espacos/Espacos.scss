@@ -1,0 +1,100 @@
+.spaces-guide {
+  color: #222;
+  margin: 0 auto;
+  max-width: 960px;
+  padding: clamp(1.25rem, 4vw, 3rem);
+}
+
+.spaces-guide__hero {
+  margin: 0 auto 2rem;
+  max-width: 720px;
+  text-align: center;
+}
+
+.spaces-guide__eyebrow {
+  color: #354f9b;
+  font-size: 0.82rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  margin-bottom: 0.45rem;
+  text-transform: uppercase;
+}
+
+.spaces-guide h1,
+.spaces-guide h2 {
+  color: #040846;
+  font-family: "Saira Semi Condensed", sans-serif;
+}
+
+.spaces-guide h1 {
+  font-size: clamp(2rem, 5vw, 3rem);
+}
+
+.spaces-guide h2 {
+  font-size: clamp(1.45rem, 3vw, 2rem);
+}
+
+.spaces-guide__intro {
+  font-size: 1.1rem;
+  line-height: 1.6;
+}
+
+.spaces-guide__primary,
+.spaces-guide__secondary,
+.spaces-guide__status {
+  border-radius: 0.75rem;
+  margin: 1.25rem 0;
+  padding: clamp(1.25rem, 3vw, 2rem);
+}
+
+.spaces-guide__primary {
+  background: #f3f6ff;
+  border: 1px solid #d6def8;
+}
+
+.spaces-guide__secondary {
+  background: #fff;
+  border: 1px solid #d7d9e2;
+}
+
+.spaces-guide__steps {
+  line-height: 1.65;
+  padding-left: 1.35rem;
+}
+
+.spaces-guide__steps li + li {
+  margin-top: 0.45rem;
+}
+
+.spaces-guide__note {
+  border-left: 4px solid #5587f3;
+  margin: 1.25rem 0;
+  padding-left: 0.85rem;
+}
+
+.spaces-guide__text-link,
+.spaces-guide__footer a {
+  color: #183a94;
+  font-weight: 600;
+  text-decoration: underline;
+  text-underline-offset: 0.15em;
+}
+
+.spaces-guide__status {
+  background: #f7f7f9;
+  border-left: 4px solid #777;
+}
+
+.spaces-guide__status h2 {
+  font-size: 1.25rem;
+}
+
+.spaces-guide__status p,
+.spaces-guide__secondary p {
+  line-height: 1.65;
+}
+
+.spaces-guide__footer {
+  padding: 0.75rem 0 1rem;
+  text-align: center;
+}

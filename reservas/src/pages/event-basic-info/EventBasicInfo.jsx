@@ -1,0 +1,210 @@
+import React, { useState, useEffect } from "react";
+import { AiOutlineLeft } from "react-icons/ai";
+import { useNavigate, useLocation } from "react-router";
+import { InputMask } from "@react-input/mask";
+import { useFormContext } from "../../context/FormContext";
+import TwoButtons from "../../components/TwoButtons";
+import "./EventBasicInfo.scss";
+import Loading from "../../components/Loading";
+
+
+
+const EventBasicInfo = () => {
+  const navigate = useNavigate();
+  const location = useLocation();
+  const query = new URLSearchParams(location.search);
+  const eventIdFromQuery = query.get("eventId"); // extract eventId from URL
+
+  const {
+    formData,
+    handleChange,
+    saveDraft,
+    handleOdsChange,
+    fillOutFormData,
+    eventTypes,
+    odsTypes,
+    loading,
+    setLoading,
+  } = useFormContext();
+
+  const [erros, setErros] = useState({});
+
+  // On mount, fill the form with event data if editing or clear for new event
+  // Load inicial datas
+  useEffect(() => {
+    const fetchData = async () => {
+    setLoading(true);
+    try {
+      await fillOutFormData(eventIdFromQuery || "");
+    } finally {
+      setLoading(false);
+    }
+  };
+  fetchData();
+  }, [eventIdFromQuery, fillOutFormData]);
+
+  const validateForm = () => {
+    const newErrors = {};
+    if (!formData.tituloEvento?.trim()) {
+      newErrors.tituloEvento = "O campo nome do evento é obrigatório.";
+    } else if (formData.tituloEvento.length < 5) {
+      newErrors.tituloEvento =
+        "O campo nome do evento precisa ter mais caracteres!";
+    }
+    if (!formData.classificacao?.trim()) {
+      newErrors.classificacao = "Defina uma classificação.";
+    }
+    if (!formData.ods?.trim()) {
+      newErrors.ods = "Defina uma ODS.";
+    }
+    setErros(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  // Saves datas and advances to the next page
+  const handleNext = async () => {
+    if (validateForm()) {
+      setLoading(true);
+      try{
+        const eventId = await saveDraft();
+        if (eventIdFromQuery || eventId) {
+          navigate(`/event/details?eventId=${eventIdFromQuery || eventId}`);
+        }
+      } finally {
+        setLoading(false);
+      }
+    } 
+
+    }
+
+  const renderError = (field) =>
+    erros[field] && <span style={{ color: "red" }}>{erros[field]}</span>;
+
+if (loading){
+  return (
+    <div className="d-flex justify-content-center align-items-center" style={{minHeight: 200}}>
+      <Loading />
+    </div>
+  )
+}
+  return (
+    <form onSubmit={(e) => e.preventDefault()}>
+      <div>
+        <div className="card-header">
+          <div className="d-flex justify-content-start">
+            <span
+              onClick={() =>{
+                try{
+                setLoading(true);
+                navigate(`/event/type-selection?eventId=${eventIdFromQuery}`)
+                }finally{
+                  setLoading(false);
+                }
+              }}
+            >
+              <AiOutlineLeft
+                style={{ margin: "0 10px 0 0" }}
+                size="20px"
+                color="white"
+              />
+            </span>
+          </div>
+        </div>
+
+        <div className="card-body">
+          <div className="row">
+            <div className="col-md-12">
+              <h4>{eventIdFromQuery ? "Editar Evento" : "Novo Evento"}</h4>
+            </div>
+          </div>
+
+          {/* Nome do Evento */}
+          <div className="row">
+            <div className="col">
+              <label htmlFor="formTitulo">Nome do Evento</label>
+              <input
+                type="text"
+                className="form-control"
+                id="formTitulo"
+                name="tituloEvento"
+                value={formData.tituloEvento || ""}
+                onChange={handleChange}
+                disabled={loading}
+              />
+              {renderError("tituloEvento")}
+            </div>
+          </div>
+
+          {/* Professor */}
+          <div className="row mt-3">
+            <div className="col">
+              <label htmlFor="formProfessor">Professor</label>
+              <input
+                type="text"
+                disabled={true}
+                className="form-control"
+                id="formProfessor"
+                name="nomeProfessor"
+                value={localStorage.getItem("userEmail") || ""}
+                onChange={() => {}}
+              />
+              {renderError("nomeProfessor")}
+            </div>
+          </div>
+
+          {/* Telefone */}
+          <div className="row mt-3">
+            <div className="col">
+              <label htmlFor="telefone">Telefone</label>
+              <InputMask
+                mask="(dd) d dddd-dddd"
+                replacement={{ d: /\d/ }}
+                id="telefone"
+                type="tel"
+                name="telefone"
+                placeholder="(XX) X XXXX-XXXX"
+                value={formData.telefone || ""}
+                onChange={handleChange}
+                disabled={loading}
+                className="form-control"
+                style={{ width: 200 }}
+              />
+              {renderError("telefone")}
+            </div>
+          </div>
+
+          {/* ODS */}
+          <div className="row mt-3">
+            <div className="col-md-12">
+              <label htmlFor="ods">Classificação ODS</label>
+              <select
+                id="ods"
+                name="ods"
+                className="form-control"
+                value={formData.ods || ""}
+                onChange={handleOdsChange}
+                disabled={loading}
+              >
+                <option value="" disabled>
+                  ODS
+                </option>
+                {odsTypes.map((ods, index) => (
+                  <option value={ods.id} key={index}>
+                    {ods.formatted}
+                  </option>
+                ))}
+              </select>
+              {renderError("ods")}
+            </div>
+          </div>
+
+          {!loading && (
+            <TwoButtons saveDraft={saveDraft} handleNext={handleNext} />
+          )}
+        </div>
+      </div>
+    </form>
+  );
+};
+
+export default EventBasicInfo;

@@ -1,22 +1,57 @@
-import axios from "axios";
+import { clearAuthStorage } from "../utils/authStorage.js";
 
-class ApiService {
-  constructor() {
-    this.http = axios.create({
-      baseURL: process.env.REACT_APP_API_BASE_URL || "http://localhost:5000",
-    });
+export class ApiService {
+  constructor({
+    baseURL = import.meta.env?.VITE_API_BASE_URL || "http://localhost:5000",
+    fetchImpl = globalThis.fetch,
+    storage = globalThis.localStorage,
+  } = {}) {
+    this.baseURL = baseURL.replace(/\/$/, "");
+    this.fetchImpl = fetchImpl.bind(globalThis);
+    this.storage = storage;
+    this.http = {
+      get: (path, config) => this.request("GET", path, undefined, config),
+      post: (path, data, config) => this.request("POST", path, data, config),
+      put: (path, data, config) => this.request("PUT", path, data, config),
+    };
+  }
 
-    this.http.interceptors.request.use((config) => {
-      // Add authorization header if available
-      const token = localStorage.getItem("token");
-      const email = localStorage.getItem("userEmail");
-      if (token) {
-        config.headers.Authorization = `Bearer ${token}`;
-        config.headers.email = email;
-        config.headers.token = token;
-      }
-      return config;
+  async request(method, path, data, config = {}) {
+    const url = new URL(`${this.baseURL}${path}`);
+    const params = config.params || {};
+    const entries = params instanceof URLSearchParams
+      ? params.entries()
+      : Object.entries(params);
+    for (const [key, value] of entries) {
+      if (value !== undefined && value !== null) url.searchParams.set(key, value);
+    }
+
+    const headers = new Headers(config.headers || {});
+    const token = this.storage?.getItem("token");
+    const email = this.storage?.getItem("userEmail");
+    if (token) {
+      headers.set("Authorization", `Bearer ${token}`);
+      if (email) headers.set("email", email);
+      headers.set("token", token);
+    }
+    if (data !== undefined && data !== null) headers.set("Content-Type", "application/json");
+
+    const response = await this.fetchImpl(url, {
+      method,
+      headers,
+      body: data === undefined || data === null ? undefined : JSON.stringify(data),
     });
+    const contentType = response.headers.get("content-type") || "";
+    const responseData = contentType.includes("json")
+      ? await response.json()
+      : await response.text();
+    if (!response.ok) {
+      const error = new Error(`Request failed with status code ${response.status}`);
+      error.status = response.status;
+      error.data = responseData;
+      throw error;
+    }
+    return { status: response.status, data: responseData };
   }
 
   async postAuthMail(email) {
@@ -24,8 +59,9 @@ class ApiService {
       const response = await this.http.post("/auth/send-link", null, {
         params: { email },
       });
-      localStorage.clear();
-      localStorage.setItem("userEmail", email);
+      if (response.status === 202) return { dryRun: true };
+      clearAuthStorage(this.storage);
+      this.storage?.setItem("userEmail", email);
       return !!response.data;
     } catch (error) {
       console.error(error);
@@ -40,10 +76,10 @@ class ApiService {
         params: params,
       });
       if (response.status === 200) return true;
-      localStorage.clear();
+      clearAuthStorage(this.storage);
       return false;
     } catch (error) {
-      localStorage.clear();
+      clearAuthStorage(this.storage);
       return false;
     }
   }
@@ -96,6 +132,19 @@ class ApiService {
         // Create a new event object
         response = await this.http.post("/events", requestData);
       }
+      return response.data.eventId;
+    } catch (error) {
+      console.error("Erro ao enviar dados:", error);
+      throw error;
+    }
+  }
+
+  async submitEventForApproval(eventId, data) {
+    try {
+      const response = await this.http.post(
+        `/events/${eventId}/submit`,
+        data,
+      );
       return response.data.eventId;
     } catch (error) {
       console.error("Erro ao enviar dados:", error);
@@ -181,18 +230,6 @@ class ApiService {
     } catch (error) {
       console.error(error);
       throw error;
-    }
-  }
-
-  async submitReservationData(roomId, reservationDate, eventId) {
-    try {
-      const reservationData = { roomId, reservationDate, eventId };
-      const response = await this.http.post("/reservations", reservationData);
-      if (response.status === 201) return true;
-      return false;
-    } catch (error) {
-      console.error(error);
-      return false;
     }
   }
 

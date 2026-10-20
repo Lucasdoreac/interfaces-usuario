@@ -24,8 +24,10 @@ body.dark .card{
 .card {
   margin-top:20px;
   width: auto;
-  margin-left: 70px;
-  margin-right: 70px;
+}
+
+#paginaInicial > div > .row > div > .card {
+  margin-inline: clamp(0px, 5vw, 70px);
 }
 
 body.light #nav{
@@ -104,12 +106,12 @@ input.input-danger {
   /* cor do texto */
 }
 
-section#paginaIncial.dark {
+body.dark section#paginaInicial {
   padding: 20px 50px;
   background-color: #1d1d1d;
   transition: background-color 0.3s ease, color 0.3s ease;
 }
-section#paginaInicial.light {
+body.light section#paginaInicial {
   padding: 20px 50px;
   background-color: #fff;
   transition: background-color 0.3s ease, color 0.3s ease;
