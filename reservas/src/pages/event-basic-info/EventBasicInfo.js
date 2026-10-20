@@ -5,6 +5,9 @@ import InputMask from "react-input-mask";
 import { useFormContext } from "../../context/FormContext";
 import TwoButtons from "../../components/TwoButtons";
 import "./EventBasicInfo.scss";
+import Loading from "../../components/Loading";
+
+
 
 const EventBasicInfo = () => {
   const navigate = useNavigate();
@@ -27,8 +30,17 @@ const EventBasicInfo = () => {
   const [erros, setErros] = useState({});
 
   // On mount, fill the form with event data if editing or clear for new event
+  // Load inicial datas
   useEffect(() => {
-    fillOutFormData(eventIdFromQuery || "");
+    const fetchData = async () => {
+    setLoading(true);
+    try {
+      await fillOutFormData(eventIdFromQuery || "");
+    } finally {
+      setLoading(false);
+    }
+  };
+  fetchData();
   }, [eventIdFromQuery, fillOutFormData]);
 
   const validateForm = () => {
@@ -49,29 +61,46 @@ const EventBasicInfo = () => {
     return Object.keys(newErrors).length === 0;
   };
 
+  // Saves datas and advances to the next page
   const handleNext = async () => {
     if (validateForm()) {
       setLoading(true);
-      const eventId = await saveDraft();
-      setLoading(false);
-      if (eventIdFromQuery || eventId) {
-        navigate(`/event/details?eventId=${eventIdFromQuery || eventId}`);
+      try{
+        const eventId = await saveDraft();
+        if (eventIdFromQuery || eventId) {
+          navigate(`/event/details?eventId=${eventIdFromQuery || eventId}`);
+        }
+      } finally {
+        setLoading(false);
       }
+    } 
+
     }
-  };
 
   const renderError = (field) =>
     erros[field] && <span style={{ color: "red" }}>{erros[field]}</span>;
 
+if (loading){
+  return (
+    <div className="d-flex justify-content-center align-items-center" style={{minHeight: 200}}>
+      <Loading />
+    </div>
+  )
+}
   return (
     <form onSubmit={(e) => e.preventDefault()}>
       <div>
         <div className="card-header">
           <div className="d-flex justify-content-start">
             <span
-              onClick={() =>
+              onClick={() =>{
+                try{
+                setLoading(true);
                 navigate(`/event/type-selection?eventId=${eventIdFromQuery}`)
-              }
+                }finally{
+                  setLoading(false);
+                }
+              }}
             >
               <AiOutlineLeft
                 style={{ margin: "0 10px 0 0" }}
