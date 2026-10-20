@@ -133,6 +133,13 @@ Após instalar as ferramentas, siga os passos abaixo:
 
    Abra [http://localhost:3000](http://localhost:3000). A aplicação é uma SPA; não há servidor SSR em runtime.
 
+   Para verificar uma instalação limpa, gere a SPA antes da suíte, que também confere a prévia de produção:
+
+   ```bash
+   yarn build
+   yarn test
+   ```
+
 ---
 
 ## Manual de Solução de Erros

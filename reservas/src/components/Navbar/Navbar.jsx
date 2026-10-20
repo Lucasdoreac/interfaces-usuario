@@ -1,16 +1,29 @@
 import "./Navbar.scss";
-import { useState } from "react";
+import { useEffect, useState, useSyncExternalStore } from "react";
 import { AiOutlineClose, AiOutlineMenu } from "react-icons/ai";
-import { Link, useNavigate } from 'react-router';
+import { Link, useLocation, useNavigate } from 'react-router';
+import { endSession, hasSession, subscribeSession } from "../../utils/session";
 
 const Navbar = () => {
     const navigate = useNavigate(); // useNavigate para alterar a URL
+    const location = useLocation();
     const [menuOpen, setMenuOpen] = useState(false);
+    const loggedIn = useSyncExternalStore(
+        subscribeSession,
+        () => hasSession(globalThis.localStorage),
+        () => false,
+    );
 
-    const go = (path) => {
+    useEffect(() => {
+        if (location.state?.loggedOut) endSession(globalThis.localStorage);
+    }, [location]);
+
+    const go = (path, state) => {
         setMenuOpen(false);
-        navigate(path);
+        navigate(path, state ? { state } : undefined);
     };
+
+    const logout = () => go('/organizer', { loggedOut: true });
 
     return (
         <nav id="nav" className={menuOpen ? "nav-visible" : undefined}>
@@ -43,6 +56,11 @@ const Navbar = () => {
             <span className="u-nav">Organizador</span>
           </span>
         </Link>
+        {loggedIn && (
+          <button type="button" id="logout" className="nav-link" onClick={logout}>
+            <span className="nav-link-span"><span className="u-nav">Sair</span></span>
+          </button>
+        )}
             </div>
         </nav>
 
