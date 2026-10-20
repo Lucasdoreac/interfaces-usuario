@@ -80,7 +80,7 @@ Após a instalação, verifique com:
 nvm --version
 ```
 
-> **Importante:** O frontend usa Node.js v26.10.0, definida em `reservas/.nvmrc`.
+> **Importante:** O frontend exige Node.js >= 22.22.0 (mínimo das dependências, `engines` em `reservas/package.json`); `reservas/.nvmrc` fixa v22.22.0 e versões mais novas, como a 26, também funcionam.
 
 Para instalar uma versão específica do Node.js:
 
