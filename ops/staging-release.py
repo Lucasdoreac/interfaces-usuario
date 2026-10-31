@@ -22,7 +22,7 @@ import urllib.request
 
 ROOT = Path(__file__).resolve().parents[1]
 SERVICE = "srv-dau3tntg1s2s73bbr0sg"
-BASE = "1519cea1c853c6c27ecb52227933c4c885c83348"
+BASE = "dc33793a68eac6dd695d970a071849ebb40af02e"
 URL = "https://reservas-staging-web.onrender.com"
 REPOSITORY = "https://github.com/Lucasdoreac/interfaces-usuario"
 PROBES = ("/", "/organizer")
