@@ -31,13 +31,14 @@ const Home = () => {
         </div>
       </div>
       <div className="card-body">
+        <h1 className="visually-hidden">Reservas UDF</h1>
         <div className="row">
           <div className="col-md-12 text-center">
             <img
               className="img-man"
               src={AvatarImage}
               style={{ width: "200px" }}
-              alt="man avatar"
+              alt=""
             />
             <div className="d-grid gap-3 d-sm-flex justify-content-sm-center mt-4">
               <button

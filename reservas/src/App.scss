@@ -42,6 +42,18 @@ body.dark #nav{
   transition: background-color 0.3s ease, color 0.3s ease;
 }
 
+// Navbar links and the mobile menu icon default to the navy brand colour, which is
+// 1.1:1 on this background; light text reaches 15:1. The hover state turns the link
+// background light, so its text goes back to dark.
+body.dark #nav a.nav-link:not(.active),
+body.dark #nav .btn-nav {
+  color: #f2f2f2;
+}
+
+body.dark #nav a.nav-link:not(.active):hover {
+  color: #1d1d1d;
+}
+
 
 body.light input[type="email"] {
   background-color: #fff;

@@ -17,7 +17,7 @@ const AccessDenied = () => {
         <p>Você não tem permissão para acessar esta página.</p>
         <p>Por favor, faça login para continuar.</p>
         <div className="mt-4">
-          <button className="btn-voltar" onClick={() => navigate("/")}>
+          <button type="button" className="btn-voltar" onClick={() => navigate("/")}>
             Voltar para a Página Inicial
           </button>
         </div>

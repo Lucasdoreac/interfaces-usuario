@@ -20,7 +20,7 @@ const EventConfirmation = () => {
               alt="Confirmação de Envio"
               className="confirmacao-imagem"
             />
-            <h2>Evento Enviado com Sucesso!</h2>
+            <h1 className="h2">Evento Enviado com Sucesso!</h1>
             <p>
               Seu evento foi enviado para análise. Você pode acompanhar a
               situação de seus eventos na aba "Meus Eventos".

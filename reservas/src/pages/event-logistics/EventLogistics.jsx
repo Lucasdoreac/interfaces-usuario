@@ -105,7 +105,7 @@ const EventLogistics = () => {
         </div>
 
         <div className="card-body">
-          <h4>Novo Evento</h4>
+          <h1 className="h4">Novo Evento</h1>
 
           <div className="form-group mt-3">
             <label htmlFor="numeroParticipantes">Número de participantes</label>

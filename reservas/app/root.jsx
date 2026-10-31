@@ -52,7 +52,9 @@ export default function Root() {
           <div className="row justify-content-center">
             <div className="col-md-12 col-sm-12 col-12">
               <div className="card">
-                <Outlet />
+                <main>
+                  <Outlet />
+                </main>
               </div>
             </div>
           </div>

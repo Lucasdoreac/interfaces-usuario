@@ -29,9 +29,9 @@ const Navbar = () => {
         <nav id="nav" className={menuOpen ? "nav-visible" : undefined}>
             <div className="nav left">
         <span className="gradient skew">
-          <h1 className="logo un-skew mt-4">
+          <div className="logo un-skew mt-4">
             <Link to="/" onClick={() => setMenuOpen(false)}>LabTech UDF</Link>
-          </h1>
+          </div>
         </span>
                 <button
                     id="menu"

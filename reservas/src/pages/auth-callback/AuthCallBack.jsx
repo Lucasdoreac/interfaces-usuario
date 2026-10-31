@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useCallback, useMemo } from "react";
 import { useLocation, useNavigate } from "react-router";
 import EnvImage from "../../images/email.png";
-import { AiOutlineLeft } from "react-icons/ai";
+import BackButton from "../../components/BackButton";
 import apiService from "../../services/client";
 import Loading from "../../components/Loading";
 import { clearAuthStorage } from "../../utils/authStorage";
@@ -58,17 +58,11 @@ const AuthCallBack = () => {
     <div>
       <div className="card-header">
         <div className="d-flex justify-content-start">
-          <span onClick={() => navigate("/organizer")}>
-            <AiOutlineLeft
-              style={{ margin: "0px 10px 0px 0px" }}
-              size="20px"
-              color="white"
-            />
-          </span>
-          <h5>Voltar</h5>
+          <BackButton onClick={() => navigate("/organizer")} />
         </div>
       </div>
       <div className="card-body">
+        <h1 className="visually-hidden">Entrar</h1>
         {loading ? (
           <div className="d-flex justify-content-center align-items-center">
             <Loading />
@@ -80,7 +74,7 @@ const AuthCallBack = () => {
                 className="img-man mb-2"
                 src={EnvImage}
                 style={{ width: "200px", backgroundColor: "transparent" }}
-                alt="man avatar"
+                alt=""
               />
               <p>
                 Clique no botão de autorizar que enviamos para{" "}

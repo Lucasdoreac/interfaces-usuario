@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import "./Organizer.scss";
 import AvatarImage from "../../images/man.png";
 import BackButton from "../../components/BackButton";
@@ -12,6 +12,7 @@ function Organizer() {
   const [errors, setErro] = useState("");
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+  const emailRef = useRef(null);
 
   const handleChange = (e) => {
     setEmail(e.target.value);
@@ -34,14 +35,19 @@ function Organizer() {
     }
   };
 
+  // Every validation failure sets the message and puts the focus back on the field.
+  const fail = (message) => {
+    setErro(message);
+    emailRef.current?.focus();
+    return false;
+  };
+
   const validEmail = () => {
     if (!email.trim()) {
-      setErro("O campo e-mail é obrigatório.");
-      return false;
+      return fail("O campo e-mail é obrigatório.");
     }
     if (!isAllowedOrganizerEmail(email)) {
-      setErro("O campo e-mail está fora do formato permitido.");
-      return false;
+      return fail("O campo e-mail está fora do formato permitido.");
     }
     return true;
   };
@@ -54,6 +60,7 @@ function Organizer() {
         </div>
       </div>
       <div className="card-body" aria-busy={loading}>
+        <h1 className="visually-hidden">Organizador</h1>
         <form onSubmit={sendEmail} noValidate>
         <div className="row">
           <div className="col-md-12 text-center">
@@ -61,11 +68,12 @@ function Organizer() {
               className="img-man mb-2"
               src={AvatarImage}
               style={{ width: "200px" }}
-              alt="man avatar"
+              alt=""
             />
             <label htmlFor="organizer-email" className="visually-hidden">E-mail institucional</label>
             <input
               id="organizer-email"
+              ref={emailRef}
               type="email"
               inputMode="email"
               autoComplete="email"
@@ -74,6 +82,7 @@ function Organizer() {
               value={email}
               onChange={handleChange}
               className="form-control"
+              required
               aria-invalid={errors ? "true" : undefined}
               aria-describedby={errors ? "organizer-email-error" : undefined}
             />
