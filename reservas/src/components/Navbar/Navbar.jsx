@@ -46,11 +46,6 @@ const Navbar = () => {
                 </button>
             </div>
             <div id="nav-links" className="nav right">
-        <Link className="nav-link" to="/espacos" onClick={() => setMenuOpen(false)}>
-          <span className="nav-link-span">
-            <span className="u-nav">Espaços</span>
-          </span>
-        </Link>
         <Link className="nav-link" to="/organizer" onClick={() => setMenuOpen(false)}>
           <span className="nav-link-span">
             <span className="u-nav">Organizador</span>
