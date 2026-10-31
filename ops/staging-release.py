@@ -22,10 +22,10 @@ import urllib.request
 
 ROOT = Path(__file__).resolve().parents[1]
 SERVICE = "srv-dau3tntg1s2s73bbr0sg"
-BASE = "d7d7981a00b3d000c7c3c7bc4aacfdcca064091f"
+BASE = "344a54e1d742382bf900bc8c26da215562b0d0f2"
 URL = "https://reservas-staging-web.onrender.com"
 REPOSITORY = "https://github.com/Lucasdoreac/interfaces-usuario"
-PROBES = ("/", "/organizer", "/espacos")
+PROBES = ("/", "/organizer")
 PRIVATE = Path.home() / "Library/Application Support/LabTech/staging-runtime-inventory.private.json"
 
 

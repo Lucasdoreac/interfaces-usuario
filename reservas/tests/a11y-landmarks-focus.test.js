@@ -50,7 +50,7 @@ test("each page that renders a screen has a single h1", () => {
 test("every route module exports a meta with '<Tela> | Reservas UDF'", () => {
   assert.match(read("../src/routeMeta.js"), /title:\s*`\$\{screen\} \| Reservas UDF`/);
   const leaves = routes.filter((f) => !f.endsWith("event-layout.jsx"));
-  assert.equal(leaves.length, 13);
+  assert.equal(leaves.length, 12);
   for (const file of leaves) {
     const src = read(file);
     assert.match(src, /export function meta\(\)\s*\{\s*return pageMeta\("[^"]+"\);/, `${file} has no meta`);

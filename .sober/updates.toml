@@ -22,7 +22,7 @@ adapter = "render-staging-ui"
 environment = "staging"
 # Core names this generic external-effect switch production_enabled; target is fixed to Staging.
 production_enabled = true
-probes = ["/organizer", "/espacos"]
+probes = ["/organizer"]
 rollback = "Render rollback to the retained previous Staging static-site deploy ID"
 
 [harness]
