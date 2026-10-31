@@ -172,3 +172,17 @@ body.light .acesso-negado .card-body {
 
 //Organizer Button
 
+
+// The org main's Home uses Bootstrap's outline button. Its default blue (#0d6efd) is 3.74:1 on
+// this background, under the 4.5:1 text minimum (WCAG 1.4.3). #6ea8fe is Bootstrap 5.3's own
+// dark-mode link blue (7:1), applied through the component's documented CSS variables.
+body.dark .btn-outline-primary {
+  --bs-btn-color: #6ea8fe;
+  --bs-btn-border-color: #6ea8fe;
+  --bs-btn-hover-color: #1d1d1d;
+  --bs-btn-hover-bg: #6ea8fe;
+  --bs-btn-hover-border-color: #6ea8fe;
+  --bs-btn-active-color: #1d1d1d;
+  --bs-btn-active-bg: #6ea8fe;
+  --bs-btn-active-border-color: #6ea8fe;
+}
