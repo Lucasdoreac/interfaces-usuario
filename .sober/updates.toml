@@ -1,0 +1,33 @@
+schema_version = 1
+[project]
+name = "LabTech Render Staging UI"
+authority = "owner"
+[policy]
+capability = "updates"
+version = 1
+enabled = true
+channel = "stable"
+auto_merge_risks = []
+auto_deploy_risks = ["LOW", "MEDIUM"]
+[policy.limits]
+max_concurrent_jobs = 1
+max_changed_packages = 10
+max_daily_jobs = 5
+[gates]
+commands = ["python3 ops/staging-release.py gate"]
+publish_ci_status = false
+[deployment]
+artifact_kind = "provider-build"
+adapter = "render-staging-ui"
+environment = "staging"
+# Core names this generic external-effect switch production_enabled; target is fixed to Staging.
+production_enabled = true
+probes = ["/", "/organizer", "/espacos"]
+rollback = "Render rollback to the retained previous Staging static-site deploy ID"
+
+[harness]
+repository = "Lucasdoreac/personal-dev-harness"
+revision = "5f98615a83aaee926c73f76bb3a1b4ac43ec9288"
+source_sha256 = "6af285431eec621cc1f22ce2de7d29e3c338bc71a37af4dd6ccf2e170bf1afb3"
+package = "personal-dev-harness-update-vanguard"
+path = "ops/vendor/update-vanguard"
