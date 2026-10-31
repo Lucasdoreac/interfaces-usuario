@@ -1,0 +1,24 @@
+[build-system]
+requires = ["setuptools>=75"]
+build-backend = "setuptools.build_meta"
+
+[dependency-groups]
+build-system = ["setuptools>=75"]
+test = ["pytest>=8"]
+
+[project]
+name = "personal-dev-harness-update-vanguard"
+version = "0.1.60"
+description = "Sovereign, project-scoped update inventory and planning core"
+requires-python = ">=3.11"
+dependencies = []
+
+[project.scripts]
+sober-updates = "update_vanguard.cli:main"
+harness-scratch-gc = "update_vanguard.scratch:main"
+harness-worktree-gc = "update_vanguard.worktree_gc:main"
+harness-branch-gc = "update_vanguard.branch_gc:main"
+harness-agent = "update_vanguard.agent:main"
+
+[tool.setuptools]
+packages = ["update_vanguard"]

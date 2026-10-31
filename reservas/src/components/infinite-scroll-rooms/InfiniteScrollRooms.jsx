@@ -43,7 +43,7 @@ const InfiniteScrollRooms = ({ date, time, onRoomSelect, userSearchInput = "" })
     }
   };
 
-    return (
+  return (
     error ? (
       <div className="error-message" role="alert">
         <p>{error}</p>
@@ -52,12 +52,14 @@ const InfiniteScrollRooms = ({ date, time, onRoomSelect, userSearchInput = "" })
         </button>
       </div>
     ) : (
+      <div id="scrollableDiv" style={{ height: '60vh', overflow: 'auto' }}>
       <InfiniteScroll
         dataLength={rooms.length}
         next={loadMoreRooms}
         hasMore={hasMore}
         loader={<h4>Carregando mais salas...</h4>}
         endMessage={<p>Você chegou ao fim da lista.</p>}
+        scrollableTarget="scrollableDiv"
       >
         <div className="rooms-list">
           {rooms.length > 0 ? (
@@ -76,6 +78,7 @@ const InfiniteScrollRooms = ({ date, time, onRoomSelect, userSearchInput = "" })
           )}
         </div>
       </InfiniteScroll>
+      </div>
     )
   );
 };

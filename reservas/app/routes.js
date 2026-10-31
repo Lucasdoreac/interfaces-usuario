@@ -2,6 +2,7 @@ import { index, route } from "@react-router/dev/routes";
 
 export default [
   index("routes/home.jsx"),
+  route("espacos", "routes/espacos.jsx"),
   route("organizer", "routes/organizer.jsx"),
   route("auth/callback", "routes/auth-callback.jsx"),
   route("access-denied", "routes/access-denied.jsx"),

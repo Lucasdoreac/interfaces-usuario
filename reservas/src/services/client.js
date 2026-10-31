@@ -1,3 +1,4 @@
+import { clearAuthStorage } from "../utils/authStorage.js";
 import { assertEventId } from "../utils/eventId.js";
 
 export class ApiService {
@@ -139,7 +140,7 @@ export class ApiService {
         params: { email },
       });
       if (response.status === 202) return { dryRun: true };
-      this.storage?.clear();
+      clearAuthStorage(this.storage);
       this.storage?.setItem("userEmail", email);
       return !!response.data;
     } catch (error) {
@@ -177,11 +178,11 @@ export class ApiService {
         params: params,
       });
       if (response.status === 200) return true;
-      this.storage?.clear();
+      clearAuthStorage(this.storage);
       return false;
     } catch (error) {
       // Auth unavailable (503) says nothing about the token: keep the session.
-      if (error.status !== 503) this.storage?.clear();
+      if (error.status !== 503) clearAuthStorage(this.storage);
       return false;
     }
   }

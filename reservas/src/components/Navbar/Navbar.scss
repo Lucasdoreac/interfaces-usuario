@@ -260,3 +260,9 @@ a:hover {
   cursor: pointer;
   font: inherit;
 }
+
+// Keep navigation legible over the selected theme, including button links.
+body.dark #nav {
+  .nav-link:not(.active), #menu { color: #f2f2f2; }
+  a:hover.nav-link:not(.active) { color: #1d1d1d; }
+}
