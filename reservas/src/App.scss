@@ -11,12 +11,16 @@ body.light .card{
   transition: background-color 0.3s ease, color 0.3s ease;
 }
 body.dark{
+  // Frames and control borders: a muted grey (3.6:1 on #1d1d1d) instead of pure white, which
+  // glares on a dark page. Text stays white.
+  --dark-border: #6c757d;
   background-color: #1d1d1d;
   color: #fff;
   transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 body.dark .card{
+  border-color: var(--dark-border) !important;
   background-color: #1d1d1d;
   color: #fff;
   transition: background-color 0.3s ease, color 0.3s ease;
@@ -66,7 +70,7 @@ body.dark input[type="email"] {
   background-color: #1d1d1d;
   color: #fff;
   transition: background-color 0.3s ease, color 0.3s ease; 
-  border: 1px solid #fff;
+  border: 1px solid var(--dark-border);
 }
 
 body.light input[type="email"] ::placeholder {
@@ -185,4 +189,9 @@ body.dark .btn-outline-primary {
   --bs-btn-active-color: #1d1d1d;
   --bs-btn-active-bg: #6ea8fe;
   --bs-btn-active-border-color: #6ea8fe;
+}
+
+// The wizard buttons keep their navy fill; only the white ring around them is softened.
+body.dark .btn:not(.btn-outline-primary) {
+  border-color: var(--dark-border) !important;
 }

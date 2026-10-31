@@ -23,3 +23,16 @@ test("dark theme: navbar links and the menu icon are light text, 4.5:1 on the da
   assert.ok(rule, "the dark navbar link/menu colour rule is missing");
   assert.ok(ratio(rule[1], DARK_BACKGROUND) >= 4.5, `${rule[1]} is ${ratio(rule[1], DARK_BACKGROUND).toFixed(2)}:1`);
 });
+
+// Non-text parts (frames and control borders) in the dark theme come down from pure white: they stay
+// at least 3:1 against the background (WCAG 1.4.11), while text keeps its own white.
+test("dark theme: frames and control borders are softer than pure white and still reach 3:1", () => {
+  const softBorder = css.match(/body\.dark\s*\{[^}]*?--dark-border:\s*(#[0-9a-fA-F]{6})/)?.[1];
+  assert.ok(softBorder, "the dark border colour variable is missing");
+  assert.notEqual(softBorder.toLowerCase(), "#ffffff");
+  assert.ok(ratio(softBorder, DARK_BACKGROUND) >= 3, `${softBorder} is ${ratio(softBorder, DARK_BACKGROUND).toFixed(2)}:1`);
+  for (const selector of ["body\\.dark \\.card", "body\\.dark input\\[type=\"email\"\\]", "body\\.dark \\.btn:not\\(\\.btn-outline-primary\\)"]) {
+    const rule = css.match(new RegExp(`${selector}\\s*\\{[^}]*\\}`))?.[0] ?? "";
+    assert.match(rule, /border(-color)?:[^;]*var\(--dark-border\)/, `${selector} must use var(--dark-border)`);
+  }
+});
