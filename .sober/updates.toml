@@ -27,7 +27,7 @@ rollback = "Render rollback to the retained previous Staging static-site deploy 
 
 [harness]
 repository = "Lucasdoreac/personal-dev-harness"
-revision = "5f98615a83aaee926c73f76bb3a1b4ac43ec9288"
-source_sha256 = "6af285431eec621cc1f22ce2de7d29e3c338bc71a37af4dd6ccf2e170bf1afb3"
+revision = "41262ba149201d5c3aa54fd758c3af52ef77f971"
+source_sha256 = "0de9fa87bf902174fb5ed364175a13a5a83e32fbc3219168e9ae62e59beff77e"
 package = "personal-dev-harness-update-vanguard"
 path = "ops/vendor/update-vanguard"

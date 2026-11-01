@@ -10,6 +10,7 @@ import json
 import copy
 import os
 import re
+import shlex
 from dataclasses import dataclass
 from enum import StrEnum
 from pathlib import Path, PurePosixPath
@@ -827,10 +828,25 @@ class UpdateCapabilityService:
             return UpdateResult(False, {"job_id": job["job_id"]},
                                 "project update manifest is missing")
 
+        is_sober = manifest.get("execution", {}).get("adapter") == "sober-ops-ci"
+        declared_commands: list[list[str]] = []
+        if not is_sober:
+            if manifest.get("gates", {}).get("publish_ci_status", False):
+                return UpdateResult(False, {"job_id": job["job_id"]},
+                                    "project status publication adapter is not configured")
+            try:
+                declared_commands = [shlex.split(command) for command in manifest.get("gates", {}).get("commands", [])]
+            except ValueError:
+                return UpdateResult(False, {"job_id": job["job_id"]}, "invalid declared gate command")
+            if not declared_commands or any(not command for command in declared_commands):
+                return UpdateResult(False, {"job_id": job["job_id"]}, "project code gate requires declared commands")
+
         status_required = bool(manifest.get("gates", {}).get("publish_ci_status", False))
         prior_code_gate = plan.get("code_gate", {})
         prior_publication = plan.get("status_publication", {})
         suite_passed = _canonical_suite_passed(plan, head_sha)
+        if not is_sober:
+            suite_passed = suite_passed and prior_code_gate.get("declared_commands") == declared_commands
         publication_confirmed = _status_publication_confirmed(plan, head_sha)
         if suite_passed and (not status_required or publication_confirmed):
             return UpdateResult(True, {"job_id": job["job_id"], "state": job["state"],
@@ -861,7 +877,7 @@ class UpdateCapabilityService:
         ci_command = ["python3", "-m", "ops.ci", "--expect", head_sha]
         if status_retry:
             ci_command = ["python3", "-m", "ops.ci", "--publish-status", "--expect", head_sha]
-        commands = [role_command, ci_command]
+        commands = [role_command, ci_command] if is_sober else declared_commands
         results: list[dict[str, Any]] = []
         prior_results = []
         if status_retry and isinstance(prior_code_gate, dict):
@@ -968,6 +984,7 @@ class UpdateCapabilityService:
         current_plan["code_gate"] = {
             "status": "passed" if suite_passed else "failed", "source_sha": head_sha,
             "suite_passed": suite_passed, "commands": prior_results + results,
+            "declared_commands": declared_commands if not is_sober else None,
             "completed_at": _utc_now(),
         }
         if status_required and isinstance(publication, dict):
@@ -1925,6 +1942,14 @@ def _canonical_suite_passed(plan: dict[str, Any], source_sha: str) -> bool:
     commands = gate.get("commands")
     if not isinstance(commands, list):
         return False
+    declared = gate.get("declared_commands")
+    if declared is not None:
+        return (isinstance(declared, list) and bool(declared)
+                and all(isinstance(command, list) and command and all(isinstance(arg, str) for arg in command)
+                        for command in declared)
+                and len(commands) == len(declared)
+                and all(isinstance(item, dict) and item.get("command") == command and item.get("exit_code") == 0
+                        for item, command in zip(commands, declared)))
     return any(
         isinstance(item, dict) and item.get("exit_code") == 0
         and item.get("command") == ["python3", "-m", "ops.ci", "--expect", source_sha]

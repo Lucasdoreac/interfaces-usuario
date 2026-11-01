@@ -186,7 +186,8 @@ def load_manifest(root: Path) -> dict[str, Any] | None:
     deployment = data.get("deployment", {})
     if not isinstance(deployment, dict):
         raise ManifestError("deployment must be a TOML table")
-    if deployment.get("artifact_kind", "docker-image") not in {"docker-image", "provider-build"}:
+    artifact_kind = deployment.get("artifact_kind", "docker-image")
+    if not isinstance(artifact_kind, str) or artifact_kind not in {"docker-image", "provider-build"}:
         raise ManifestError("deployment.artifact_kind must be docker-image or provider-build")
     probes = deployment.get("probes", [])
     rollback = deployment.get("rollback", "")
