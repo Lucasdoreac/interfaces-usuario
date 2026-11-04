@@ -29,3 +29,21 @@ test("a rota /sistema-especialista está declarada e tem meta", () => {
   assert.match(readFileSync(new URL("../../app/routes.js", import.meta.url), "utf8"), /route\("sistema-especialista", "routes\/sistema-especialista\.jsx"\)/);
   assert.match(readFileSync(new URL("../../app/routes/sistema-especialista.jsx", import.meta.url), "utf8"), /pageMeta\("Sistema especialista"\)/);
 });
+
+import { CASOS_DE_USO, COMPONENTES, CLASSES, SEQUENCIA, TECNOLOGIAS } from "../../src/especialista/diagramas.js";
+
+test("toda ligação dos diagramas aponta para elementos que existem", () => {
+  for (const d of [CASOS_DE_USO, COMPONENTES, CLASSES]) {
+    const ids = new Set(d.elementos.map((e) => e.id));
+    assert.equal(ids.size, d.elementos.length, `${d.id}: ids repetidos`);
+    for (const l of d.ligacoes) assert.ok(ids.has(l.de) && ids.has(l.para), `${d.id}: ${l.de}->${l.para}`);
+    assert.ok(d.alternativa.length > 40, `${d.id} sem versão em texto`);
+  }
+  for (const m of SEQUENCIA.mensagens) {
+    assert.ok(SEQUENCIA.participantes[m.de] && SEQUENCIA.participantes[m.para]);
+  }
+});
+
+test("a lista de tecnologias cita onde conferir cada camada", () => {
+  for (const t of TECNOLOGIAS) assert.ok(t.camada && t.itens && t.onde);
+});
