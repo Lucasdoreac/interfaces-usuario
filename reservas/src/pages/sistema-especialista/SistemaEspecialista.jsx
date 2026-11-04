@@ -1,6 +1,6 @@
 import React from "react";
 import { ESTADOS, SECOES } from "../../especialista/documentacao";
-import { ATIVIDADES, CASOS_DE_USO, CLASSES, COMPONENTES, SEQUENCIA, TECNOLOGIAS } from "../../especialista/diagramas";
+import { ATIVIDADES, CASOS_DE_USO, CLASSES, COMPONENTES, SEQUENCIA, TECNOLOGIAS, NOTA_TECNOLOGIAS } from "../../especialista/diagramas";
 import { REGRAS } from "../../especialista/motor";
 import { DiagramaGeral, DiagramaSequencia } from "../../components/sistema-especialista/Diagrama";
 import Demonstracao from "../../components/sistema-especialista/Demonstracao";
@@ -27,9 +27,9 @@ const SistemaEspecialista = () => (
 
     <section id="pitch" aria-labelledby="pitch-titulo" className="mt-4">
       <h2 id="pitch-titulo">Pitch</h2>
-      <p><strong>Problema.</strong> Quem precisa de uma sala escolhe sem saber se ela comporta o evento, tem os recursos e onde fica. A confirmação é manual e a informação de localização é pouca.</p>
-      <p><strong>Solução.</strong> Um sistema especialista que recomenda salas e explica: para cada sala mostra qual regra foi aplicada, qual fato foi usado e de onde ele vem. Quando falta dado, diz que falta, em vez de chutar. A localização aparece separada da recomendação e só com o que está confirmado.</p>
-      <p><strong>Diferencial.</strong> Explicável, com validação humana das regras e sem inventar dados. A decisão final da reserva continua com a Assessoria Acadêmica.</p>
+      <p><strong>Problema.</strong> Hipótese a validar com a Coordenação: quem precisa de uma sala escolheria sem saber se ela comporta o evento, tem os recursos e onde fica, e a confirmação seria manual. Ainda não há pesquisa que meça isso.</p>
+      <p><strong>Solução.</strong> Um protótipo de sistema especialista que recomenda salas (na demonstração, salas sintéticas) e explica: para cada sala mostra qual regra foi aplicada, qual fato foi usado e de onde ele vem. Quando falta dado, diz que falta, em vez de chutar. A localização aparece separada da recomendação, só com o que consta nos dados, e lista o que falta.</p>
+      <p><strong>Diferencial.</strong> Explicável e sem inventar dados. A validação humana das regras está prevista, ainda não feita. A decisão final da reserva continua com a Assessoria Acadêmica.</p>
     </section>
 
     <Demonstracao />
@@ -63,7 +63,7 @@ const SistemaEspecialista = () => (
 
     <section id="uml" aria-labelledby="uml-titulo" className="mt-5">
       <h2 id="uml-titulo">Documentação de software: UML</h2>
-      <p>Diagramas resumem o código e identificam o que ainda não foi implementado. São esquemas simplificados: a notação UML formal e a revisão acadêmica permanecem pendentes. Cada um tem uma versão em texto.</p>
+      <p>Diagramas resumem o código e identificam o que ainda não foi implementado. São esquemas inspirados na UML 2.5.1, não uma prova de conformidade: casos de uso e classes são modelos conceituais; componentes, atividades e sequência seguem o código e a configuração, com a evidência de cada ligação indicada. A revisão acadêmica permanece pendente. Cada diagrama tem uma versão em texto.</p>
       <DiagramaGeral d={CASOS_DE_USO} />
       <DiagramaGeral d={COMPONENTES} />
       <DiagramaGeral d={CLASSES} />
@@ -86,6 +86,7 @@ const SistemaEspecialista = () => (
           </tbody>
         </table>
       </div>
+      <p className="small">{NOTA_TECNOLOGIAS}</p>
     </section>
 
     {SECOES.map((s) => (

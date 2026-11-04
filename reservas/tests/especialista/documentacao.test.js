@@ -60,19 +60,19 @@ test('documentação informa consulta individual sem prometer integração de re
   assert.doesNotMatch(texto, /trocar dados sintéticos por dados institucionais/);
 });
 
-test('os casos de uso ficam dentro da fronteira do sistema', () => {
+test('os casos de uso do protótipo ficam dentro da fronteira; o fluxo atual (u4) fica fora', () => {
   const f = CASOS_DE_USO.fronteira;
-  for (const e of CASOS_DE_USO.elementos.filter((item) => item.forma === 'elipse')) {
+  for (const e of CASOS_DE_USO.elementos.filter((item) => item.forma === 'elipse' && item.id !== 'u4')) {
     assert.ok(e.x >= f.x && e.x + e.w <= f.x + f.w && e.y >= f.y && e.y + e.h <= f.y + f.h, e.id);
   }
 });
 
 test('modelo admite sala sem fatos e não atribui resultado diretamente a uma regra', () => {
-  assert.equal(CLASSES.ligacoes.find((l) => l.de === 'sala' && l.para === 'fato').rotulo, '0..*');
+  assert.equal(CLASSES.ligacoes.find((l) => l.de === 'sala' && l.para === 'fato').multiplicidadePara, '0..*');
   assert.ok(!CLASSES.ligacoes.some((l) => l.de === 'regra' && l.para === 'res'));
 });
 
 test('casos de uso distinguem protótipo do fluxo existente', () => {
-  assert.match(CASOS_DE_USO.fronteira.rotulo, /Reservas/);
-  assert.match(CASOS_DE_USO.legenda, /fora da demonstração/i);
+  assert.match(CASOS_DE_USO.fronteira.rotulo, /Protótipo/);
+  assert.match(CASOS_DE_USO.legenda, /Fora dela, o fluxo de reserva/i);
 });
