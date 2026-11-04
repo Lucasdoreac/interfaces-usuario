@@ -1,7 +1,7 @@
 import React from "react";
 import { ESTADOS, SECOES } from "../../especialista/documentacao";
 import { ATIVIDADES, CASOS_DE_USO, CLASSES, COMPONENTES, SEQUENCIA, TECNOLOGIAS, NOTA_TECNOLOGIAS } from "../../especialista/diagramas";
-import { REGRAS } from "../../especialista/motor";
+import { REGRAS_TRIAGEM } from "../../especialista/triagem";
 import { DiagramaGeral, DiagramaSequencia } from "../../components/sistema-especialista/Diagrama";
 import Demonstracao from "../../components/sistema-especialista/Demonstracao";
 
@@ -27,9 +27,9 @@ const SistemaEspecialista = () => (
 
     <section id="pitch" aria-labelledby="pitch-titulo" className="mt-4">
       <h2 id="pitch-titulo">Pitch</h2>
-      <p><strong>Problema.</strong> Hipótese a validar com a Coordenação: quem precisa de uma sala escolheria sem saber se ela comporta o evento, tem os recursos e onde fica, e a confirmação seria manual. Ainda não há pesquisa que meça isso.</p>
-      <p><strong>Solução.</strong> Um protótipo de sistema especialista que recomenda salas (na demonstração, salas sintéticas) e explica: para cada sala mostra qual regra foi aplicada, qual fato foi usado e de onde ele vem. Quando falta dado, diz que falta, em vez de chutar. A localização aparece separada da recomendação, só com o que consta nos dados, e lista o que falta.</p>
-      <p><strong>Diferencial.</strong> Explicável e sem inventar dados. A validação humana das regras está prevista, ainda não feita. A decisão final da reserva continua com a Assessoria Acadêmica.</p>
+      <p><strong>Problema.</strong> Hipótese a validar com a Coordenação: o pedido de reserva chega à Assessoria e é conferido à mão contra o procedimento (três turnos, limites por dia e por solicitante). Ainda não há pesquisa que meça esse esforço.</p>
+      <p><strong>Solução.</strong> Um protótipo de sistema especialista que tria um pedido de reserva contra o procedimento da Assessoria Acadêmica e explica: para cada regra mostra o fato usado, de onde ele vem e como foi derivado. Quando falta dado, diz que falta, em vez de chutar. A consulta de uma sala real por ID mostra só o que o catálogo tem (rótulo e campus) e lista o que falta.</p>
+      <p><strong>Diferencial.</strong> Explicável, com encadeamento de fatos e sem inventar dados. A validação humana das regras está prevista, ainda não feita. A decisão final da reserva continua com a Assessoria Acadêmica.</p>
     </section>
 
     <Demonstracao />
@@ -37,10 +37,10 @@ const SistemaEspecialista = () => (
     <section id="como-funciona" aria-labelledby="como-titulo" className="mt-5">
       <h2 id="como-titulo">Como o especialista decide</h2>
       <p>
-        <strong>Base de conhecimento:</strong> fatos sobre cada sala (campus, prédio, andar, capacidade, recursos), cada um com valor e fonte,
-        e regras do tipo SE–ENTÃO. <strong>Motor de inferência:</strong> aplica as regras aos fatos e conclui “atende”, “não atende” ou
-        “falta dado”, devolvendo a justificativa. Fato ausente nunca vira “atende”, e sem nenhum critério nada é recomendado.
-        Regras sem validação humana são sinalizadas no resultado.
+        <strong>Base de conhecimento:</strong> fatos do pedido (participantes, datas e turnos, exceção) e regras do tipo SE–ENTÃO do
+        procedimento. <strong>Motor de inferência:</strong> encadeia para a frente: dos fatos informados deriva outros (por exemplo, as
+        reservas de cada dia levam a “dia dentro do limite”) até não haver o que derivar, e conclui “atende”, “não atende” ou “falta dado”,
+        devolvendo a justificativa. Fato que não pôde ser derivado nunca vira “atende”. Regras sem validação humana são sinalizadas no resultado.
       </p>
       <div className="table-responsive">
         <table className="table align-middle">
@@ -49,7 +49,7 @@ const SistemaEspecialista = () => (
             <tr><th scope="col">Regra</th><th scope="col">SE–ENTÃO</th><th scope="col">Validação humana</th></tr>
           </thead>
           <tbody>
-            {REGRAS.map((r) => (
+            {REGRAS_TRIAGEM.map((r) => (
               <tr key={r.id}>
                 <td><code>{r.id}</code></td>
                 <td>{r.descricao}</td>

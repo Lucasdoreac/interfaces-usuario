@@ -14,9 +14,9 @@ export const SECOES = Object.freeze([
     id: "limites",
     titulo: "Limites e dados",
     itens: [
-      { texto: "A demonstração usa quatro salas sintéticas por padrão e permite consulta opcional de uma sala por ID. No esquema examinado, o catálogo guarda rótulo e campus, sem prédio, andar, capacidade ou recursos.", fonte: "Contagem agregada de um backup do banco local de 19/10", estado: "registrado" },
+      { texto: "A demonstração não usa dataset: quem usa digita o pedido. A consulta opcional de uma sala real é feita por ID. No esquema examinado, o catálogo guarda rótulo e campus, sem prédio, andar, capacidade ou recursos.", fonte: "Contagem agregada de um backup do banco local de 19/10", estado: "registrado" },
       { texto: "A planilha de oferta 2026/2 não tem dia da semana nem horário; por isso o sistema não infere disponibilidade de aulas.", fonte: "Planilha de oferta e reports/DADOS.md", estado: "registrado" },
-      { texto: "As regras atuais (capacidade, recursos, campus) são sintéticas e ainda não foram validadas por quem decide na instituição.", fonte: "Código do projeto", estado: "pendente" },
+      { texto: "As regras da triagem (período, pedido completo, até 2 por dia, até 6 por solicitante, exceção) vêm do procedimento da Assessoria, mas ainda não foram validadas por ela.", fonte: "Código do projeto e procedimento de 28/09", estado: "pendente" },
       { texto: "Localização mostra só o que está confirmado e nunca monta trajeto; fonte oficial de prédio, andar, capacidade e recursos ainda não identificada.", fonte: "Lacuna", estado: "pendente" },
     ],
   },
@@ -25,7 +25,7 @@ export const SECOES = Object.freeze([
     titulo: "Regras do procedimento de reserva, candidatas",
     itens: [
       { texto: "Cada solicitação vale para um período; são três turnos (matutino, vespertino, noturno).", fonte: "Procedimento da Assessoria Acadêmica, 28/09", estado: "candidata" },
-      { texto: "Até 2 reservas por dia e até 6 por solicitante; reservas contínuas cabem num só formulário.", fonte: "Procedimento da Assessoria Acadêmica, 28/09", estado: "candidata" },
+      { texto: "Até 2 reservas por dia e até 6 por solicitante; reservas contínuas cabem num só formulário (a triagem ainda não verifica o padrão de uso das contínuas).", fonte: "Procedimento da Assessoria Acadêmica, 28/09", estado: "candidata" },
       { texto: "A reserva só vale após confirmação formal da Assessoria, sujeita a disponibilidade e prioridade; casos excepcionais vão para a Assessoria, que decide.", fonte: "Procedimento da Assessoria Acadêmica, 28/09", estado: "candidata" },
     ],
   },
@@ -44,7 +44,6 @@ export const SECOES = Object.freeze([
     titulo: "Próximos passos",
     itens: [
       { texto: "Avaliar integração com a lista de salas e com o fluxo de pedido de reserva; a consulta atual é individual e não reserva.", fonte: "Backlog", estado: "pendente" },
-      { texto: "Encadeamento de fatos derivados no motor (hoje cada regra lê fatos diretos).", fonte: "Backlog", estado: "pendente" },
       { texto: "Atualizar dependências, consolidar os PRs anteriores e retomar com a DW quando o acesso aos repositórios da organização voltar.", fonte: "Plano de consolidação", estado: "pendente" },
     ],
   },

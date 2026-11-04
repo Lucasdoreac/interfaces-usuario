@@ -67,8 +67,8 @@ test('os casos de uso do protótipo ficam dentro da fronteira; o fluxo atual (u4
   }
 });
 
-test('modelo admite sala sem fatos e não atribui resultado diretamente a uma regra', () => {
-  assert.equal(CLASSES.ligacoes.find((l) => l.de === 'sala' && l.para === 'fato').multiplicidadePara, '0..*');
+test('modelo admite pedido sem linhas e não atribui resultado diretamente a uma regra', () => {
+  assert.equal(CLASSES.ligacoes.find((l) => l.de === 'ped' && l.para === 'lin').multiplicidadePara, '0..*');
   assert.ok(!CLASSES.ligacoes.some((l) => l.de === 'regra' && l.para === 'res'));
 });
 

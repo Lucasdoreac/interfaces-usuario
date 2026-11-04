@@ -1,8 +1,9 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { readFileSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
 import { ATIVIDADES, CASOS_DE_USO, CLASSES, COMPONENTES, SEQUENCIA, TECNOLOGIAS } from "../../src/especialista/diagramas.js";
-import { localizacao, recomendar } from "../../src/especialista/motor.js";
+import { localizacao } from "../../src/especialista/motor.js";
+import { triar } from "../../src/especialista/triagem.js";
 
 const gerais = [CASOS_DE_USO, COMPONENTES, CLASSES, ATIVIDADES];
 const lerFonte = (p) => readFileSync(new URL(p, import.meta.url), "utf8");
@@ -59,12 +60,12 @@ test("item 5: classes são modelo conceitual, com compartimentos e multiplicidad
   const res = CLASSES.elementos.find((e) => e.id === "res");
   const loc = CLASSES.elementos.find((e) => e.id === "loc");
   for (const e of CLASSES.elementos) assert.ok(Array.isArray(e.atributos) && Array.isArray(e.operacoes), e.id);
-  assert.deepEqual([...res.atributos].sort(), Object.keys(recomendar([], {})).sort());
+  assert.deepEqual([...res.atributos].sort(), Object.keys(triar({ linhas: [] })).sort());
   const camposLoc = Object.keys(localizacao({ id: "x", rotulo: "x" })).filter((k) => k !== "salaId" && k !== "rotulo");
   assert.deepEqual(loc.atributos.map((l) => l.split(" ")[0]).sort(), camposLoc.sort());
-  const sf = CLASSES.ligacoes.find((l) => l.de === "sala" && l.para === "fato");
-  assert.equal(sf.multiplicidadePara, "0..*");
-  assert.equal(sf.rotulo, undefined);
+  const pl = CLASSES.ligacoes.find((l) => l.de === "ped" && l.para === "lin");
+  assert.equal(pl.multiplicidadePara, "0..*");
+  assert.equal(pl.rotulo, undefined);
 });
 
 test("item 6: atividades têm nó inicial, finais, decisões com guardas e a iteração por sala", () => {
@@ -74,15 +75,20 @@ test("item 6: atividades têm nó inicial, finais, decisões com guardas e a ite
   const guardas = ATIVIDADES.ligacoes.map((l) => l.rotulo);
   assert.ok(guardas.includes("[sim]") && guardas.includes("[não]"));
   const regiao = ATIVIDADES.elementos.find((e) => e.forma === "regiao");
-  assert.match(regiao.rotulo, /para cada sala/);
-  assert.match(ATIVIDADES.alternativa, /semCriterio/);
+  assert.match(regiao.rotulo, /para cada regra/);
+  assert.match(ATIVIDADES.alternativa, /encadeia/);
 });
 
-test("item 7: pitch marca validação como prevista, problema como hipótese e mantém 'sintéticas'", () => {
+test("item 7: pitch marca validação como prevista e o problema como hipótese", () => {
   assert.match(pagina, /validação humana das regras (está )?prevista, ainda não feita/);
   assert.match(pagina, /Hipótese a validar/);
-  assert.match(pagina, /recomenda salas[^<]{0,80}sint[ée]tic/i);
-  assert.doesNotMatch(pagina, /só com o que está confirmado/);
+});
+
+test("nada sintético: sem arquivo de dados, sem regra sintética e sem a palavra na página, nos diagramas e na documentação", () => {
+  assert.equal(existsSync(new URL("../../src/especialista/dadosSinteticos.js", import.meta.url)), false);
+  for (const p of ["../../src/especialista/motor.js", "../../src/especialista/triagem.js", "../../src/especialista/diagramas.js", "../../src/especialista/documentacao.js", "../../src/components/sistema-especialista/Demonstracao.jsx", "../../src/pages/sistema-especialista/SistemaEspecialista.jsx"]) {
+    assert.doesNotMatch(lerFonte(p), /sint[ée]tic|regra-sintetica|SALAS_SINT/i, p);
+  }
 });
 
 test("item 8: legenda da sequência cita onde o Bearer é enviado", () => {
