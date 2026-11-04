@@ -1,6 +1,6 @@
 import React from "react";
 import { ESTADOS, SECOES } from "../../especialista/documentacao";
-import { CASOS_DE_USO, CLASSES, COMPONENTES, SEQUENCIA, TECNOLOGIAS } from "../../especialista/diagramas";
+import { ATIVIDADES, CASOS_DE_USO, CLASSES, COMPONENTES, SEQUENCIA, TECNOLOGIAS } from "../../especialista/diagramas";
 import { REGRAS } from "../../especialista/motor";
 import { DiagramaGeral, DiagramaSequencia } from "../../components/sistema-especialista/Diagrama";
 import Demonstracao from "../../components/sistema-especialista/Demonstracao";
@@ -67,6 +67,7 @@ const SistemaEspecialista = () => (
       <DiagramaGeral d={CASOS_DE_USO} />
       <DiagramaGeral d={COMPONENTES} />
       <DiagramaGeral d={CLASSES} />
+      <DiagramaGeral d={ATIVIDADES} />
       <DiagramaSequencia d={SEQUENCIA} />
     </section>
 
