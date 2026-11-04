@@ -29,3 +29,18 @@ test("dark theme: the active navbar link reaches 4.5:1 on the dark navbar", () =
   assert.ok(color, "the dark active-link colour is missing");
   assert.ok(ratio(color, DARK_BACKGROUND) >= 4.5, `${color} is ${ratio(color, DARK_BACKGROUND).toFixed(2)}:1`);
 });
+
+const especialista = css.match(/body\.dark \.sistema-especialista\s*\{[\s\S]*?\n\}\n/)?.[0] ?? "";
+const corDe = (regra) => especialista.match(new RegExp(`${regra}\\s*\\{[^}]*?(?:^|[\\s;{])color:\\s*(#[0-9a-fA-F]{6})`, "m"))?.[1];
+
+test("dark theme: the expert-system page redraws table text, links, code and fields", () => {
+  assert.ok(especialista, "the dark rules for .sistema-especialista are missing");
+  assert.match(especialista, /--bs-table-color:\s*#fff/);
+  assert.match(especialista, /--bs-table-bg:\s*#1d1d1d/);
+  for (const [nome, regra] of [["links", "a"], ["code", "code"]]) {
+    const cor = corDe(regra);
+    assert.ok(cor, `${nome}: colour missing`);
+    assert.ok(ratio(cor, DARK_BACKGROUND) >= 4.5, `${nome} ${cor} is ${ratio(cor, DARK_BACKGROUND).toFixed(2)}:1`);
+  }
+  assert.match(especialista, /\.form-control,\s*\.form-select\s*\{[^}]*background-color:\s*#1d1d1d;[^}]*color:\s*#fff/);
+});

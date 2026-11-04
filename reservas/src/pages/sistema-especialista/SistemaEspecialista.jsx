@@ -15,7 +15,7 @@ const INDICE = [
 ];
 
 const SistemaEspecialista = () => (
-  <div className="container py-4">
+  <div className="container py-4 sistema-especialista">
     <h1>Sistema especialista de salas</h1>
     <nav aria-label="Seções da documentação">
       <ul>
