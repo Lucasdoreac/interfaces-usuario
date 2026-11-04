@@ -4,25 +4,25 @@
 export const CASOS_DE_USO = {
   id: "uml-casos-de-uso",
   titulo: "Casos de uso",
-  legenda: "Caixas tracejadas: ainda não implementado no protótipo. O pedido de reserva já existe no fluxo atual do Reservas.",
+  legenda: "Tracejado: validação ainda não implementada. Pedido de reserva: fluxo existente fora da demonstração.",
   largura: 760,
   altura: 400,
-  fronteira: { x: 190, y: 20, w: 380, h: 360, rotulo: "Sistema especialista de salas" },
+  fronteira: { x: 190, y: 20, w: 380, h: 360, rotulo: "Reservas e protótipo especialista" },
   elementos: [
     { id: "sol", forma: "ator", x: 70, y: 140, rotulo: "Solicitante" },
     { id: "ass", forma: "ator", x: 690, y: 90, rotulo: "Assessoria Acadêmica" },
     { id: "reg", forma: "ator", x: 690, y: 290, rotulo: "Responsável pelas regras" },
-    { id: "u1", forma: "elipse", x: 380, y: 70, w: 300, h: 44, rotulo: "Informar a necessidade do evento" },
-    { id: "u2", forma: "elipse", x: 380, y: 135, w: 300, h: 44, rotulo: "Receber recomendação justificada" },
-    { id: "u3", forma: "elipse", x: 380, y: 200, w: 300, h: 44, rotulo: "Consultar localização confirmada" },
-    { id: "u4", forma: "elipse", x: 380, y: 265, w: 300, h: 44, rotulo: "Pedir reserva (fluxo atual)" },
-    { id: "u5", forma: "elipse", x: 380, y: 330, w: 300, h: 44, rotulo: "Validar regras e fatos das salas", tracejado: true },
+    { id: "u1", forma: "elipse", x: 230, y: 70, w: 300, h: 44, rotulo: "Informar a necessidade do evento" },
+    { id: "u2", forma: "elipse", x: 230, y: 135, w: 300, h: 44, rotulo: "Receber recomendação justificada" },
+    { id: "u3", forma: "elipse", x: 230, y: 200, w: 300, h: 44, rotulo: "Consultar localização confirmada" },
+    { id: "u4", forma: "elipse", x: 230, y: 265, w: 300, h: 44, rotulo: "Pedir reserva (fluxo atual)" },
+    { id: "u5", forma: "elipse", x: 230, y: 330, w: 300, h: 44, rotulo: "Validar regras e fatos das salas", tracejado: true },
   ],
   ligacoes: [
     { de: "sol", para: "u1" }, { de: "sol", para: "u2" }, { de: "sol", para: "u3" }, { de: "sol", para: "u4" },
     { de: "ass", para: "u4" }, { de: "reg", para: "u5" },
   ],
-  alternativa: "O Solicitante informa o evento, recebe a recomendação com justificativa, consulta a localização e pede a reserva. A Assessoria Acadêmica confirma a reserva. O Responsável pelas regras valida regras e fatos das salas (ainda não implementado).",
+  alternativa: "O Solicitante informa o evento, recebe a recomendação com justificativa, consulta a localização e pede a reserva. A Assessoria Acadêmica participa do fluxo de reserva existente, fora da demonstração. O Responsável pelas regras valida regras e fatos das salas (ainda não implementado).",
 };
 
 export const COMPONENTES = {
@@ -46,7 +46,7 @@ export const COMPONENTES = {
     { de: "api", para: "pdf", rotulo: "gera e guarda" },
     { de: "api", para: "mail", rotulo: "aviso ao revisor" },
   ],
-  alternativa: "A SPA chama a API Reservas por HTTP. A API consulta o catálogo e o login em shared-resources, grava eventos e reservas no MongoDB, gera o PDF com Typst e guarda no MinIO, e aciona a Cloud Function para o e-mail de aprovação. O motor do especialista está dentro da SPA e só lê as salas que a API entrega.",
+  alternativa: "A SPA chama a API Reservas por HTTP. A API consulta o catálogo e o login em shared-resources, grava eventos e reservas no MongoDB, gera o PDF com Typst e guarda no MinIO, e aciona a Cloud Function para o e-mail de aprovação. O motor está na SPA; usa dados sintéticos ou, opcionalmente, uma sala consultada na API.",
 };
 
 export const CLASSES = {
@@ -64,39 +64,36 @@ export const CLASSES = {
     { id: "loc", forma: "caixa", x: 550, y: 215, w: 190, h: 90, titulo: "Localizacao", linhas: ["conhecidos", "ausentes", "trajeto = null"] },
   ],
   ligacoes: [
-    { de: "sala", para: "fato", rotulo: "1..*" },
+    { de: "sala", para: "fato", rotulo: "0..*" },
     { de: "regra", para: "sala", rotulo: "avalia" },
     { de: "regra", para: "ped", rotulo: "usa" },
-    { de: "regra", para: "res", rotulo: "produz" },
     { de: "sala", para: "loc", rotulo: "informa" },
   ],
-  alternativa: "Uma Sala tem vários Fatos, cada um com valor e fonte. Uma Regra avalia uma Sala segundo um Pedido e alimenta o Resultado, separado em recomendadas, indeterminadas e rejeitadas. Localização é derivada da Sala e nunca tem trajeto.",
+  alternativa: "Uma Sala pode ter Fatos, cada um com valor e fonte. Uma Regra avalia uma Sala segundo um Pedido; recomendar agrega as avaliações no Resultado, separado em recomendadas, indeterminadas e rejeitadas. Localização é derivada da Sala e nunca tem trajeto.",
 };
 
 export const SEQUENCIA = {
   id: "uml-sequencia",
   titulo: "Sequência da recomendação",
-  legenda: "Fluxo do protótipo. Pedir a reserva continua no fluxo atual do Reservas.",
+  legenda: "Fluxo do protótipo; consulta ao catálogo é opcional e exige ID e autenticação.",
   participantes: ["Solicitante", "SPA", "Motor de regras", "API Reservas"],
   mensagens: [
     { de: 0, para: 1, texto: "informa participantes, recursos, campus" },
-    { de: 1, para: 3, texto: "GET /rooms" },
-    { de: 3, para: 1, texto: "salas do catálogo", tracejada: true },
+    { de: 1, para: 3, texto: "opcional: GET /rooms?roomId=…" },
+    { de: 3, para: 1, texto: "uma sala do catálogo", tracejada: true },
     { de: 1, para: 2, texto: "recomendar(salas, pedido)" },
     { de: 2, para: 1, texto: "recomendadas, indeterminadas, rejeitadas", tracejada: true },
     { de: 1, para: 0, texto: "lista com regra, fato e fonte", tracejada: true },
-    { de: 0, para: 1, texto: "escolhe uma sala" },
-    { de: 1, para: 3, texto: "POST /reservations (fluxo atual)" },
   ],
-  alternativa: "O Solicitante informa o evento. A SPA pede as salas à API, entrega salas e pedido ao motor e mostra a lista com a justificativa de cada sala. Quando o Solicitante escolhe uma sala, a reserva segue o fluxo atual. No protótipo, as salas vêm de dados sintéticos.",
+  alternativa: "O Solicitante informa o evento. A SPA usa salas sintéticas ou consulta opcionalmente uma sala por ID na API; entrega os dados ao motor e mostra justificativas. A demonstração não realiza reserva.",
 };
 
 export const TECNOLOGIAS = [
-  { camada: "Interface", itens: "JavaScript (ESM), React 19, React Router 8 em modo SPA sem SSR, Vite 8, Sass, Bootstrap 5", onde: "interfaces-usuario/reservas/package.json" },
-  { camada: "API e serviços", itens: "Python 3.12+, Flask, Gunicorn, pymongo; Auth e catálogo com Flask, GraphQL (graphene) e MongoEngine", onde: "python-services e shared-resources, pyproject.toml" },
-  { camada: "Dados", itens: "MongoDB 8 para catálogo, eventos e reservas; Redis para cache; MinIO para os PDFs", onde: "dev-local/compose.yaml" },
+  { camada: "Interface", itens: "JavaScript (ESM), React 19, React Router 8 em modo SPA sem SSR, Vite 8, Sass, Bootstrap 5", onde: "reservas/package.json e react-router.config.js" },
+  { camada: "API e serviços", itens: "Python 3.12+, Flask, Gunicorn, pymongo; Auth e catálogo com Flask, GraphQL (graphene) e MongoEngine", onde: "python-services/pyproject.toml; shared-resources/internal_apis/pyproject.toml" },
+  { camada: "Dados", itens: "MongoDB 8 para catálogo, eventos e reservas; Redis para cache; MinIO para os PDFs", onde: "dev-local/compose.yaml (ambiente local)" },
   { camada: "Documentos e e-mail", itens: "Typst gera o PDF do pedido; a Cloud Function envia o e-mail de aprovação", onde: "python-services/src/BLL/pdf.py e send_emails.py" },
-  { camada: "Testes", itens: "node:test na interface e pytest nos serviços Python", onde: "reservas/tests e src/Tests" },
-  { camada: "Execução e entrega", itens: "Docker e Docker Compose em Linux; código no GitHub; staging estático no Render", onde: "dev-local e ops/staging-release.py" },
+  { camada: "Testes", itens: "node:test na interface e pytest nos serviços Python", onde: "reservas/tests; python-services/src/Tests; shared-resources/internal_apis" },
+  { camada: "Execução e entrega", itens: "Docker e Docker Compose em Linux; código no GitHub; staging estático no Render", onde: "dev-local/compose.yaml; ops/staging-release.py" },
   { camada: "Ferramentas", itens: "IDE: a que o Lucas usar no dia (não registrada no repositório); controle de versão: Git", onde: "A preencher pelo Lucas" },
 ];

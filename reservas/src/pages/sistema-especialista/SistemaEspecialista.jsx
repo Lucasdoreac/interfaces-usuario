@@ -63,7 +63,7 @@ const SistemaEspecialista = () => (
 
     <section id="uml" aria-labelledby="uml-titulo" className="mt-5">
       <h2 id="uml-titulo">Documentação de software: UML</h2>
-      <p>Diagramas descrevem o que existe no código. Cada um tem a versão em texto logo abaixo.</p>
+      <p>Diagramas resumem o código e identificam o que ainda não foi implementado. São esquemas simplificados: a notação UML formal e a revisão acadêmica permanecem pendentes. Cada um tem uma versão em texto.</p>
       <DiagramaGeral d={CASOS_DE_USO} />
       <DiagramaGeral d={COMPONENTES} />
       <DiagramaGeral d={CLASSES} />

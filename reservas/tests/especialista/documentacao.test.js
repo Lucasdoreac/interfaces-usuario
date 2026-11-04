@@ -47,3 +47,32 @@ test("toda ligação dos diagramas aponta para elementos que existem", () => {
 test("a lista de tecnologias cita onde conferir cada camada", () => {
   for (const t of TECNOLOGIAS) assert.ok(t.camada && t.itens && t.onde);
 });
+
+test('sequência distingue consulta opcional e não atribui reserva à demonstração', () => {
+  assert.match(SEQUENCIA.legenda, /opcional/i);
+  assert.ok(!SEQUENCIA.mensagens.some((m) => /POST|escolhe uma sala/.test(m.texto)));
+  assert.match(SEQUENCIA.alternativa, /não.*reserva/i);
+});
+
+test('documentação informa consulta individual sem prometer integração de reserva', () => {
+  const texto = JSON.stringify(SECOES);
+  assert.match(texto, /consulta opcional.*ID/i);
+  assert.doesNotMatch(texto, /trocar dados sintéticos por dados institucionais/);
+});
+
+test('os casos de uso ficam dentro da fronteira do sistema', () => {
+  const f = CASOS_DE_USO.fronteira;
+  for (const e of CASOS_DE_USO.elementos.filter((item) => item.forma === 'elipse')) {
+    assert.ok(e.x >= f.x && e.x + e.w <= f.x + f.w && e.y >= f.y && e.y + e.h <= f.y + f.h, e.id);
+  }
+});
+
+test('modelo admite sala sem fatos e não atribui resultado diretamente a uma regra', () => {
+  assert.equal(CLASSES.ligacoes.find((l) => l.de === 'sala' && l.para === 'fato').rotulo, '0..*');
+  assert.ok(!CLASSES.ligacoes.some((l) => l.de === 'regra' && l.para === 'res'));
+});
+
+test('casos de uso distinguem protótipo do fluxo existente', () => {
+  assert.match(CASOS_DE_USO.fronteira.rotulo, /Reservas/);
+  assert.match(CASOS_DE_USO.legenda, /fora da demonstração/i);
+});
