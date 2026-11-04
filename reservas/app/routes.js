@@ -5,6 +5,7 @@ export default [
   route("organizer", "routes/organizer.jsx"),
   route("auth/callback", "routes/auth-callback.jsx"),
   route("access-denied", "routes/access-denied.jsx"),
+  route("sistema-especialista", "routes/sistema-especialista.jsx"),
   route("event", "routes/event-layout.jsx", [
     route("type-selection", "routes/event-type-selection.jsx"),
     route("basic-info", "routes/event-basic-info.jsx"),
