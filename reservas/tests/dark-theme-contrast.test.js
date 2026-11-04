@@ -53,3 +53,10 @@ test("a página /sistema-especialista não cresce com o hover do card global", (
   const card = readFileSync(new URL("../src/index.scss", import.meta.url), "utf8");
   assert.match(card, /\.card:hover[\s\S]*?transform:\s*scale\(1\.01\)\s*!important/, "as outras telas mantêm o comportamento do app");
 });
+
+test("as seções de /sistema-especialista têm altura do conteúdo, não 93vh como a regra global do app", () => {
+  const regra = css.match(/\.sistema-especialista section\s*\{[^}]*\}/)?.[0] ?? "";
+  assert.match(regra, /height:\s*auto\s*!important/, "sem esta regra, cada <section> fica com 93vh e uma cobre a outra");
+  const navbar = readFileSync(new URL("../src/components/Navbar/Navbar.scss", import.meta.url), "utf8");
+  assert.match(navbar, /section\s*\{\s*height:\s*93vh;/, "as outras telas mantêm a regra global");
+});

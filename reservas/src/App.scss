@@ -204,6 +204,12 @@ main.card:has(.sistema-especialista):active {
   transition: none !important;
 }
 
+// Navbar.scss define `section { height: 93vh }` para as telas de uma página só. Aqui cada
+// <section> é um trecho de documento com altura própria: com 93vh uma cobria a seguinte.
+.sistema-especialista section {
+  height: auto !important;
+}
+
 //Organizer Button
 
 // Dark theme: Bootstrap's default primary blue (#0d6efd) is 3.74:1 on #1d1d1d, under the 4.5:1
