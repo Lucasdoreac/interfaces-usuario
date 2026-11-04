@@ -158,7 +158,7 @@ export function DiagramaGeral({ d }) {
             return (
               <g key={`${l.de}-${l.para}`}>
                 <line x1={p1.x} y1={p1.y} x2={p2.x} y2={p2.y} {...traco} strokeDasharray={l.tracejada ? "6 4" : undefined} markerEnd={seta} />
-                {l.rotulo && <text x={mx} y={my - 5} textAnchor="middle" {...FONTE} fontSize={11} stroke="var(--bs-body-bg, Canvas)" strokeWidth="4" paintOrder="stroke">{l.rotulo}</text>}
+                {l.rotulo && <text x={mx} y={my - 5} textAnchor="middle" {...FONTE} fontSize={11}>{l.rotulo}</text>}
                 {mult && <text x={mult.x + 6} y={mult.y - 6} {...FONTE} fontSize={11}>{l.multiplicidadePara}</text>}
                 {multDe && <text x={multDe.x + 6} y={multDe.y - 6} {...FONTE} fontSize={11}>{l.multiplicidadeDe}</text>}
               </g>
