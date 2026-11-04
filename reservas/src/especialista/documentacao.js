@@ -14,7 +14,7 @@ export const SECOES = Object.freeze([
     id: "limites",
     titulo: "Limites e dados",
     itens: [
-      { texto: "A demonstração não usa dataset: quem usa digita o pedido. A consulta opcional de uma sala real é feita por ID. No esquema examinado, o catálogo guarda rótulo e campus, sem prédio, andar, capacidade ou recursos.", fonte: "Contagem agregada de um backup do banco local de 19/10", estado: "registrado" },
+      { texto: "A demonstração não usa dataset: quem usa digita o pedido. A consulta opcional de uma sala real é feita por ID. No esquema examinado, o catálogo guarda rótulo e campus, sem prédio, andar, capacidade ou recursos.", fonte: "Leitura agregada do Atlas Staging em 04/11 (148 salas, só NR_SALA e CAMPUS) e backup local de 19/10", estado: "registrado" },
       { texto: "A planilha de oferta 2026/2 não tem dia da semana nem horário; por isso o sistema não infere disponibilidade de aulas.", fonte: "Planilha de oferta e reports/DADOS.md", estado: "registrado" },
       { texto: "As regras da triagem (período, pedido completo, até 2 por dia, até 6 por solicitante, exceção) vêm do procedimento da Assessoria, mas ainda não foram validadas por ela.", fonte: "Código do projeto e procedimento de 28/09", estado: "pendente" },
       { texto: "Localização mostra só o que está confirmado e nunca monta trajeto; fonte oficial de prédio, andar, capacidade e recursos ainda não identificada.", fonte: "Lacuna", estado: "pendente" },
