@@ -44,3 +44,12 @@ test("dark theme: the expert-system page redraws table text, links, code and fie
   }
   assert.match(especialista, /\.form-control,\s*\.form-select\s*\{[^}]*background-color:\s*#1d1d1d;[^}]*color:\s*#fff/);
 });
+
+test("a página /sistema-especialista não cresce com o hover do card global", () => {
+  const regra = css.match(/main\.card:has\(\.sistema-especialista\)[\s\S]*?\{[^}]*\}/)?.[0] ?? "";
+  assert.ok(regra, "a regra que neutraliza o scale do card está ausente");
+  for (const estado of [":hover", ":focus", ":active"]) assert.ok(regra.includes(`main.card:has(.sistema-especialista)${estado}`), estado);
+  assert.match(regra, /transform:\s*none\s*!important/);
+  const card = readFileSync(new URL("../src/index.scss", import.meta.url), "utf8");
+  assert.match(card, /\.card:hover[\s\S]*?transform:\s*scale\(1\.01\)\s*!important/, "as outras telas mantêm o comportamento do app");
+});

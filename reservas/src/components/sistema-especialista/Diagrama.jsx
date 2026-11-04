@@ -135,7 +135,7 @@ export function DiagramaGeral({ d }) {
     <figure id={d.id} className="mt-4">
       <figcaption><h3 className="h5">{d.titulo}</h3></figcaption>
       <div style={{ overflowX: "auto" }}>
-        <svg role="img" aria-label={`${d.titulo}. ${d.alternativa}`} viewBox={`0 0 ${d.largura} ${d.altura}`} width="100%" style={{ minWidth: 640, maxWidth: d.largura }}>
+        <svg role="img" aria-label={`${d.titulo}. ${d.alternativa}`} viewBox={`0 0 ${d.largura} ${d.altura}`} width="100%" style={{ minWidth: 640, maxWidth: d.largura, height: "auto", display: "block" }}>
           <Marcador id={marc} />
           {d.fronteira && (
             <g>
@@ -185,7 +185,7 @@ export function DiagramaSequencia({ d }) {
     <figure id={d.id} className="mt-4">
       <figcaption><h3 className="h5">{d.titulo}</h3></figcaption>
       <div style={{ overflowX: "auto" }}>
-        <svg role="img" aria-label={`${d.titulo}. ${d.alternativa}`} viewBox={`0 0 ${largura} ${altura}`} width="100%" style={{ minWidth: 640, maxWidth: largura }}>
+        <svg role="img" aria-label={`${d.titulo}. ${d.alternativa}`} viewBox={`0 0 ${largura} ${altura}`} width="100%" style={{ minWidth: 640, maxWidth: largura, height: "auto", display: "block" }}>
           <Marcador id={marc} />
           {d.participantes.map((p, i) => (
             <g key={p}>

@@ -192,6 +192,18 @@ body.dark .sistema-especialista {
   }
 }
 
+// A página /sistema-especialista é um documento longo dentro do único <main class="card">.
+// O `.card:hover { transform: scale(1.01) }` do app (index.scss) cresce a página inteira
+// toda vez que o mouse passa e cria uma camada enorme que repinta com texto fantasma ao
+// rolar. Neste documento o card não se move; as outras telas continuam como estavam.
+main.card:has(.sistema-especialista),
+main.card:has(.sistema-especialista):hover,
+main.card:has(.sistema-especialista):focus,
+main.card:has(.sistema-especialista):active {
+  transform: none !important;
+  transition: none !important;
+}
+
 //Organizer Button
 
 // Dark theme: Bootstrap's default primary blue (#0d6efd) is 3.74:1 on #1d1d1d, under the 4.5:1
