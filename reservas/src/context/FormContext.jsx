@@ -201,6 +201,13 @@ export const FormProvider = ({ children }) => {
     }));
   };
 
+  const clearRoomData = () => {
+    setFormData((prevData) => {
+      const { roomId, reservationDate, ...remaining } = prevData;
+      return remaining;
+    });
+  };
+
   const handleSaveAlunoMonitor = (alunos) => {
     setFormData((prevData) => ({
       ...prevData,
@@ -218,6 +225,7 @@ export const FormProvider = ({ children }) => {
         handleOdsChange,
         handleCursoChanged,
         handleRoomDataChange,
+        clearRoomData,
         handleSaveAlunoMonitor,
         fillOutFormData,
         eventTypes,
