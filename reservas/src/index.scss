@@ -69,6 +69,9 @@ code {
   min-height: 0;
 }
 
+body.dark .form-error { color: #ff8993; }
+body.dark .form-notice { color: #c9c9c9; }
+
 /* Keyboard focus: dark blue ring (12.6:1 on white), white on the blue header.
    Bootstrap removes the outline on .btn/.form-control :focus-visible and loads after
    this file, hence !important. Mouse clicks do not match :focus-visible. */
@@ -77,7 +80,13 @@ code {
   outline-offset: 2px !important;
 }
 
+body.dark :focus-visible {
+  outline-color: #8ebcff !important;
+}
+
 .card-header :focus-visible,
-span.gradient :focus-visible {
+span.gradient :focus-visible,
+body.dark .card-header :focus-visible,
+body.dark span.gradient :focus-visible {
   outline-color: #fff !important;
 }
