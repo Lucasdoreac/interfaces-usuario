@@ -169,3 +169,11 @@ test("the Navbar passes the server result on and the login page shows it in a st
   assert.match(organizer, /logoutNoticeFrom\(location\.state\)/);
   assert.match(organizer, /role="status"[^>]*>\{logoutNotice\}/);
 });
+
+// REVERT-CHECK: replacing clearAuthStorage with storage.clear() loses the theme;
+// removing only auth keys leaves a previous user's event draft behind.
+test("logout preserves the selected theme and removes every session and draft value", () => {
+  const storage = createStorage({theme: "dark", token: "t", userEmail: "a@udf.edu.br", formData: "{}", eventId: "e1"});
+  endSession(storage);
+  assert.deepEqual(storage.values, {theme: "dark"});
+});
