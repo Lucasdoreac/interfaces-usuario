@@ -197,13 +197,14 @@ export const FormProvider = ({ children }) => {
       ...prevData,
       roomId,
       reservationDate: formatDateForMongoDB(reservationDate),
+      reservationTimeZone: "America/Sao_Paulo",
       eventId,
     }));
   };
 
   const clearRoomData = () => {
     setFormData((prevData) => {
-      const { roomId, reservationDate, ...remaining } = prevData;
+      const { roomId, reservationDate, reservationTimeZone, ...remaining } = prevData;
       return remaining;
     });
   };
