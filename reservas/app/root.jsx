@@ -9,6 +9,8 @@ import {
 import "../src/index.scss";
 import "../src/App.scss";
 import Navbar from "../src/components/Navbar/Navbar";
+import ThemeToggleButton from "../src/components/Button/ThemeToggleButton";
+import { ThemeProvider } from "../src/context/ThemeContext";
 // Bootstrap last, as in the previous CRA entry (src/index.js): the app's own
 // rules (.nav, .card, .btn…) are written against that order, and loading
 // Bootstrap first lets the app CSS win ties it used to lose.
@@ -44,8 +46,10 @@ export function Layout({ children }) {
 
 export default function Root() {
   return (
+    <ThemeProvider>
     <div className="App">
       <Navbar />
+      <ThemeToggleButton />
       <section id="paginaInicial" className="section-padding">
         <div>
           <div className="row justify-content-center">
@@ -58,6 +62,7 @@ export default function Root() {
         </div>
       </section>
     </div>
+    </ThemeProvider>
   );
 }
 
