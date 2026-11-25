@@ -1,9 +1,82 @@
 
+body.light{
+  background-color: #fff;
+  color: #1d1d1d;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+body.light .card{
+  background-color: #fff;
+  color: #1d1d1d;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+body.dark{
+  // Maintain 3:1 non-text contrast without pure-white frames.
+  --dark-border: #6c757d;
+  background-color: #1d1d1d;
+  color: #fff;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+body.dark .card{
+  border-color: var(--dark-border) !important;
+  background-color: #1d1d1d;
+  color: #fff;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+.card {
+  margin-top:20px;
+  width: auto;
+}
+
+#paginaInicial > div > .row > div > .card {
+  margin-inline: clamp(0px, 5vw, 70px);
+}
+
+body.light #nav{
+  background-color: #fff;
+  color: #1d1d1d;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+body.dark #nav{
+  background-color: #1d1d1d;
+  color: #fff;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
 
 
+body.light input[type="email"] {
+  background-color: #fff;
+  color: #1d1d1d;
+  transition: background-color 0.3s ease, color 0.3s ease;
+  border: 1px solid #1d1d1d ;
+
+}
+body.dark input[type="email"] {
+  background-color: #1d1d1d;
+  color: #fff;
+  transition: background-color 0.3s ease, color 0.3s ease;
+  border: 1px solid var(--dark-border);
+}
+
+body.light input[type="email"] ::placeholder {
+  color: #1d1d1d;
+  transition: background-color 0.3s ease, color 0.3s ease;
+  opacity: 0.7;
+  font-weight: 300;
+
+}
+body.dark input[type="email"]::placeholder {
+  color: #fff;
+  transition: background-color 0.3s ease, color 0.3s ease;
+  opacity:0.7;
+  font-weight: 300;
+}
 
 .App-link {
   color: #61dafb;
+  align-items: center;;
 }
 
 @keyframes App-logo-spin {
@@ -36,7 +109,78 @@ input.input-danger {
   /* cor do texto */
 }
 
-section#paginaInicial {
+body.dark section#paginaInicial {
   padding: 20px 50px;
-  background-color: #a0a0a0;
+  background-color: #1d1d1d;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+body.light section#paginaInicial {
+  padding: 20px 50px;
+  background-color: #fff;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+//Acesso Negado ('event-schedule')
+body.dark .acesso-negado {
+  background-color: #1d1d1d;
+  color: #fff;
+  transition: background-color 0.3s ease, color 0.3s ease;
+  padding-bottom: 15px;
+}
+body.light .acesso-negado {
+  background-color: #fff;
+  color: #1d1d1d;
+  transition: background-color 0.3s ease, color 0.3s ease;
+  padding-bottom: 15px;
+}
+body.dark .acesso-negado .card-header {
+  background-color: #1d1d1d;
+  color: #fff;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+body.light .acesso-negado .card-header {
+  background-color: #1d1d1d;
+  color: #fff;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+body.dark .acesso-negado .card-body {
+  background-color: #1d1d1d;
+  color: #fff;
+  transition: background-color 0.3s ease, color 0.3s ease;
+  margin-top:10px;
+  -webkit-box-shadow: 0 10px 25px rgba(0, 0, 0, 0.10) !important;
+    box-shadow: 0 5px 25px rgba(0, 0, 0, 0.5) !important;
+}
+body.light .acesso-negado .card-body {
+  background-color: #fff;
+  color: #1d1d1d;
+  transition: background-color 0.3s ease, color 0.3s ease;
+  margin-top:10px;
+  -webkit-box-shadow: 0 10px 25px rgba(0, 0, 0, 0.10) !important;
+    box-shadow: 0 5px 25px rgba(0, 0, 0, 0.5) !important;
+}
+
+//Organizer Button
+
+// Dark theme: Bootstrap's default primary blue (#0d6efd) is 3.74:1 on #1d1d1d, under the 4.5:1
+// minimum for text (WCAG 1.4.3). #6ea8fe is Bootstrap 5.3's own dark-mode link blue (7:1).
+// Components are recoloured through their documented CSS variables.
+body.dark .btn-outline-primary {
+  --bs-btn-color: #6ea8fe;
+  --bs-btn-border-color: #6ea8fe;
+  --bs-btn-hover-color: #1d1d1d;
+  --bs-btn-hover-bg: #6ea8fe;
+  --bs-btn-hover-border-color: #6ea8fe;
+  --bs-btn-active-color: #1d1d1d;
+  --bs-btn-active-bg: #6ea8fe;
+  --bs-btn-active-border-color: #6ea8fe;
+}
+
+body.dark #nav a.nav-link.active {
+  color: #6ea8fe;
+}
+
+body.dark .btn:not(.btn-outline-primary) {
+  border-color: var(--dark-border) !important;
 }

@@ -1,0 +1,294 @@
+import assert from "node:assert/strict";
+import { test } from "node:test";
+import { ApiService } from "../src/services/client.js";
+
+function createStorage(values = {}) {
+  return {
+    values: { ...values },
+    getItem(key) { return this.values[key] ?? null; },
+    setItem(key, value) { this.values[key] = value; },
+    clear() { this.values = {}; },
+  };
+}
+
+test("posts auth email with encoded query and preserves the user email", async () => {
+  const storage = createStorage({ token: "jwt-123", userEmail: "old@example.com" });
+  let request;
+  const api = new ApiService({
+    baseURL: "https://api.example.test/",
+    storage,
+    fetchImpl: async (url, options) => {
+      request = { url: String(url), options };
+      return new Response(JSON.stringify({ sent: true }), {
+        status: 200,
+        headers: { "content-type": "application/json" },
+      });
+    },
+  });
+
+  assert.equal(await api.postAuthMail("lucas.dorea+dev@cs.udf.edu.br"), true);
+  assert.equal(request.url, "https://api.example.test/auth/send-link?email=lucas.dorea%2Bdev%40cs.udf.edu.br");
+  assert.equal(request.options.headers.get("Authorization"), "Bearer jwt-123");
+  assert.equal(request.options.headers.get("email"), "old@example.com");
+  assert.equal(storage.getItem("userEmail"), "lucas.dorea+dev@cs.udf.edu.br");
+  assert.equal(storage.getItem("token"), null);
+});
+
+test("serializes query parameters and returns decoded JSON", async () => {
+  let requestUrl;
+  const api = new ApiService({
+    baseURL: "http://api.example.test",
+    storage: createStorage(),
+    fetchImpl: async (url) => {
+      requestUrl = String(url);
+      return new Response(JSON.stringify({ courses: [{ id: "c1" }] }), {
+        status: 200,
+        headers: { "content-type": "application/json" },
+      });
+    },
+  });
+
+  assert.deepEqual(await api.searchCourses("Computer Science"), { courses: [{ id: "c1" }] });
+  assert.equal(requestUrl, "http://api.example.test/courses?course_name=Computer+Science");
+});
+
+test("submits an event and its reservation through one API request", async () => {
+  const calls = [];
+  const event = {
+    tituloEvento: "Palestra",
+    classificacao: "lecture",
+    roomId: "room-42",
+    reservationDate: "2031-03-12T10:00:00.000Z",
+  };
+  const api = new ApiService({
+    baseURL: "https://api.example.test",
+    storage: createStorage({ token: "jwt-123", userEmail: "owner@udf.edu.br" }),
+    fetchImpl: async (url, options) => {
+      calls.push({ url: String(url), options });
+      return new Response(JSON.stringify({ eventId: "507f1f77bcf86cd799439011" }), {
+        status: 200,
+        headers: { "content-type": "application/json" },
+      });
+    },
+  });
+
+  assert.equal(await api.submitEventForApproval("507f1f77bcf86cd799439011", event), "507f1f77bcf86cd799439011");
+  assert.equal(calls.length, 1);
+  assert.equal(calls[0].url, "https://api.example.test/events/507f1f77bcf86cd799439011/submit");
+  assert.equal(calls[0].options.method, "POST");
+  assert.deepEqual(JSON.parse(calls[0].options.body), event);
+  assert.equal(calls[0].options.headers.get("token"), "jwt-123");
+  assert.equal(calls[0].options.headers.get("email"), "owner@udf.edu.br");
+});
+
+test("returns null for a failed auth request", async () => {
+  const api = new ApiService({
+    baseURL: "http://api.example.test",
+    storage: createStorage(),
+    fetchImpl: async () => new Response("unavailable", { status: 502 }),
+  });
+
+  assert.equal(await api.postAuthMail("user@udf.edu.br"), null);
+});
+
+test("reports auth dry-run without clearing session or treating it as delivery", async () => {
+  const storage = createStorage({ token: "existing-token", userEmail: "saved@udf.edu.br" });
+  const api = new ApiService({
+    baseURL: "http://api.example.test",
+    storage,
+    fetchImpl: async () => new Response(
+      JSON.stringify({ message: "Email dry-run enabled; no email sent" }),
+      { status: 202, headers: { "content-type": "application/json" } },
+    ),
+  });
+
+  assert.deepEqual(await api.postAuthMail("reviewer@cs.udf.edu.br"), { dryRun: true });
+  assert.equal(storage.getItem("token"), "existing-token");
+  assert.equal(storage.getItem("userEmail"), "saved@udf.edu.br");
+});
+
+test("validates auth token with URLSearchParams and authorization headers", async () => {
+  const storage = createStorage({ token: "jwt-456", userEmail: "user@udf.edu.br" });
+  let request;
+  const api = new ApiService({
+    baseURL: "http://api.example.test",
+    storage,
+    fetchImpl: async (url, options) => {
+      request = { url: String(url), options };
+      return new Response("true", {
+        status: 200,
+        headers: { "content-type": "application/json" },
+      });
+    },
+  });
+
+  assert.equal(await api.validateToken("hash-456", "user@udf.edu.br"), true);
+  assert.equal(request.url, "http://api.example.test/auth/validate?token=hash-456&email=user%40udf.edu.br");
+  assert.equal(request.options.headers.get("token"), "jwt-456");
+  assert.equal(request.options.headers.get("email"), "user@udf.edu.br");
+});
+
+test("calls the injected fetch function with the global receiver", async () => {
+  let receiver;
+  const api = new ApiService({
+    baseURL: "http://api.example.test",
+    storage: createStorage(),
+    fetchImpl: function (url) {
+      receiver = this;
+      return Promise.resolve(new Response("ok", { status: 200 }));
+    },
+  });
+
+  await api.request("GET", "/health");
+  assert.equal(receiver, globalThis);
+});
+
+const WAKE = "https://auth.example.test/health";
+
+function json(status, body) {
+  return new Response(JSON.stringify(body), { status, headers: { "content-type": "application/json" } });
+}
+
+test("503 with wake_url wakes Auth from the browser and retries once", async () => {
+  const calls = [];
+  let waking = 0;
+  const api = new ApiService({
+    baseURL: "https://api.example.test",
+    storage: createStorage(),
+    fetchImpl: async (url, options) => {
+      calls.push({ url: String(url), mode: options?.mode });
+      if (String(url) === WAKE) return new Response(null, { status: 200 });
+      return calls.filter((c) => c.url.startsWith("https://api")).length === 1
+        ? json(503, { error: "Authentication service unavailable", wake_url: WAKE })
+        : json(200, { sent: true });
+    },
+  });
+  const stop = api.onWaking(() => { waking += 1; });
+  assert.equal(await api.postAuthMail("a@udf.edu.br"), true);
+  assert.deepEqual(calls.map((c) => c.url.split("?")[0]), [
+    "https://api.example.test/auth/send-link", WAKE, "https://api.example.test/auth/send-link",
+  ]);
+  assert.equal(calls[1].mode, "no-cors");
+  assert.equal(waking, 1);
+  stop();
+});
+
+test("a second 503 after the wake is reported, not retried again", async () => {
+  let apiCalls = 0;
+  const api = new ApiService({
+    baseURL: "https://api.example.test",
+    storage: createStorage(),
+    fetchImpl: async (url) => {
+      if (String(url) === WAKE) return new Response(null, { status: 200 });
+      apiCalls += 1;
+      return json(503, { error: "unavailable", wake_url: WAKE });
+    },
+  });
+  assert.equal(await api.postAuthMail("a@udf.edu.br"), null);
+  assert.equal(apiCalls, 2);
+});
+
+test("wake_url that is not an https /health URL is ignored", async () => {
+  for (const wake of ["http://auth.example.test/health", "https://evil.example.test/steal", "https://auth.example.test/health?x=1", "nope"]) {
+    const urls = [];
+    const api = new ApiService({
+      baseURL: "https://api.example.test",
+      storage: createStorage(),
+      fetchImpl: async (url) => { urls.push(String(url)); return json(503, { error: "unavailable", wake_url: wake }); },
+    });
+    assert.equal(await api.postAuthMail("a@udf.edu.br"), null);
+    assert.equal(urls.length, 1, wake);
+  }
+});
+
+test("validateToken keeps the session when Auth is unavailable (503)", async () => {
+  const storage = createStorage({ token: "jwt-123", userEmail: "a@udf.edu.br" });
+  const api = new ApiService({
+    baseURL: "https://api.example.test",
+    storage,
+    fetchImpl: async () => json(503, { error: "unavailable" }),
+  });
+  assert.equal(await api.validateToken("jwt-123", "a@udf.edu.br"), false);
+  assert.equal(storage.getItem("token"), "jwt-123");
+});
+
+test("validateToken still clears the session on a real denial (403)", async () => {
+  const storage = createStorage({ token: "jwt-123" });
+  const api = new ApiService({
+    baseURL: "https://api.example.test",
+    storage,
+    fetchImpl: async () => json(403, { error: "Token validation failed" }),
+  });
+  assert.equal(await api.validateToken("jwt-123", "a@udf.edu.br"), false);
+  assert.equal(storage.getItem("token"), null);
+});
+
+test("concurrent requests to a sleeping service share one wake call", async () => {
+  let wakes = 0;
+  const calls = {};
+  let release;
+  const gate = new Promise((resolve) => { release = resolve; });
+  const api = new ApiService({
+    baseURL: "https://api.example.test",
+    storage: createStorage(),
+    fetchImpl: async (url) => {
+      const path = new URL(String(url)).pathname;
+      if (String(url) === WAKE) { wakes += 1; await gate; return new Response(null, { status: 200 }); }
+      calls[path] = (calls[path] || 0) + 1;
+      return calls[path] === 1 ? json(503, { error: "unavailable", wake_url: WAKE }) : json(200, { ok: path });
+    },
+  });
+  const notified = [];
+  api.onWaking(() => notified.push(1));
+  const both = Promise.all([api.http.get("/auth/validate"), api.http.get("/types")]);
+  await new Promise((resolve) => setTimeout(resolve, 20));
+  release();
+  const [a, b] = await both;
+  assert.equal(wakes, 1);
+  assert.deepEqual([a.data.ok, b.data.ok], ["/auth/validate", "/types"]);
+  assert.equal(notified.length, 2);
+});
+
+test("the private-route loading screen can show the waking notice", async () => {
+  const { WAKING_MESSAGE } = await import("../src/utils/wakingMessage.js");
+  assert.match(WAKING_MESSAGE, /Servidor iniciando/);
+});
+
+test("exchangeToken trades the link in the request body and returns the session token", async () => {
+  let request;
+  const api = new ApiService({
+    baseURL: "https://api.example.test",
+    storage: createStorage(),
+    fetchImpl: async (url, options) => {
+      request = { url: String(url), options };
+      return json(200, { token: "session-token" });
+    },
+  });
+  assert.equal(await api.exchangeToken("link-token", "a@udf.edu.br"), "session-token");
+  assert.equal(request.url, "https://api.example.test/auth/exchange");
+  assert.equal(request.options.method, "POST");
+  assert.deepEqual(JSON.parse(request.options.body), { email: "a@udf.edu.br", token: "link-token" });
+});
+
+test("exchangeToken spends the link once even when called twice", async () => {
+  let calls = 0;
+  const api = new ApiService({
+    baseURL: "https://api.example.test",
+    storage: createStorage(),
+    fetchImpl: async () => { calls += 1; return json(200, { token: "session-token" }); },
+  });
+  const [a, b] = await Promise.all([
+    api.exchangeToken("link-token", "a@udf.edu.br"),
+    api.exchangeToken("link-token", "a@udf.edu.br"),
+  ]);
+  assert.deepEqual([a, b, calls], ["session-token", "session-token", 1]);
+});
+
+test("exchangeToken returns null for a used or invalid link", async () => {
+  const api = new ApiService({
+    baseURL: "https://api.example.test",
+    storage: createStorage(),
+    fetchImpl: async () => json(403, { message: "Invalid or expired link" }),
+  });
+  assert.equal(await api.exchangeToken("used", "a@udf.edu.br"), null);
+});

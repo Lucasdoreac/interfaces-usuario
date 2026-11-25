@@ -1,0 +1,23 @@
+// Resumo dos dados do evento (issue #36): rótulo em cima, valor embaixo.
+.dados-preview {
+  margin: 0 0 1.5rem;
+  text-align: left;
+
+  .dados-preview-item {
+    padding: 0.6rem 0;
+    border-bottom: 1px solid rgba(128, 128, 128, 0.25);
+  }
+
+  dt {
+    font-size: 0.8rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    opacity: 0.7;
+  }
+
+  dd {
+    margin: 0.15rem 0 0;
+    overflow-wrap: anywhere;
+  }
+}

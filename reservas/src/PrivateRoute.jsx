@@ -1,0 +1,72 @@
+import React, { useState, useEffect } from "react";
+import { Navigate, useNavigate } from "react-router";
+import apiService from "../src/services/client";
+import Loading from "./components/Loading";
+import { WAKING_MESSAGE } from "./utils/wakingMessage";
+import { sessionEndedByStorageEvent } from "./utils/session";
+
+const LOCAL_STORAGE_KEYS = {
+  TOKEN: "token",
+  EMAIL: "userEmail",
+};
+
+const PrivateRoute = ({ element: Component, ...rest }) => {
+  const [isAuthorized, setIsAuthorized] = useState(null);
+  const [waking, setWaking] = useState(false);
+  const navigate = useNavigate();
+  const token = localStorage.getItem(LOCAL_STORAGE_KEYS.TOKEN);
+  const email = localStorage.getItem(LOCAL_STORAGE_KEYS.EMAIL);
+
+  useEffect(() => apiService.onWaking(() => setWaking(true)), []);
+
+  // Every private route renders through here: when another tab ends the session, stop showing
+  // the content already loaded (it unmounts with the authorization) and go to the login page.
+  useEffect(() => {
+    const onStorage = (event) => {
+      if (!sessionEndedByStorageEvent(event, globalThis.localStorage)) return;
+      setIsAuthorized(false);
+      navigate("/organizer", { replace: true });
+    };
+    window.addEventListener("storage", onStorage);
+    return () => window.removeEventListener("storage", onStorage);
+  }, [navigate]);
+
+  useEffect(() => {
+    const validateUserToken = async () => {
+      if (token && email) {
+        const isValid = await apiService.validateToken(token, email);
+        setIsAuthorized(isValid);
+      } else {
+        setIsAuthorized(false);
+      }
+    };
+    validateUserToken();
+  }, [token, email]);
+
+  if (isAuthorized === null) {
+    return (
+      <div
+        role="status"
+        aria-live="polite"
+        aria-busy="true"
+        style={{
+          display: "flex",
+          flexDirection: "column",
+          justifyContent: "center",
+          alignItems: "center",
+        }}
+      >
+        <Loading />
+        <p className="form-notice">{waking ? WAKING_MESSAGE : ""}</p>
+      </div>
+    );
+  }
+
+  return isAuthorized ? (
+    <Component {...rest} />
+  ) : (
+    <Navigate to="/access-denied" />
+  );
+};
+
+export default PrivateRoute;

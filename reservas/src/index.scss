@@ -28,12 +28,65 @@ code {
     -webkit-box-shadow: 0 10px 25px rgba(0, 0, 0, 0.10) !important;
     box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5) !important;    
   }
+// Every screen's card header is blue. This used to live in Organizer.scss, which
+// the old single-bundle build applied everywhere; with one stylesheet per route it
+// only applied after /organizer had been opened, leaving the home card's header a
+// pale grey strip.
 .card-header{
+  background-color: #0a2d7a !important;
+  color: #fff !important;
   border-width: 5px !important;
   border-color: #fff !important;   
+  border: 0 !important; // as in Organizer.scss before: it won over the two lines above
   border-top-left-radius: 15px !important;
   border-top-right-radius:  15px !important;
 }
 .btn-sm {
   padding: 10px 20px !important;
+}
+
+.back-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 0;
+  color: inherit;
+  font-size: 1.25rem; /* the size of the h5 it replaces */
+  font-weight: 500;
+  line-height: 1.2;
+  margin-bottom: 0.5rem; /* the h5 margin: keeps the card header the height it had */
+}
+
+.form-error {
+  color: #b00020; /* 7.3:1 on white; the red used before is 4.0:1 */
+  margin: 8px 0 0;
+  font-size: 0.95rem;
+}
+
+.form-notice {
+  color: #555555; /* 7.5:1 on white, the color the notice already had */
+  margin: 8px 0 0;
+  min-height: 0;
+}
+
+body.dark .form-error { color: #ff8993; }
+body.dark .form-notice { color: #c9c9c9; }
+
+/* Keyboard focus: dark blue ring (12.6:1 on white), white on the blue header.
+   Bootstrap removes the outline on .btn/.form-control :focus-visible and loads after
+   this file, hence !important. Mouse clicks do not match :focus-visible. */
+:focus-visible {
+  outline: 3px solid #0a2d7a !important;
+  outline-offset: 2px !important;
+}
+
+body.dark :focus-visible {
+  outline-color: #8ebcff !important;
+}
+
+.card-header :focus-visible,
+span.gradient :focus-visible,
+body.dark .card-header :focus-visible,
+body.dark span.gradient :focus-visible {
+  outline-color: #fff !important;
 }

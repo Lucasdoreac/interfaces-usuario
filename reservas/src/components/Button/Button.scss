@@ -2,7 +2,6 @@ a,
 a:hover,
 a:focus,
 .btn:focus {
-  outline: none;
   -webkit-box-shadow: none;
   box-shadow: none;
 }
@@ -18,7 +17,6 @@ a:focus,
   border-width: 2px !important;
   border-color: #fff !important;
   border-radius: 10px !important;
-  outline: 0 none;
   position: relative;
   z-index: 10;
 
