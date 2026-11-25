@@ -18,10 +18,10 @@ test("API ISO and HTTP GMT timestamps preserve instant and render in the picker'
 
 test("day and time follow the same zone, including midnight and missing dates", () => {
   process.env.TZ = "America/Sao_Paulo";
-  assert.deepEqual(formatReservation("2026-10-18T02:30:00Z", "2026-10-18T04:00:00Z"), {day: "17/10/2026", hours: "23:30 - 01:00"});
+  assert.deepEqual(formatReservation("2026-10-18T02:30:00Z", "2026-10-18T04:00:00Z"), {day: "17/10/2026", hours: "23:30 - 01:00 (18/10/2026)"});
   assert.deepEqual(formatReservation(null, null), {day: "Indefinido", hours: "Indefinido"});
   process.env.TZ = "UTC";
-  assert.deepEqual(formatReservation("2026-10-18T02:30:00Z", "2026-10-18T04:00:00Z"), {day: "18/10/2026", hours: "02:30 - 04:00"});
+  assert.deepEqual(formatReservation("2026-10-18T02:30:00Z", "2026-10-18T04:00:00Z"), {day: "17/10/2026", hours: "23:30 - 01:00 (18/10/2026)"});
 });
 
 test("MyEvents uses the tested formatter", () => {
