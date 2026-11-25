@@ -2,6 +2,7 @@
 // Antes a tela despejava JSON.stringify(formData), com chaves internas,
 // logo: {} e campos vazios (issue #36).
 
+import { formatBrasiliaDateTime } from "./dateUtils.js";
 const EVENT_TYPES = {
   lecture: "Palestra",
   workshop: "Workshop",
@@ -32,12 +33,9 @@ const yesNo = (flag, description) => {
   return "";
 };
 
-const formatDate = (iso) => {
-  const date = new Date(iso);
-  return Number.isNaN(date.getTime())
-    ? String(iso)
-    : date.toLocaleString("pt-BR", { dateStyle: "short", timeStyle: "short" });
-};
+const formatDate = (iso, zone) => zone === "America/Sao_Paulo"
+  ? `${formatBrasiliaDateTime(iso)} (horário de Brasília)`
+  : "Horário anterior não confirmado — selecione a sala novamente";
 
 export const summarizeEventData = (formData = {}) => {
   const data = formData || {};
@@ -55,7 +53,7 @@ export const summarizeEventData = (formData = {}) => {
     ["Trilha empreendedora", yesNo(data.trilha, data.trilhaDesc)],
     ["Projeto de extensão", yesNo(data.projeto, data.projetoDesc)],
     ["Alunos monitores", data.alunosMonitores],
-    ["Data da reserva", isEmpty(data.reservationDate) ? "" : formatDate(data.reservationDate)],
+    ["Data da reserva", isEmpty(data.reservationDate) ? "" : formatDate(data.reservationDate, data.reservationTimeZone)],
   ];
 
   return rows
