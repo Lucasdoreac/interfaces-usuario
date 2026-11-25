@@ -40,7 +40,7 @@ const Home = () => {
               style={{ width: "200px" }}
               alt=""
             />
-            <div className="mt-4">
+            <div className="d-grid gap-3 d-sm-flex justify-content-sm-center mt-4">
               {/* O botão agora usa onClick para navegação */}
               <button
                 type="button"
