@@ -287,16 +287,14 @@ export class ApiService {
   }
 
   async getAvailableSlots(
-    formattedDate,
-    time,
+    startAt,
     page = 1,
     page_size = 10,
     roomName = ""
   ) {
     try {
       const params = {
-        date: formattedDate,
-        time: time,
+        start_at: startAt,
         page,
         page_size,
       };
