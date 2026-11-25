@@ -62,7 +62,7 @@ test("monitors accept text or objects and become one list", () => {
 });
 
 test("formats the reservation date in pt-BR", () => {
-  const rows = byLabel(summarizeEventData({ reservationDate: "2026-10-05T13:30:00.000Z" }));
+  const rows = byLabel(summarizeEventData({ reservationDate: "2026-10-05T13:30:00.000Z", reservationTimeZone: "America/Sao_Paulo" }));
 
   assert.match(rows["Data da reserva"], /05\/10\/2026/);
 });

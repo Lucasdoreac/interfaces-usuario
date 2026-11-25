@@ -4,7 +4,7 @@ import apiService from '../../services/client';
 import { createRoomsLoader } from './roomPagination.js';
 import './InfiniteScrollRooms.scss';
 
-const InfiniteScrollRooms = ({ date, time, onRoomSelect, userSearchInput = "" }) => {
+const InfiniteScrollRooms = ({ startAt, onRoomSelect, userSearchInput = "" }) => {
   const pageSize = 10;
   const [{ rooms, hasMore, error }, setLoaderState] = useState({
     rooms: [],
@@ -13,15 +13,12 @@ const InfiniteScrollRooms = ({ date, time, onRoomSelect, userSearchInput = "" })
   });
   const [selectedRoomId, setSelectedRoomId] = useState(null);
 
-  // Formata a data para o formato "YYYY-MM-DD"
-  const formattedDate = date.toISOString().split('T')[0];
-
   // O controlador descarta respostas de filtros antigos e guarda o pedido em andamento.
   const loaderRef = useRef(null);
   if (!loaderRef.current) {
     loaderRef.current = createRoomsLoader({
       fetchPage: (page, filter) =>
-        apiService.getAvailableSlots(filter.date, filter.time, page, pageSize, filter.search),
+        apiService.getAvailableSlots(filter.startAt, page, pageSize, filter.search),
       onChange: setLoaderState,
     });
   }
@@ -30,9 +27,9 @@ const InfiniteScrollRooms = ({ date, time, onRoomSelect, userSearchInput = "" })
   // Reinicia e busca a primeira página quando os filtros mudam
   useEffect(() => {
     setSelectedRoomId(null);
-    loader.setFilter({ date: formattedDate, time, search: userSearchInput });
+    loader.setFilter({ startAt, search: userSearchInput });
     return () => loader.cancel();
-  }, [loader, formattedDate, time, userSearchInput]);
+  }, [loader, startAt, userSearchInput]);
 
   const loadMoreRooms = () => loader.loadMore();
 

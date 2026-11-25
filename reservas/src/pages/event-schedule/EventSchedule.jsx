@@ -4,14 +4,11 @@ import DatePickerComponent from "../../components/date-picker/DatePickerComponen
 import InfiniteScrollRooms from "../../components/infinite-scroll-rooms/InfiniteScrollRooms";
 import { useNavigate, useLocation } from "react-router";
 import { useFormContext } from "../../context/FormContext";
+import { todayInBrasilia, civilDayToPicker, pickerToCivilDay, brasiliaCivilToInstant } from "../../utils/dateUtils";
 import "./EventSchedule.scss";
 
 const EventSchedule = () => {
-  const [selectedDate, setSelectedDate] = useState(() => {
-    const date = new Date();
-    date.setHours(8, 0, 0, 0);
-    return date;
-  });
+  const [selectedDay, setSelectedDay] = useState(() => todayInBrasilia());
   const [selectedPeriod, setSelectedPeriod] = useState("Manha");
   const [selectedRoom, setSelectedRoom] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
@@ -32,22 +29,18 @@ const EventSchedule = () => {
 
   const selectedTime = periodToTime[selectedPeriod];
 
-  const dateAtTime = (date, time) => {
-    const next = new Date(date);
-    const [hours, minutes, seconds] = time.split(":").map(Number);
-    next.setHours(hours, minutes, seconds, 0);
-    return next;
-  };
+  let selectedDate = null;
+  try { selectedDate = brasiliaCivilToInstant(selectedDay, selectedTime); } catch { /* fail closed */ }
   const clearSelection = () => {
     setSelectedRoom(null);
     clearRoomData();
   };
   const handleDateChange = (date) => {
     if (!date) return;
-    const next = dateAtTime(date, selectedTime);
-    if (next.getTime() !== selectedDate.getTime()) {
+    const next = pickerToCivilDay(date);
+    if (next !== selectedDay) {
       clearSelection();
-      setSelectedDate(next);
+      setSelectedDay(next);
     }
   };
   const handlePeriodChange = (e) => {
@@ -55,10 +48,10 @@ const EventSchedule = () => {
     if (period === selectedPeriod) return;
     clearSelection();
     setSelectedPeriod(period);
-    setSelectedDate(dateAtTime(selectedDate, periodToTime[period]));
   };
 
   const handleRoomSelect = (roomId) => {
+    if (!selectedDate) return;
     setSelectedRoom(roomId);
     handleRoomDataChange(roomId, selectedDate, eventId);
   };
@@ -84,6 +77,7 @@ const EventSchedule = () => {
   // Debounce para a busca
   const handleSearchChange = (e) => {
     const value = e.target.value;
+    clearSelection();
     setSearchQuery(value);
 
     // Debounce para evitar muitas requisições durante a digitação
@@ -108,7 +102,8 @@ const EventSchedule = () => {
       <div className="header-container">
         <h1 className="h2">Escolha o Dia e Horário</h1>
         <DatePickerComponent
-          selectedDate={selectedDate}
+          selectedDate={civilDayToPicker(selectedDay)}
+          minDate={civilDayToPicker(todayInBrasilia())}
           onDateChange={handleDateChange}
         />
         <div className="period-selection">
@@ -158,8 +153,8 @@ const EventSchedule = () => {
         {selectedPeriod && (
           <>
             <h3>
-              Salas disponíveis para {selectedDate.toLocaleDateString()} às{" "}
-              {selectedTime}:
+              Salas disponíveis para {selectedDay.split("-").reverse().join("/")} às{" "}
+              {selectedTime} (horário de Brasília):
             </h3>
 
             {/* Barra de pesquisa */}
@@ -176,13 +171,12 @@ const EventSchedule = () => {
               </div>
             </div>
 
-            <InfiniteScrollRooms
-              key={`${selectedDate.getTime()}-${selectedTime}`}
-              date={selectedDate}
-              time={selectedTime}
+            {!selectedDate ? <p role="alert">Horário inexistente ou ambíguo em Brasília. Escolha outra data ou período.</p> : searchQuery !== debouncedQuery ? <p>Atualizando pesquisa...</p> : <InfiniteScrollRooms
+              key={`${selectedDay}-${selectedTime}`}
+              startAt={selectedDate.toISOString()}
               onRoomSelect={handleRoomSelect}
               userSearchInput={debouncedQuery}
-            />
+            />}
           </>
         )}
       </div>
