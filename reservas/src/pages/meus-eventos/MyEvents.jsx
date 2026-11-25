@@ -6,6 +6,7 @@ import { useFormContext } from "../../context/FormContext";
 import EventStatus from "../../utils/EventStatus";
 import { linkText, safeHttpUrl } from "../../utils/safeUrl";
 import { eventCardView, statusLabel } from "../../utils/eventStatusLabel";
+import { formatReservation } from "../../utils/dateUtils";
 
 const MyEvents = () => {
   const { eventTypes, odsTypes, targetPublicTypes, resourcesTypes } =
@@ -122,32 +123,7 @@ const MyEvents = () => {
           {mergedData.map((item) => {
             const { reservation, room, course } = item;
             let sala = room && room.name ? room.name : "Indefinido";
-            let dia = "Indefinido";
-            let horario = "Indefinido";
-            if (reservation && reservation.startAt) {
-              // Create Date objects from the strings
-              const startAt = new Date(reservation.startAt);
-              const endAt = new Date(reservation.endAt);
-
-              // Format date normally for the day display
-              dia = startAt.toLocaleDateString("pt-BR");
-
-              // Format time using UTC methods to preserve the original hours
-              horario = `${startAt
-                .getUTCHours()
-                .toString()
-                .padStart(2, "0")}:${startAt
-                .getUTCMinutes()
-                .toString()
-                .padStart(2, "0")} - 
-                         ${endAt
-                           .getUTCHours()
-                           .toString()
-                           .padStart(2, "0")}:${endAt
-                .getUTCMinutes()
-                .toString()
-                .padStart(2, "0")}`;
-            }
+            const { day: dia, hours: horario } = formatReservation(reservation?.startAt, reservation?.endAt);
 
             // Aviso de alterações e link de edição vêm do helper testado
             const { changeNotice, editLink } = eventCardView(item);
