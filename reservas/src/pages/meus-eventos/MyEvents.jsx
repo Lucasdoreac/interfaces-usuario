@@ -104,6 +104,7 @@ const MyEvents = () => {
   return (
     <div className="container my-4">
       <h1 className="h2 mb-4">Meus Eventos</h1>
+      <p>Horários exibidos em Brasília a partir dos instantes informados pela API. Reservas antigas podem ter fuso incerto; confirme os dados antes de alterá-las.</p>
       {loading ? (
         <div className="d-flex justify-content-center align-items-center">
           <Loading />
