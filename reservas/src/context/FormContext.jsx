@@ -87,7 +87,8 @@ export const FormProvider = ({ children }) => {
     localStorage.removeItem("formData");
 
     if (!eventId) {
-      // New event: clear form data
+      // New event: clear form data and the previous draft's in-memory ID.
+      setEventId("");
       setFormData({});
       localStorage.removeItem("eventId");
       localStorage.removeItem("formData");
