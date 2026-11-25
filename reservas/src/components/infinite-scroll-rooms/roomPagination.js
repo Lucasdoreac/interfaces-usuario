@@ -45,7 +45,7 @@ export function createRoomsLoader({ fetchPage, onChange }) {
           hasMore: more,
         });
       } else {
-        update({ hasMore: false });
+        update({ error: "Resposta de disponibilidade inválida. Tente novamente.", hasMore: false });
       }
     } catch (error) {
       if (mine !== sequence) return;

@@ -7,6 +7,7 @@ import { summarizeEventData } from "../../utils/eventSummary";
 import Loading from "../../components/Loading";
 import { runSingleFlight } from "../../utils/singleFlight";
 import { clearStoredDraftId } from "../../utils/draftCreateLock";
+import { parseExplicitInstant, RESERVATION_ZONE } from "../../utils/dateUtils";
 import "./EventConfirmData.scss";
 
 const EventConfirmData = () => {
@@ -45,9 +46,9 @@ const EventConfirmData = () => {
       navigate(`/event/confirmation?eventId=${eventId}`);
     } catch (error) {
       console.error("Error submitting:", error);
-      setErrors({
-        api: "Ocorreu um erro ao enviar os dados. Tente novamente.",
-      });
+      setErrors({ api: error.status === 409 || error.response?.status === 409
+        ? "Essa sala não está mais disponível. Volte e escolha novamente."
+        : "Ocorreu um erro ao enviar os dados. Tente novamente." });
     }
   };
 
@@ -55,6 +56,9 @@ const EventConfirmData = () => {
 
   const validateForm = () => {
     const newErrors = {};
+    if (!formData.roomId || formData.reservationTimeZone !== RESERVATION_ZONE || !parseExplicitInstant(formData.reservationDate)) {
+      newErrors.api = "Selecione novamente a sala e o horário de Brasília antes de confirmar.";
+    }
 
     if (
       formData.classificacao == "lecture" ||
