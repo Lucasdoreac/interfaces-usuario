@@ -7,7 +7,7 @@ export const DRAFT_ERROR_MESSAGE =
   "Não foi possível salvar o rascunho. Verifique a conexão e tente novamente.";
 
 export function isDraftConflict(error) {
-  return error?.response?.status === 409;
+  return error?.status === 409;
 }
 
 export function draftSaveFailure(error) {

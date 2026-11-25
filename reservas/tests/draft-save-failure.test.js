@@ -1,4 +1,5 @@
 import assert from "node:assert/strict";
+import { ApiService } from "../src/services/client.js";
 import { readFileSync } from "node:fs";
 import { test } from "node:test";
 import {
@@ -10,11 +11,15 @@ import {
 
 const read = (path) => readFileSync(new URL(path, import.meta.url), "utf8");
 
-test("a 409 from the API is the already-submitted conflict, anything else is a generic failure", () => {
-  const conflict = { response: { status: 409, data: { error: "EventNotEditable" } } };
+test("a 409 from the API is the already-submitted conflict, anything else is a generic failure", async () => {
+  const api = new ApiService({ baseURL: "https://example.test", storage: null, fetchImpl: async () => new Response(JSON.stringify({ error: "EventNotEditable" }), { status: 409, headers: { "content-type": "application/json" } }) });
+  let conflict;
+  try { await api.request("PUT", "/draft", {}); } catch (error) { conflict = error; }
+  assert.ok(conflict instanceof Error);
+  assert.equal(conflict.status, 409);
   assert.equal(isDraftConflict(conflict), true);
   assert.deepEqual(draftSaveFailure(conflict), { kind: "conflict", message: DRAFT_CONFLICT_MESSAGE });
-  for (const other of [{ response: { status: 500 } }, { response: { status: 403 } }, new Error("Network Error"), null, undefined]) {
+  for (const other of [{ status: 500 }, { status: 403 }, new Error("Network Error"), null, undefined]) {
     assert.equal(isDraftConflict(other), false);
     assert.deepEqual(draftSaveFailure(other), { kind: "error", message: DRAFT_ERROR_MESSAGE });
   }
