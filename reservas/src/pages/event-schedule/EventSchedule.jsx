@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { AiOutlineLeft, AiOutlineSearch } from "react-icons/ai";
 import DatePickerComponent from "../../components/date-picker/DatePickerComponent";
 import InfiniteScrollRooms from "../../components/infinite-scroll-rooms/InfiniteScrollRooms";
@@ -7,14 +7,18 @@ import { useFormContext } from "../../context/FormContext";
 import "./EventSchedule.scss";
 
 const EventSchedule = () => {
-  const [selectedDate, setSelectedDate] = useState(new Date());
+  const [selectedDate, setSelectedDate] = useState(() => {
+    const date = new Date();
+    date.setHours(8, 0, 0, 0);
+    return date;
+  });
   const [selectedPeriod, setSelectedPeriod] = useState("Manha");
   const [selectedRoom, setSelectedRoom] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [debouncedQuery, setDebouncedQuery] = useState("");
 
   // Pego o eventId e a classificação (tipo de evento) do contexto do formulário
-  const { handleRoomDataChange, formData } = useFormContext();
+  const { handleRoomDataChange, clearRoomData, formData } = useFormContext();
   const navigate = useNavigate();
   const location = useLocation();
   const queryParams = new URLSearchParams(location.search);
@@ -26,30 +30,32 @@ const EventSchedule = () => {
     Noite: "19:00:00",
   };
 
-  const [selectedTime, setSelectedTime] = useState(
-    periodToTime[selectedPeriod]
-  );
+  const selectedTime = periodToTime[selectedPeriod];
 
-  // Update selectedTime and adjust selectedDate when selectedPeriod changes
-  useEffect(() => {
-    if (selectedPeriod) {
-      const time = periodToTime[selectedPeriod];
-      setSelectedTime(time);
-
-      // Update the hour of selectedDate based on the selected period
-      const [hours, minutes, seconds] = time.split(":").map(Number);
-      const updatedDate = new Date(selectedDate);
-      updatedDate.setHours(hours, minutes, seconds);
-      setSelectedDate(updatedDate);
-    }
-  }, [selectedPeriod]);
-
-  const handleDateChange = (date) => {
-    setSelectedDate(date);
+  const dateAtTime = (date, time) => {
+    const next = new Date(date);
+    const [hours, minutes, seconds] = time.split(":").map(Number);
+    next.setHours(hours, minutes, seconds, 0);
+    return next;
   };
-
+  const clearSelection = () => {
+    setSelectedRoom(null);
+    clearRoomData();
+  };
+  const handleDateChange = (date) => {
+    if (!date) return;
+    const next = dateAtTime(date, selectedTime);
+    if (next.getTime() !== selectedDate.getTime()) {
+      clearSelection();
+      setSelectedDate(next);
+    }
+  };
   const handlePeriodChange = (e) => {
-    setSelectedPeriod(e.target.value);
+    const period = e.target.value;
+    if (period === selectedPeriod) return;
+    clearSelection();
+    setSelectedPeriod(period);
+    setSelectedDate(dateAtTime(selectedDate, periodToTime[period]));
   };
 
   const handleRoomSelect = (roomId) => {
@@ -171,6 +177,7 @@ const EventSchedule = () => {
             </div>
 
             <InfiniteScrollRooms
+              key={`${selectedDate.getTime()}-${selectedTime}`}
               date={selectedDate}
               time={selectedTime}
               onRoomSelect={handleRoomSelect}
