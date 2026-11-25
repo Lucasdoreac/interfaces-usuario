@@ -276,25 +276,8 @@ export class ApiService {
         params: { eventId },
       });
       if (response.status === 200) {
-        let reservation = response.data;
-
-        // Modify the date strings to change "GMT" to "GMT-3" before parsing
-        if (reservation && reservation.startAt) {
-          // Replace GMT with GMT-3 in the date strings
-          const startAtString = reservation.startAt.replace(" GMT", " GMT-3");
-          const endAtString = reservation.endAt.replace(" GMT", " GMT-3");
-
-          // Now parse the modified strings to Date objects
-          const startDate = new Date(startAtString);
-          const endDate = new Date(endAtString);
-
-          reservation = {
-            ...reservation,
-            startAt: startDate,
-            endAt: endDate,
-          };
-        }
-        return reservation;
+        // Preserve the API's timezone (including RFC 1123 GMT and ISO Z).
+        return response.data;
       }
       return null;
     } catch (error) {
