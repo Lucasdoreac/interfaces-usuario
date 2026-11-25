@@ -1,4 +1,13 @@
-.header-container {
+body.dark .header-container {
+  position: sticky;
+  top: 0;
+  background-color: #1d1d1d;
+  z-index: 1000;
+  padding: 10px;
+  color: #fff !important;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+body.light .header-container {
   position: sticky;
   top: 0;
   background-color: #fff;
@@ -22,26 +31,26 @@
 .search-container {
   margin-bottom: 15px;
   width: 100%;
-  
+
   .search-input-wrapper {
     position: relative;
     display: flex;
     align-items: center;
-    
+
     .search-icon {
       position: absolute;
       left: 10px;
       font-size: 20px;
       color: #6c757d;
     }
-    
+
     .search-input {
       width: 100%;
       padding: 10px 10px 10px 40px;
       border: 1px solid #ddd;
       border-radius: 5px;
       font-size: 16px;
-      
+
       &:focus {
         border-color: #007bff;
         box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
